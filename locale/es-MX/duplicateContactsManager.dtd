@@ -1,0 +1,74 @@
+<!-- TODO: check and improve translations of new strings, also in .properties file -->
+
+<!-- Messenger Tools Menu -->
+<!ENTITY toolsmenu.items.handleduplicates.label		"Duplicate Contacts Manager...">
+<!ENTITY toolsmenu.items.handleduplicates.accesskey	"D">
+
+<!-- Address Book Menu -->
+<!ENTITY abookmenu.label				"Duplicados">
+<!ENTITY abookmenu.accesskey				"C">
+<!ENTITY abookmenu.items.handleduplicates.label		"Encuentra y administra duplicados...">
+<!ENTITY abookmenu.items.handleduplicates.accesskey	"N">
+
+<!-- Address Book Toolbar -->
+<!ENTITY abooktoolbar.label				"Encuentra duplicados">
+<!ENTITY abooktoolbar.tooltip				"Encuentra contactos duplicados en las libretas de direcciones">
+
+<!-- Check and Handle Duplicates -->
+<!ENTITY handleDuplicates.windowtitle			"Encuentra y administra contactos duplicados">
+<!ENTITY handleDuplicates.introheader			"¿Como se maneja?">
+<!ENTITY handleDuplicates.introtext			"La libreta de direcciones seleccionada será revisada para encontrar contactos coincidencias potencialmente duplicadas.">
+<!ENTITY handleDuplicates.chooseSecondary		"Si elige dos libretas de direcciones diferentes, los duplicados se manejarán en las dos libretas de direcciones seleccionadas, de lo contrario, dentro de la misma libreta de direcciones.">
+<!ENTITY handleDuplicates.introtext2			"Cada vez que se presenta un par de candidatos, puede decidir omitirlos, editarlos y conservarlos, o eliminar uno y editar el otro.">
+<!ENTITY handleDuplicates.differentiator		"Si desea evitar que las entradas se muestren como posibles duplicados cada vez, puede darles diferentes nombres AIM.">
+<!ENTITY handleDuplicates.removeWithoutAsking		"Eliminar un contacto idénticos sin pedir permiso.">
+<!ENTITY handleDuplicates.preserveFirst			"Cuando utilice dos libretas de direcciones diferentes, no elimine automáticamente las entradas de la primera.">
+<!ENTITY handleDuplicates.deferInteractive		"Primero recopile todos los duplicados potenciales que requieran tratamiento manual y luego preséntelos de manera interactiva..">
+<!ENTITY handleDuplicates.durationWarning		"Dependiendo del número de contactos y la velocidad del CPU de la computadora, será el tiempo que se tarde,  y puede tomar varios minutos.">
+<!ENTITY handleDuplicates.natTrunkPrefix		"Prefijo de número de teléfono nacional, p. '01'">
+<!ENTITY handleDuplicates.countryCallingCode		"Prefijo internacional predeterminado, p. '+52'">
+<!ENTITY handleDuplicates.ignoreFields			"Campos para ignorar">
+<!ENTITY handleDuplicates.introtext3			"Se puede abandonar el proceso en cualquier momento presionando la tecla 'Cancelar'. Si no se quieren hacer cambios a un duplicado, se usa la tecla 'Saltar'.">
+<!ENTITY handleDuplicates.introtext4			"Si desea guardar los cambios y mantener ambas entradas, haga clic en 'Conservar ambos y continuar'; para eliminar una entrada, haga clic en 'Aplicar y continuar'.">
+<!ENTITY handleDuplicates.options			"Opciones">
+
+<!-- text after process has finished -->
+<!ENTITY handleDuplicates.endheader			"Eso es todo.">
+<!ENTITY handleDuplicates.endtext			"Acabas de deshacerse de estos duplicados y ahora puedes continuar con algo que es aún más divertido :-)">
+<!ENTITY handleDuplicates.endtext.numBefore		"Número de contactos antes">
+<!ENTITY handleDuplicates.endtext.numAfter		"Número de contactos después">
+<!ENTITY handleDuplicates.endtext.numRemoved		"Contactos eliminados">
+<!ENTITY handleDuplicates.endtext.numRemovedAuto	"Contactos eliminados automáticamente">
+<!ENTITY handleDuplicates.endtext.numPresented		"Pares de contactos presentados">
+<!ENTITY handleDuplicates.endtext.numRemovedMan		"Contactos eliminados manualmente">
+<!ENTITY handleDuplicates.endtext.numSkipped		"Contactos saltados">
+<!ENTITY handleDuplicates.endtext.ignoredFields		"Tipos de campo ignorado">
+<!ENTITY handleDuplicates.endtext.diffProps		"Tipos de campo encontrados con valores no equivalentes">
+<!ENTITY handleDuplicates.endtext.numChanged		"Las entradas han cambiado">
+<!ENTITY handleDuplicates.endtext.helpDevelopment	"Puede ayudar a mejorar este extensión de Thunderbird archivando problemas o comentándolos, contribuyendo con traducciones o incluso escribiendo código. El sitio de desarrollo es:">
+<!ENTITY handleDuplicates.endtext.provideFeedback	"o envíe sus sugerencias directamente a la lista de correo pública:">
+<!ENTITY handleDuplicates.feedbackMail			"duplicate-contact-manager-for-thunderbird@googlegroups.com">
+<!ENTITY handleDuplicates.devSiteUrl			"http://code.google.com/p/duplicate-contact-manager-for-thundebird/">
+
+<!ENTITY handleDuplicates.pleasepressstart		"Por favor presione Inicio.">
+
+<!ENTITY handleDuplicates.startbutton.label		"Inicio">
+<!ENTITY handleDuplicates.startbutton.accesskey		"I">
+<!ENTITY handleDuplicates.applynextbutton.label		"Aplicar y continuar &#62;">
+<!ENTITY handleDuplicates.applynextbutton.accesskey	"A">
+<!ENTITY handleDuplicates.keepnextbutton.label		"Conservar ambos y continuar &#62;">
+<!ENTITY handleDuplicates.keepnextbutton.accesskey	"C">
+<!ENTITY handleDuplicates.skipnextbutton.label		"Saltar &#62;">
+<!ENTITY handleDuplicates.skipnextbutton.accesskey	"S">
+<!ENTITY handleDuplicates.stopbutton.label		"Cancelar">
+<!ENTITY handleDuplicates.quitbutton.label		"Salir">
+<!ENTITY handleDuplicates.firstcontact			"Primer contacto">
+<!ENTITY handleDuplicates.secondcontact			"Segundo Contacto">
+<!ENTITY handleDuplicates.will_be_kept			"Será guardado">
+<!ENTITY handleDuplicates.will_be_removed		"Será borrado">
+<!ENTITY handleDuplicates.empty				"Vacío">
+<!ENTITY handleDuplicates.status_default		"Buscando contactos duplicados...">
+<!ENTITY handleDuplicates.status_nonefound		"No se encontraron contactos duplicados">
+<!ENTITY handleDuplicates.status_nfound			"&#x25;s contactos duplicados posibles">
+<!ENTITY handleDuplicates.status_of			"&#x25;s de &#x25;s">
+

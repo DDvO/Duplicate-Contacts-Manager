@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE overlay SYSTEM "chrome://duplicatecontactsmanager/locale/duplicateContactsManager.dtd">
+<?xml-stylesheet type="text/css" href="chrome://duplicatecontactsmanager/skin/duplicateContactsManager.css"?>
+
+<overlay id="duplicateContactsManager.overlay.menuitem2"
+	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" onload="init();">
+
+	<script type="application/x-javascript" src="chrome://duplicatecontactsmanager/content/duplicateContactsManager.js"/>
+	<script type="application/x-javascript" src="chrome://duplicatecontactsmanager/content/duplicateEntriesWindow.js"/>
+	<menupopup id="taskPopup">
+		<menuitem id="duplicateContactsManager-launch1"
+			  label="&toolsmenu.items.handleduplicates.label;"
+			  oncommand="DuplicateContactsManager.manageDuplicates();" />
+	</menupopup>
+	<menupopup id="appmenu_taskPopup">
+		<menuitem id="duplicateContactsManager-launch2"
+			  label="&toolsmenu.items.handleduplicates.label;"
+			  oncommand="DuplicateContactsManager.manageDuplicates();" />
+	</menupopup>
+</overlay>

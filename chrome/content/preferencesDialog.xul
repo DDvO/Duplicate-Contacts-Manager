@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://messenger/skin/dialogs.css" type="text/css"?>
+
+<dialog xmlns:html="http://www.w3.org/1999/xhtml"
+	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+	id="prefDialog"
+	buttons="accept,cancel"
+	onaccept="close();"
+	oncancel="close();"
+	title="Preferences">
+	<grid flex="1">
+	<columns>
+		<column/>
+		<column flex="1"/>
+	</columns>
+	<rows>
+		<row>
+			<label control="doctitle" value="Document Title:"/>
+			<textbox id="doctitle" flex="1"/>
+		</row>
+		<row>
+			<label control="docpath" value="Path to Address Database:"/>
+			<hbox flex="1">
+				<textbox id="docpath" flex="1"/>
+				<button label="Browse..."/>
+			</hbox>
+		</row>
+	</rows>
+	</grid>
+</dialog>

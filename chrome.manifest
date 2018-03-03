@@ -1,0 +1,9 @@
+content		duplicatecontactsmanager							chrome/content/
+skin		duplicatecontactsmanager		en-US					skin/classic/
+locale		duplicatecontactsmanager		en-US					locale/en-US/
+locale		duplicatecontactsmanager		de-DE					locale/de-DE/
+locale		duplicatecontactsmanager		fr-FR					locale/fr-FR/
+locale		duplicatecontactsmanager		es-ES					locale/es-ES/
+locale		duplicatecontactsmanager		es-MX					locale/es-MX/
+overlay		chrome://messenger/content/addressbook/addressbook.xul	chrome://duplicatecontactsmanager/content/menuOverlayABook.xul
+overlay		chrome://messenger/content/messenger.xul		chrome://duplicatecontactsmanager/content/menuOverlay.xul

@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+
+<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+	xmlns:em="http://www.mozilla.org/2004/em-rdf#">
+
+	<Description about="urn:mozilla:install-manifest">
+		<em:name>Duplicate Contacts Manager</em:name>
+		<em:id>duplicateContactsManager@ddvo.net</em:id>
+		<em:version>1.0</em:version>
+		<em:description>Facilitates handling of duplicate contacts in your address books.</em:description>
+		<em:creator>Marian Steinbach and David von Oheimb</em:creator>
+		<em:contributor>François Godin (Copelnug)</em:contributor>
+		<em:contributor>Alfred Peng</em:contributor>
+		<em:contributor>Valeryan_24@laposte.net</em:contributor>
+		<em:homepageURL>https://addons.mozilla.org/thunderbird/addon/2505</em:homepageURL>
+		<em:iconURL>chrome://duplicatecontactsmanager/content/kate.png</em:iconURL>
+		<em:aboutURL>chrome://duplicatecontactsmanager/content/aboutDialog.xul</em:aboutURL>
+		<!--It's an extension-->
+		<em:type>2</em:type>
+		<!--<em:optionsURL>chrome://duplicatecontactsmanager/content/preferencesDialog.xul</em:optionsURL>-->
+		<em:targetApplication>
+		<Description>
+			<em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id>
+			<em:minVersion>3.0</em:minVersion>
+			<em:maxVersion>61.0</em:maxVersion>
+		</Description>
+		</em:targetApplication>
+	</Description>
+</RDF>

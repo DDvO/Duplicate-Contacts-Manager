@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+
+<?xml-stylesheet href="chrome://messenger/skin/dialogs.css" type="text/css"?>
+
+<!DOCTYPE window SYSTEM "chrome://duplicatecontactsmanager/content/duplicateContactsManager.dtd">
+
+<dialog xmlns:html="http://www.w3.org/1999/xhtml"
+	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+	id="aboutDialog"
+	buttons="accept"
+	onaccept="close();"
+	title="Duplicate Contacts Manager">
+	<hbox>
+		<vbox align="center">
+			<image src="search-contacts.png" />
+		</vbox>
+		<vbox flex="1" align="left" style="padding: 20px;">
+			<description style="font-weight: bold">Duplicate Contacts Manager</description>
+			<description>Thunderbird add-on originally by Marian Steinbach</description>
+			<description>Major improvements by David von Oheimb</description>
+			<description>Contributor: François Godin (Copelnug)</description>
+			<description>Contributor: Alfred Peng</description>
+			<description>Contributor: Valeryan_24@laposte.net</description>
+			<description></description>
+			<description>Current add-on home page:</description>
+			<description><html:a style="text-decoration: underline; color: #0000ff;" href="http://ddvo.net/DuplicateContactsManager/">http://ddvo.net/DuplicateContactsManager/</html:a></description>
+			<description></description>
+			<description>Current code repository:</description>
+			<description><html:a style="text-decoration: underline; color: #0000ff;" href="https://github.com/DDvO/Duplicate-Contacts-Manager">https://github.com/DDvO/Duplicate-Contacts-Manager</html:a></description>
+			<description>Original add-on home page (inactive since end-2012):</description>
+			<description><html:a style="text-decoration: underline; color: #0000ff;" href="https://addons.mozilla.org/thunderbird/addon/2505">https://addons.mozilla.org/thunderbird/addon/2505</html:a></description>
+			<description></description>
+			<description>Original development page:</description>
+			<description><html:a style="text-decoration: underline; color: #0000ff;" href="http://code.google.com/p/duplicate-contact-manager-for-thundebird/">http://code.google.com/p/duplicate-contact-manager-for-thundebird/</html:a></description>
+			<description></description>
+			<description>Original mailing list:</description>
+			<description><html:a style="text-decoration: underline; color: #0000ff;" href="http://groups.google.com/group/duplicate-contact-manager-for-thunderbird">http://groups.google.com/group/duplicate-contact-manager-for-thunderbird</html:a></description>
+		</vbox>
+	</hbox>
+</dialog>

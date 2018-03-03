@@ -1,0 +1,157 @@
+#duplicatecontactsmanager-toolbarbutton-1,
+#wrapper-duplicatecontactsmanager-toolbarbutton-1
+  {list-style-image: url("chrome://duplicatecontactsmanager/content/menubutton.png");}
+
+/* common style for all custom buttons */
+.custombutton
+  {-moz-image-region: rect( 0px 24px 24px  0px);}
+
+.custombutton:hover
+  {-moz-image-region: rect(24px 24px 48px  0px);}
+
+[iconsize="small"] .custombutton
+  {-moz-image-region: rect( 0px 40px 16px 24px);}
+
+[iconsize="small"] .custombutton:hover
+  {-moz-image-region: rect(24px 40px 40px 24px);}
+
+.text-link {
+	color: blue;
+	text-decoration: underline;
+}
+
+.error-message {
+	color: red;
+}
+
+.equivalence {
+	width: 16px;
+	font-size: 20px;
+	text-align: center;
+}
+
+description.text-line {
+	padding-top: 2px;
+	padding-bottom: 2px;
+	margin-top: 0px;
+	margin-bottom: 0px;
+	line-height: 1em;
+}
+
+description.value {
+	margin-left: 0px;
+	padding-left: 0px;
+}
+
+#handleDuplicates-window, #AttributesTable {
+	width: 850px;
+}
+#handleDuplicates-window {
+	height: 700px;
+}
+#AttributesTable {
+	border: 1px inset;
+}
+#explanation, #AttributesTable {
+	min-height: 550px;
+	overflow-y: auto;
+}
+#duplicatesButtonsBox {
+	padding-bottom: 10px;
+}
+
+radio#columnUseLeft, radio#columnUseRight {
+	padding: 4px 0px 0px 0px;
+	font-weight: bold;
+/*	background-color: #cccc00 !important; does not work - why? */
+}
+
+label#columnKeptInfoLeft, label#columnKeptInfoRight {
+	padding: 0px 0px 6px 10px;
+}
+
+#AttributesTableRows row hbox {
+	padding: 0px;
+}
+
+#AttributesTableRows row label.textbox {
+	padding: 8px 4px 8px 4px;
+}
+
+/*unused*/
+row label.empty, row hbox.empty {
+	color: #ccc;
+	font-style: italic;
+}
+
+AttributesTable tableheader {
+	font-weight: bold;
+	padding: 4px;
+	margin: 1px;
+	background-color: #D3FFD3;
+	border: 1px solid white;
+}
+
+#duplicatesButtonsBox {
+	margin: 10px;
+	text-align: center;
+}
+
+.used {
+	background-color: #D3FFD3;
+}
+.unused {
+	background-color: #FFBFBF;
+}
+#explanation {
+	font-size: 12px;
+	margin: 20px;
+	height: 500px;
+	width: auto;
+	text-align: center;
+}
+#explanation description {
+	padding: 4px;
+	display: block;
+	width: auto;
+	height: auto;
+	text-align: left;
+}
+#explanation .low {
+/*	height: 10px !important;  does not work - why? */
+}
+
+.explheader {
+	font-size: 14px;
+	font-weight: bold;
+	font-size: 1.2em;
+	text-align: center;
+}
+
+#explanation .strong {
+	font-weight: bold;
+}
+#explanation .em {
+	font-style: italic;
+}
+
+#AttributesTableRows row label.field {
+	padding: 3px;
+}
+
+hbox.addressbooklists .addressbookname {
+	margin-left: 3em;
+}
+.addressbookname {
+	text-align: left;
+	font-weight: bold;
+}
+
+checkbox {
+	text-align: left;
+}
+
+#mainbox{
+	min-width: 550px;
+	overflow: auto;
+}

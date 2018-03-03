@@ -1,0 +1,73 @@
+<!-- TODO: check and improve translations of new strings, also in .properties file -->
+
+<!-- Messenger Tools Menu -->
+<!ENTITY toolsmenu.items.handleduplicates.label		"Duplicate Contacts Manager...">
+<!ENTITY toolsmenu.items.handleduplicates.accesskey	"D">
+
+<!-- Address Book Menu -->
+<!ENTITY abookmenu.label				"Doublons">
+<!ENTITY abookmenu.accesskey				"D">
+<!ENTITY abookmenu.items.handleduplicates.label		"Cherche et traite les doublons...">
+<!ENTITY abookmenu.items.handleduplicates.accesskey	"C">
+
+<!-- Address Book Toolbar -->
+<!ENTITY abooktoolbar.label				"Recherche des doublons">
+<!ENTITY abooktoolbar.tooltip				"Recherche les doublons de votre carnet d'adresses">
+
+<!-- Check and Handle Duplicates -->
+<!ENTITY handleDuplicates.windowtitle			"Recherche et traitement des doublons du Carnet d'Adresses">
+<!ENTITY handleDuplicates.introheader			"Comment ça marche ?">
+<!ENTITY handleDuplicates.introtext			"Les entrées correspondantes potentiellement dupliquées vont maintenant être recherchées dans le(s) carnet(s) d'adresses sélectionné(s) ci-dessous.">
+<!ENTITY handleDuplicates.chooseSecondary		"Les contacts du premier carnet d’adresse seront comparés à ceux du second. Mettre deux fois le même carnet permet de rechercher les contacts similaires dans celui-ci.">
+<!ENTITY handleDuplicates.introtext2			"Chaque fois qu'une paire de candidats est présentée, vous pouvez décider de les ignorer, de les modifier et de les conserver tous les deux, ou d'en supprimer un et de modifier l'autre.">
+<!ENTITY handleDuplicates.differentiator		"Si vous souhaitez empêcher les entrées d'être affichées en tant que doublons potentiels à chaque fois, vous pouvez leur donner différents pseudos AIM.">
+<!ENTITY handleDuplicates.removeWithoutAsking		"Automatiquement supprimer un des contacts lorsqu’ils sont totalement identiques (ou conserver celui qui a un champs en plus).">
+<!ENTITY handleDuplicates.preserveFirst			"Lorsque vous utilisez deux carnets d'adresses différents, ne supprimez pas automatiquement les entrées du premier.">
+<!ENTITY handleDuplicates.deferInteractive		"Collecter tous les duplicats potentiels avant de les présenter.">
+<!ENTITY handleDuplicates.durationWarning		"En fonction du nombre d'adresses et du CPU de votre ordinateur, ce processus peut prendre plusieurs minutes.">
+<!ENTITY handleDuplicates.natTrunkPrefix		"Préfixe de numéro de téléphone national, par ex. '0'">
+<!ENTITY handleDuplicates.countryCallingCode		"Code international par défaut, par ex. '+33'">
+<!ENTITY handleDuplicates.ignoreFields			"Champs à ignorer">
+<!ENTITY handleDuplicates.introtext3			"Vous pouvez tout arrêter à n'importe quel moment en pressant sur 'Annuler'. Si vous ne voulez pas traiter un doublon, utilisez le bouton 'Passer'.">
+<!ENTITY handleDuplicates.introtext4			"Si vous souhaitez enregistrer les modifications et conserver les deux entrées, cliquez sur 'Conserver les deux et continuer'; pour supprimer une entrée, cliquez sur 'Appliquer et continuer'.">
+<!ENTITY handleDuplicates.options			"Options">
+
+<!-- text after process has finished -->
+<!ENTITY handleDuplicates.endheader			"C'est bon.">
+<!ENTITY handleDuplicates.endtext			"Vous venez de vous débarrasser des doublons et pouvez maintenant continuer avec quelque chose de plus amusant  :-)">
+<!ENTITY handleDuplicates.endtext.numBefore		"Nombre de contacts avant">
+<!ENTITY handleDuplicates.endtext.numAfter		"Nombre de contacts après">
+<!ENTITY handleDuplicates.endtext.numRemoved		"Nombre de contacts enlevés">
+<!ENTITY handleDuplicates.endtext.numRemovedAuto	"Contacts enlevés automatiquement">
+<!ENTITY handleDuplicates.endtext.numPresented		"Paires de contacts présentés">
+<!ENTITY handleDuplicates.endtext.numRemovedMan		"Contacts enlevés manuellement">
+<!ENTITY handleDuplicates.endtext.numSkipped		"Contacts passés">
+<!ENTITY handleDuplicates.endtext.ignoredFields		"Types de champs ignorés">
+<!ENTITY handleDuplicates.endtext.diffProps		"Types de champs trouvés avec des valeurs non équivalentes">
+<!ENTITY handleDuplicates.endtext.numChanged		"Nombre de contact modifiés">
+<!ENTITY handleDuplicates.endtext.helpDevelopment	"Vous pouvez aider à améliorer cette extension de Thunderbird en classant des problèmes ou en les commentant, en apportant des traductions, ou même en écrivant du code. Le site de développement est:">
+<!ENTITY handleDuplicates.endtext.provideFeedback	"Pour aider à améliorer cette extension, envoyez vos commentaires par email à:">
+<!ENTITY handleDuplicates.feedbackMail			"duplicate-contact-manager-for-thunderbird@googlegroups.com">
+<!ENTITY handleDuplicates.devSiteUrl			"http://code.google.com/p/duplicate-contact-manager-for-thundebird/">
+
+<!ENTITY handleDuplicates.pleasepressstart		"Appuyer sur Démarrer SVP.">
+
+<!ENTITY handleDuplicates.startbutton.label		"Démarrer">
+<!ENTITY handleDuplicates.startbutton.accesskey		"D">
+<!ENTITY handleDuplicates.applynextbutton.label		"Appliquer et continuer &#62;">
+<!ENTITY handleDuplicates.applynextbutton.accesskey	"A">
+<!ENTITY handleDuplicates.keepnextbutton.label		"Conserver les deux et continuer &#62;">
+<!ENTITY handleDuplicates.keepnextbutton.accesskey	"C">
+<!ENTITY handleDuplicates.skipnextbutton.label		"Passer &#62;">
+<!ENTITY handleDuplicates.skipnextbutton.accesskey	"s">
+<!ENTITY handleDuplicates.stopbutton.label		"Annuler">
+<!ENTITY handleDuplicates.quitbutton.label		"Quitter">
+<!ENTITY handleDuplicates.firstcontact			"Premier Contact">
+<!ENTITY handleDuplicates.secondcontact			"Second Contact">
+<!ENTITY handleDuplicates.will_be_kept			"à conserver">
+<!ENTITY handleDuplicates.will_be_removed		"à enlever">
+<!ENTITY handleDuplicates.empty				"vide">
+<!ENTITY handleDuplicates.status_default		"Recherche des doublons en cours...">
+<!ENTITY handleDuplicates.status_nonefound		"Aucun doublon n'a été trouvé">
+<!ENTITY handleDuplicates.status_nfound			"&#x25;s doublons possibles ont été trouvés">
+<!ENTITY handleDuplicates.status_of			"&#x25;s sur &#x25;s">

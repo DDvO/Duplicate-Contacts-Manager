@@ -1,0 +1,71 @@
+<!-- Messenger Tools Menu -->
+<!ENTITY toolsmenu.items.handleduplicates.label		"Duplicate Contacts Manager...">
+<!ENTITY toolsmenu.items.handleduplicates.accesskey	"D">
+
+<!-- Address Book Menu -->
+<!ENTITY abookmenu.label				"Duplicates">
+<!ENTITY abookmenu.accesskey				"C">
+<!ENTITY abookmenu.items.handleduplicates.label		"Find and manage duplicates...">
+<!ENTITY abookmenu.items.handleduplicates.accesskey	"f">
+
+<!-- Address Book Toolbar -->
+<!ENTITY abooktoolbar.label				"Find Duplicates">
+<!ENTITY abooktoolbar.tooltip				"Finds duplicates in your Thunderbird address books">
+
+<!-- Check and Handle Duplicates -->
+<!ENTITY handleDuplicates.windowtitle			"Find and Manage Duplicates">
+<!ENTITY handleDuplicates.introheader			"What’s happening here?">
+<!ENTITY handleDuplicates.introtext			"The selected address book(s) will be searched for matching potentially duplicate entries.">
+<!ENTITY handleDuplicates.chooseSecondary		"If you choose two different address books, duplicates will be handled across the two selected address books, otherwise within the same address book.">
+<!ENTITY handleDuplicates.introtext2			"Each time a pair of candidate is presented, you can decide to skip them, edit and keep them both, or delete one and edit the other.">
+<!ENTITY handleDuplicates.differentiator		"If you wish to prevent entries from being shown as potential duplicates each time, you may give them different AIM names.">
+<!ENTITY handleDuplicates.removeWithoutAsking		"Remove without asking all duplicates containing less information when the rest is the same between the two.">
+<!ENTITY handleDuplicates.preserveFirst			"When using two different address books, do not automatically remove entries from the first one.">
+<!ENTITY handleDuplicates.deferInteractive		"First collect all potential duplicates requiring manual treatment and then present them interactively.">
+<!ENTITY handleDuplicates.durationWarning		"Depending on the number of addresses and the speed of your computer, this process might take several minutes.">
+<!ENTITY handleDuplicates.natTrunkPrefix		"National phone number prefix, e.g., '1' or '0'">
+<!ENTITY handleDuplicates.countryCallingCode		"Default country calling code, e.g., '+1' or '+44'">
+<!ENTITY handleDuplicates.ignoreFields			"Fields to ignore">
+<!ENTITY handleDuplicates.introtext3			"If you do not want to treat a potential duplicate, use 'Skip'. You can abort the process by pressing 'Stop'.">
+<!ENTITY handleDuplicates.introtext4			"If you want to save changes and keep both entries, press 'Keep both and continue'; for deleting one entry, press 'Apply and continue'.">
+<!ENTITY handleDuplicates.options			"Options">
+
+<!-- text after process has finished -->
+<!ENTITY handleDuplicates.endheader			"That’s it.">
+<!ENTITY handleDuplicates.endtext			"You just got rid of these duplicates and can now continue with something that’s more fun :-)">
+<!ENTITY handleDuplicates.endtext.numBefore		"Number of entries before">
+<!ENTITY handleDuplicates.endtext.numAfter		"Number of entries after">
+<!ENTITY handleDuplicates.endtext.numRemoved		"Entries removed">
+<!ENTITY handleDuplicates.endtext.numRemovedAuto	"Entries removed automatically">
+<!ENTITY handleDuplicates.endtext.numPresented		"Entry pairs presented">
+<!ENTITY handleDuplicates.endtext.numRemovedMan		"Entries removed manually">
+<!ENTITY handleDuplicates.endtext.numSkipped		"Entry pairs skipped">
+<!ENTITY handleDuplicates.endtext.ignoredFields		"Field types ignored">
+<!ENTITY handleDuplicates.endtext.diffProps		"Field types found with non-equivalent values">
+<!ENTITY handleDuplicates.endtext.numChanged		"Entries changed">
+<!ENTITY handleDuplicates.endtext.helpDevelopment	"You can help improve this Thunderbird Add-On by filing issues or commenting them, contributing translations, or even writing code. The development site is:">
+<!ENTITY handleDuplicates.endtext.provideFeedback	"or send your feedback directly to our public mailing list:">
+<!ENTITY handleDuplicates.feedbackMail			"duplicate-contact-manager-for-thunderbird@googlegroups.com">
+<!ENTITY handleDuplicates.devSiteUrl			"https://github.com/DDvO/Duplicate-Contacts-Manager">
+
+<!ENTITY handleDuplicates.pleasepressstart		"Please press Start.">
+
+<!ENTITY handleDuplicates.startbutton.label		"Start">
+<!ENTITY handleDuplicates.startbutton.accesskey		"S">
+<!ENTITY handleDuplicates.applynextbutton.label		"Apply and continue &#62;">
+<!ENTITY handleDuplicates.applynextbutton.accesskey	"A">
+<!ENTITY handleDuplicates.keepnextbutton.label		"Keep both and continue &#62;">
+<!ENTITY handleDuplicates.keepnextbutton.accesskey	"K">
+<!ENTITY handleDuplicates.skipnextbutton.label		"Skip &#62;">
+<!ENTITY handleDuplicates.skipnextbutton.accesskey	"i">
+<!ENTITY handleDuplicates.stopbutton.label		"Stop">
+<!ENTITY handleDuplicates.quitbutton.label		"Quit">
+<!ENTITY handleDuplicates.firstcontact			"First Entry">
+<!ENTITY handleDuplicates.secondcontact			"Second Entry">
+<!ENTITY handleDuplicates.will_be_kept			"to be saved">
+<!ENTITY handleDuplicates.will_be_removed		"to be removed">
+<!ENTITY handleDuplicates.empty				"empty">
+<!ENTITY handleDuplicates.status_default		"Searching for duplicates...">
+<!ENTITY handleDuplicates.status_nonefound		"No duplicates found">
+<!ENTITY handleDuplicates.status_nfound			"Found &#x25;s potential duplicates">
+<!ENTITY handleDuplicates.status_of			"&#x25;s of &#x25;s">

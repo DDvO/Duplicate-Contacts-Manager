@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE overlay SYSTEM "chrome://duplicatecontactsmanager/locale/duplicateContactsManager.dtd">
+<?xml-stylesheet href="chrome://messenger/skin/addressbook/addressbook.css" type="text/css"?>
+<?xml-stylesheet href="chrome://duplicatecontactsmanager/skin/duplicateContactsManager.css" type="text/css"?>
+<window
+    id="handleDuplicates-window"
+    title="&handleDuplicates.windowtitle;"
+	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+	xmlns:html="http://www.w3.org/1999/xhtml"
+	onload="DuplicateEntriesWindow.init()"
+    onunload="DuplicateEntriesWindow.OnUnloadWindow()">
+	<script type="application/x-javascript" src="chrome://duplicatecontactsmanager/content/duplicateEntriesWindow.js"/>
+	<stringbundleset id="duplicateContactsManagerStringbundleset">
+		<stringbundle id="bundle_duplicateContactsManager" src="chrome://duplicatecontactsmanager/locale/duplicateContactsManager.properties" />
+	</stringbundleset>
+
+	<vbox id="mainbox">
+		<!--image src="chrome://duplicatecontactsmanager/content/kate.png" height="40" alt="DCM logo" /-->
+		<statusbar id="duplicates-status-bar">
+			<statusbarpanel id="statusText" flex="0">
+				<label id="statusText_label" value="&handleDuplicates.status_default;" />
+				<spacer flex="4"/>
+			</statusbarpanel>
+			<statusbarpanel id="statusAddressBook1" flex="1">
+				<label id="statusAddressBook1_label" value="AddressBook1" class="addressbookname" />
+				<label id="statusAddressBook1_size" value="" />
+				<spacer flex="1"/>
+			</statusbarpanel>
+			<statusbarpanel id="progressText" flex="1">
+				<label id="progressText_label" value="" />
+			</statusbarpanel>
+			<statusbarpanel flex="0">
+				<spacer flex="1"/>
+				<progressmeter id="progressMeter" mode="determined" value="0%" style="display: none" />
+				<spacer flex="1"/>
+			</statusbarpanel>
+			<statusbarpanel id="statusAddressBook2" flex="1">
+				<label id="statusAddressBook2_label" value="AddressBook2" class="addressbookname" />
+				<label id="statusAddressBook2_size" value="" />
+				<spacer flex="2"/>
+			</statusbarpanel>
+		</statusbar>
+		<hbox align="center" id="duplicatesButtonsBox">
+			<button	id="startbutton"
+				class="dialog"
+				label="&handleDuplicates.startbutton.label;"
+				disabled="true"
+				accesskey="&handleDuplicates.startbutton.accesskey;"
+				oncommand="DuplicateEntriesWindow.startSearch()" />
+			<button	id="skipnextbutton"
+				class="dialog"
+				label="&handleDuplicates.skipnextbutton.label;"
+				disabled="true"
+				accesskey="&handleDuplicates.skipnextbutton.accesskey;"
+				oncommand="DuplicateEntriesWindow.skipAndSearchNextDuplicate()" />
+			<button	id="keepnextbutton" flex="1"
+				class="dialog"
+				label="&handleDuplicates.keepnextbutton.label;"
+				disabled="true"
+				visibility="hidden"
+				accesskey="&handleDuplicates.keepnextbutton.accesskey;"
+				oncommand="DuplicateEntriesWindow.keepAndSearchNextDuplicate();" />
+			<button	id="applynextbutton" flex="1"
+				class="dialog"
+				label="&handleDuplicates.applynextbutton.label;"
+				disabled="true"
+				visibility="hidden"
+				accesskey="&handleDuplicates.applynextbutton.accesskey;"
+				oncommand="DuplicateEntriesWindow.applyAndSearchNextDuplicate();" />
+			<spacer flex="3" />
+			<button	id="stopbutton" style="display: none"
+				class="dialog"
+				label="&handleDuplicates.stopbutton.label;"
+				disabled="false"
+				oncommand="DuplicateEntriesWindow.endSearch();" />
+			<button	id="quitbutton"
+				class="dialog"
+				label="&handleDuplicates.quitbutton.label;"
+				disabled="false"
+				oncommand="window.close();" />
+		</hbox>
+		<hbox flex="1" id="explanation" style="display: block">
+			<vbox flex="1" style="text-align: center">
+				<description class="explheader">&handleDuplicates.introheader;</description>
+				<description>&handleDuplicates.introtext;</description>
+				<description>&handleDuplicates.chooseSecondary;</description>
+				<hbox id="addressbooklists"></hbox>
+				<description>&handleDuplicates.introtext2;</description>
+				<description>&handleDuplicates.differentiator;</description>
+				<description>&handleDuplicates.introtext3;</description>
+				<description>&handleDuplicates.introtext4;</description>
+				<description class="explheader">&handleDuplicates.options;</description>
+				<checkbox id="autoremove" label="&handleDuplicates.removeWithoutAsking;" />
+				<checkbox id="preservefirst" label="&handleDuplicates.preserveFirst;" />
+				<checkbox id="deferInteractive" label="&handleDuplicates.deferInteractive;" />
+				<!--description>&handleDuplicates.durationWarning;</description-->
+                                <hbox>
+                                  <description>&handleDuplicates.natTrunkPrefix;: </description>
+                                  <textbox class="low" id="natTrunkPrefix" cols="1" size="2" />
+                                  <description>&handleDuplicates.countryCallingCode;: </description>
+                                  <textbox class="low" id="countryCallingCode" cols="1" size="7" />
+                                </hbox>
+                                  <description>&handleDuplicates.ignoreFields;: </description>
+                                  <textbox multiline="true" id="ignoreFields" cols="90" />
+			</vbox>
+		</hbox>
+		<hbox flex="1" id="tablepane" style="display: none">
+			<radiogroup>
+				<grid id="AttributesTable" flex="1">
+					<columns><column flex="1" /><column flex="2" /><column class="equivalence" /><column flex="2" /></columns>
+					<rows id="AttributesTableRows">
+						<row id="tableheader">
+							<hbox>
+								<label id="fieldLabels" class="field" value=" " />
+							</hbox>
+							<hbox id="columnHeaderLeft" class="used" oncommand="DuplicateEntriesWindow.toggleContactLeftRight('left')">
+								<radio id="columnUseLeft" label="&handleDuplicates.firstcontact;" selected="true" />
+								<label id="columnKeptInfoLeft" value="&handleDuplicates.will_be_kept;" />
+							</hbox>
+							<hbox><description id="cardsEqu" class="equivalence" value="" />
+							</hbox>
+							<hbox id="columnHeaderRight" class="unused" oncommand="DuplicateEntriesWindow.toggleContactLeftRight('right')">
+								<radio id="columnUseRight" label="&handleDuplicates.secondcontact;" selected="false" />
+								<label id="columnKeptInfoRight" value="&handleDuplicates.will_be_removed;" />
+							</hbox>
+						</row>
+					</rows>
+				</grid>
+			</radiogroup>
+		</hbox>
+		<hbox flex="1" id="endinfo" style="display: none">
+			<vbox flex="1" style="text-align: center">
+				<description class="explheader">&handleDuplicates.endheader;</description>
+				<vbox style="background-color: #FFFFFF; margin: 10px 20px 5px 15px; padding: 10px; border: 1px inset;">
+					<hbox><description class="text-line" value="&handleDuplicates.endtext.numBefore;:" />
+					      <description class="text-line  value" id="resultNumBefore" value="0" /></hbox>
+					<hbox><description class="text-line" value="&handleDuplicates.endtext.numAfter;:" />
+					      <description class="text-line  value" id="resultNumAfter" value="0" /></hbox>
+					<hbox><description class="text-line" value="&handleDuplicates.endtext.numRemovedMan;:" />
+					      <description class="text-line  value" id="resultNumRemovedMan" value="0" /></hbox>
+					<hbox><description class="text-line" value="&handleDuplicates.endtext.numRemovedAuto;:" />
+					      <description class="text-line  value" id="resultNumRemovedAuto" value="0" /></hbox>
+					<hbox><description class="text-line" value="&handleDuplicates.endtext.numChanged;:" />
+					      <description class="text-line  value" id="resultNumChanged" value="0" /></hbox>
+					<hbox><description class="text-line" value="&handleDuplicates.endtext.numSkipped;:" />
+					      <description class="text-line  value" id="resultNumSkipped" value="0" /></hbox>
+					<hbox><description class="text-line" value="&handleDuplicates.endtext.ignoredFields;:" />
+					      <description class="text-line  value" id="resultIgnoredFields" style="width: 600px;" /></hbox>
+					<hbox><description class="text-line" value="&handleDuplicates.endtext.diffProps;:" />
+					      <description class="text-line  value" id="resultDiffProps" style="width: 400px;" /></hbox>
+				</vbox>
+				<vbox style="background-color: #FFFFFF; margin: 5px 20px 20px 15px; padding: 10px; border: 1px inset;">
+					<description style="width: 600px;">&handleDuplicates.endtext.helpDevelopment;</description>
+					<description><html:a class="text-link" href="&handleDuplicates.devSiteUrl;">&handleDuplicates.devSiteUrl;</html:a></description>
+<!--
+					<description>&handleDuplicates.endtext.provideFeedback;</description>
+					<description><html:a class="text-link" href="mailto:&handleDuplicates.feedbackMail;?subject=Feedback">&handleDuplicates.feedbackMail;</html:a></description>
+-->
+				</vbox>
+			</vbox>
+		</hbox>
+	</vbox>
+</window>
