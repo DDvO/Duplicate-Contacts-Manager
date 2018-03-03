@@ -6,7 +6,7 @@
 	<Description about="urn:mozilla:install-manifest">
 		<em:name>Duplicate Contacts Manager</em:name>
 		<em:id>duplicateContactsManager@ddvo.net</em:id>
-		<em:version>1.0</em:version>
+		<em:version>1.0.1</em:version>
 		<em:description>Facilitates handling of duplicate contacts in your address books.</em:description>
 		<em:creator>Marian Steinbach and David von Oheimb</em:creator>
 		<em:contributor>François Godin (Copelnug)</em:contributor>
