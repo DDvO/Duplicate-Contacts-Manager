@@ -6,8 +6,8 @@
 	<Description about="urn:mozilla:install-manifest">
 		<em:name>Duplicate Contacts Manager</em:name>
 		<em:id>duplicateContactsManager@ddvo.net</em:id>
-		<em:version>1.0.1</em:version>
-		<em:description>Facilitates handling of duplicate contacts in your address books.</em:description>
+		<em:version>1.0.2</em:version>
+		<em:description>Facilitates handling of redundant entries in address books.</em:description>
 		<em:creator>Marian Steinbach and David von Oheimb</em:creator>
 		<em:contributor>François Godin (Copelnug)</em:contributor>
 		<em:contributor>Alfred Peng</em:contributor>
@@ -22,8 +22,26 @@
 		<Description>
 			<em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id>
 			<em:minVersion>3.0</em:minVersion>
-			<em:maxVersion>61.0</em:maxVersion>
+			<em:maxVersion>61.*</em:maxVersion>
 		</Description>
 		</em:targetApplication>
+                <em:localized>
+                  <Description>
+                    <em:locale>de</em:locale>
+		    <em:description>Dubletten und andere redundante Einträge in Adressbüchern suchen und entfernen.</em:description>
+                  </Description>
+                </em:localized>
+                <em:localized>
+                  <Description>
+                    <em:locale>fr</em:locale>
+		    <em:description>Recherche et traitement des doublons du Carnet d'Adresses.</em:description>
+                  </Description>
+                </em:localized>
+                <em:localized>
+                  <Description>
+                    <em:locale>es</em:locale>
+		    <em:description>Encuentra y administra contactos duplicados en las libretas de direcciones.</em:description>
+                  </Description>
+                </em:localized>
 	</Description>
 </RDF>
