@@ -12,9 +12,9 @@
 	<menu id="tasksMenu">
 		<menupopup id="taskPopup">
 			<menuitem id="duplicateContactsManagerMenu_manageDuplicates"
-				label="&toolsmenu.items.handleduplicates.label;"
+				label="&abookmenu.items.handleduplicates.label;"
 				oncommand="DuplicateContactsManager.manageDuplicates();"
-				accesskey="&toolsmenu.items.handleduplicates.accesskey;" />
+				accesskey="&abookmenu.items.handleduplicates.accesskey;" />
 		</menupopup>
 	</menu>
 	<!-- Thunderbird address book -->
