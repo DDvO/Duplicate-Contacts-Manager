@@ -432,7 +432,8 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 		},
 
 		updateDeletedProgress: function (label, book, nDeleted) {
-			document.getElementById(label).value = '(cards: '+ (this.vcards[book].length -
+			const cards = this.stringBundle.getString('cards');
+			document.getElementById(label).value = '('+cards+': '+ (this.vcards[book].length -
 			                         (this.abDir1 == this.abDir2 ? this.totalCardsDeleted1 +
 			                                                       this.totalCardsDeleted2 : nDeleted)) +')';
 		},
@@ -441,8 +442,9 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			// update status info - will not be visible immediately, see also http://forums.mozillazine.org/viewtopic.php?p=5300605
 			var pos = this.currentSearchPosition1 + 1;
 			var len = this.vcards[this.BOOK_1].length;
+			const current = this.stringBundle.getString('current');
 			this.progressmeter.setAttribute('value', ((pos / len) * 100) + '%');
-			this.progresstext.value = "current: "+pos;
+			this.progresstext.value = current+": "+pos;
 			this.updateDeletedProgress('statusAddressBook1_size' , this.BOOK_1, this.totalCardsDeleted1);
 			this.updateDeletedProgress('statusAddressBook2_size' , this.BOOK_2, this.totalCardsDeleted2);
 		},
