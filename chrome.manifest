@@ -1,7 +1,6 @@
 content		duplicatecontactsmanager							chrome/content/
 skin		duplicatecontactsmanager		classic					skin/classic/
-locale		duplicatecontactsmanager		en-US					locale/en-US/
-locale		duplicatecontactsmanager		de-DE					locale/de-DE/
+locale		duplicatecontactsmanager		en					locale/en-US/
 locale		duplicatecontactsmanager		de					locale/de-DE/
 locale		duplicatecontactsmanager		fr					locale/fr-FR/
 locale		duplicatecontactsmanager		es-ES					locale/es-ES/
