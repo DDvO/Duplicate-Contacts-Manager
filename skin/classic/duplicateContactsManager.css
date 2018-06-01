@@ -24,12 +24,6 @@
 	color: red;
 }
 
-.equivalence {
-	width: 16px;
-	font-size: 20px;
-	text-align: center;
-}
-
 description.text-line {
 	padding-top: 2px;
 	padding-bottom: 2px;
@@ -43,18 +37,23 @@ description.value {
 	padding-left: 0px;
 }
 
-#handleDuplicates-window, #AttributesTable {
+#handleDuplicates-window {
+/*	height: 700px; */
 	width: 850px;
 }
-#handleDuplicates-window {
-	height: 700px;
-}
-#AttributesTable {
+.tbox {
+	background-color: #FFFFFF;
+	margin: 10px 20px 5px 15px;
+	padding: 10px;
 	border: 1px inset;
 }
-#explanation, #AttributesTable {
-	min-height: 550px;
+#AttributesTable {
+	margin: 10px 20px 5px 15px;
+/*	width: 800px; */
+/*	height: 680px;
+	min-height: 450px;
 	overflow-y: auto;
+*/
 }
 #duplicatesButtonsBox {
 	padding-bottom: 10px;
@@ -70,7 +69,12 @@ label#columnKeptInfoLeft, label#columnKeptInfoRight {
 	padding: 0px 0px 6px 10px;
 }
 
+#statusText {
+	color: #aa0000;
+}
+
 #AttributesTableRows row hbox {
+	width: 100px;
 	padding: 0px;
 }
 
@@ -78,7 +82,13 @@ label#columnKeptInfoLeft, label#columnKeptInfoRight {
 	padding: 8px 4px 8px 4px;
 }
 
-/*unused*/
+.equivalence {
+	width: 16px;
+	font-size: 20px;
+	text-align: center;
+}
+
+/* unused */
 row label.empty, row hbox.empty {
 	color: #ccc;
 	font-style: italic;
@@ -106,7 +116,9 @@ AttributesTable tableheader {
 #explanation {
 	font-size: 12px;
 	margin: 20px;
-	height: 500px;
+/*	height: 600px;
+	min-height: 450px;
+	overflow-y: auto; */
 	width: auto;
 	text-align: center;
 }
@@ -114,13 +126,16 @@ AttributesTable tableheader {
 	padding: 4px;
 	display: block;
 	width: auto;
-	height: auto;
+/*	height: auto; */
 	text-align: left;
 }
 #explanation .low {
 /*	height: 10px !important;  does not work - why? */
 }
 
+#endinfo {
+	width: auto;
+}
 .explheader {
 	font-size: 14px;
 	font-weight: bold;
@@ -152,6 +167,6 @@ checkbox {
 }
 
 #mainbox{
-	min-width: 550px;
-	overflow: auto;
+/*	min-width: 850px;
+	overflow: auto; */
 }

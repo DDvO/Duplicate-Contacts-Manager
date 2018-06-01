@@ -1064,8 +1064,8 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 					sideUnused = 'right';
 					this.columnUseLeftRadioButton.setAttribute('selected', 'true');
 					this.columnUseRightRadioButton.setAttribute('selected', 'false');
-					document.getElementById('columnHeaderRight').setAttribute('class', 'unused');
 					document.getElementById('columnHeaderLeft').setAttribute('class', 'used');
+					document.getElementById('columnHeaderRight').setAttribute('class', 'unused');
 					var temp = infoLeft.getAttribute('value');
 					infoLeft.value = infoRight.getAttribute('value');
 					infoRight.value = temp;

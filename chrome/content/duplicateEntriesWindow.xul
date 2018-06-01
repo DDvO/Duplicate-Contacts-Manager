@@ -17,22 +17,22 @@
 	<vbox id="mainbox">
 		<!--image src="chrome://duplicatecontactsmanager/content/kate.png" height="40" alt="DCM logo" /-->
 		<statusbar id="duplicates-status-bar">
-			<statusbarpanel id="statusText" flex="0">
-				<label id="statusText_label" value="&handleDuplicates.status_default;" />
-				<spacer flex="4"/>
-			</statusbarpanel>
 			<statusbarpanel id="statusAddressBook1" flex="1">
 				<label id="statusAddressBook1_label" value="AddressBook1" class="addressbookname" />
 				<label id="statusAddressBook1_size" value="" />
 				<spacer flex="1"/>
 			</statusbarpanel>
 			<statusbarpanel id="progressText" flex="1">
+				<spacer flex="4"/>
 				<label id="progressText_label" value="" />
 			</statusbarpanel>
 			<statusbarpanel flex="0">
-				<spacer flex="1"/>
 				<progressmeter id="progressMeter" mode="determined" value="0%" style="display: none" />
 				<spacer flex="1"/>
+			</statusbarpanel>
+			<statusbarpanel id="statusText" flex="1">
+				<label id="statusText_label" value="&handleDuplicates.status_default;" />
+				<spacer flex="4"/>
 			</statusbarpanel>
 			<statusbarpanel id="statusAddressBook2" flex="1">
 				<label id="statusAddressBook2_label" value="AddressBook2" class="addressbookname" />
@@ -131,7 +131,7 @@
 		<hbox flex="1" id="endinfo" style="display: none">
 			<vbox flex="1" style="text-align: center">
 				<description class="explheader">&handleDuplicates.endheader;</description>
-				<vbox style="background-color: #FFFFFF; margin: 10px 20px 5px 15px; padding: 10px; border: 1px inset;">
+				<vbox class="tbox">
 					<hbox><description class="text-line" value="&handleDuplicates.endtext.numBefore;:" />
 					      <description class="text-line  value" id="resultNumBefore" value="0" /></hbox>
 					<hbox><description class="text-line" value="&handleDuplicates.endtext.numAfter;:" />
@@ -149,8 +149,8 @@
 					<hbox><description class="text-line" value="&handleDuplicates.endtext.diffProps;:" />
 					      <description class="text-line  value" id="resultDiffProps" style="width: 400px;" /></hbox>
 				</vbox>
-				<vbox style="background-color: #FFFFFF; margin: 5px 20px 20px 15px; padding: 10px; border: 1px inset;">
-					<description style="width: 600px;">&handleDuplicates.endtext.helpDevelopment;</description>
+				<vbox class="tbox">
+					<description>&handleDuplicates.endtext.helpDevelopment;</description>
 					<description><html:a class="text-link" href="&handleDuplicates.devSiteUrl;">&handleDuplicates.devSiteUrl;</html:a></description>
 <!--
 					<description>&handleDuplicates.endtext.provideFeedback;</description>
