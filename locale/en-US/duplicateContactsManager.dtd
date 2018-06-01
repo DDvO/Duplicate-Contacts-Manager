@@ -17,7 +17,7 @@
 <!ENTITY handleDuplicates.introheader			"What’s happening here?">
 <!ENTITY handleDuplicates.introtext			"The selected address book(s) will be searched for matching potentially duplicate entries.">
 <!ENTITY handleDuplicates.chooseSecondary		"If you choose two different address books, duplicates will be handled across the two selected address books, otherwise within the same address book.">
-<!ENTITY handleDuplicates.introtext2			"Each time a pair of candidate is presented, you can decide to skip them, edit and keep them both, or delete one and edit the other.">
+<!ENTITY handleDuplicates.introtext2			"Each time a pair of candidate is presented, you can decide to skip them, edit and keep them both, or delete one and possibly edit the other.">
 <!ENTITY handleDuplicates.differentiator		"If you wish to prevent entries from being shown as potential duplicates each time, you may give them different AIM names.">
 <!ENTITY handleDuplicates.removeWithoutAsking		"Remove without asking all duplicates containing less information when the rest is the same between the two.">
 <!ENTITY handleDuplicates.preserveFirst			"When using two different address books, do not automatically remove entries from the first one.">

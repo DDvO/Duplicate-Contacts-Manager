@@ -28,18 +28,21 @@
                 <em:localized>
                   <Description>
                     <em:locale>de</em:locale>
+		    <em:name>Duplicate Contacts Manager</em:name>
 		    <em:description>Dubletten und andere redundante Einträge in Adressbüchern suchen und entfernen.</em:description>
                   </Description>
                 </em:localized>
                 <em:localized>
                   <Description>
                     <em:locale>fr</em:locale>
+		    <em:name>Duplicate Contacts Manager</em:name>
 		    <em:description>Recherche et traitement des doublons du Carnet d'Adresses.</em:description>
                   </Description>
                 </em:localized>
                 <em:localized>
                   <Description>
                     <em:locale>es</em:locale>
+		    <em:name>Duplicate Contacts Manager</em:name>
 		    <em:description>Encuentra y administra contactos duplicados en las libretas de direcciones.</em:description>
                   </Description>
                 </em:localized>

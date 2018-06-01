@@ -17,7 +17,7 @@
 <!ENTITY handleDuplicates.introheader			"Was passiert hier?">
 <!ENTITY handleDuplicates.introtext			"In den ausgewählten Adressbüchern wird nach zusammenpassenden, möglicherweise redudanten Einträgen gesucht.">
 <!ENTITY handleDuplicates.chooseSecondary		"Wenn Sie zwei verschiedene Adressbücher auswählen, werden Dubletten zwischen den beiden Adressbüchern behandelt, ansonsten im selben Adressbuch.">
-<!ENTITY handleDuplicates.introtext2			"Jedes Mal, wenn ein Paar von Kandidaten präsentiert wird, können Sie entscheiden, sie zu überspringen, sie zu bearbeiten und beide zu behalten, oder einen zu löschen und den anderen zu bearbeiten.">
+<!ENTITY handleDuplicates.introtext2			"Jedes Mal, wenn ein Paar von Kandidaten präsentiert wird, können Sie entscheiden, es zu überspringen (und dabei beide Einträge zu behalten), es zu bearbeiten (und beide Einträge zu behalten), oder einen Eintrag zu löschen und den anderen zu behalten und dabei möglicherweise zu bearbeiten.">
 <!ENTITY handleDuplicates.differentiator		"Wenn Sie verhindern möchten, dass Einträge jedes Mal als mögliche Dubletten angezeigt werden, können Sie ihnen unterschiedliche AIM-Namen geben.">
 <!ENTITY handleDuplicates.removeWithoutAsking		"Lösche ohne Nachfrage alle Dubletten mit weniger Informationen oder bei identischen Einträgen den zweiten.">
 <!ENTITY handleDuplicates.preserveFirst			"Wenn zwei verschiedene Adressbücher ausgewählt sind, keine Einträge automatisch aus dem ersten löschen.">
@@ -27,7 +27,7 @@
 <!ENTITY handleDuplicates.countryCallingCode		"Standard-Landesvorwahl, z.B. '+49'">
 <!ENTITY handleDuplicates.ignoreFields			"Zu ignorierende Felder">
 <!ENTITY handleDuplicates.introtext3			"Sie können den Prozess unterbrechen, indem Sie 'Halt' drücken. Wenn Sie ein Paar nicht behandeln wollen, klicken Sie 'Überspringen'.">
-<!ENTITY handleDuplicates.introtext4			"Wenn Sie Änderungen speichern und beide Einträge behalten wollen, drücken Sie 'Beibehalten und weiter'; wenn sie einen Eintrag löschen wollen, drücken Sie 'Anwenden und weiter'.">
+<!ENTITY handleDuplicates.introtext4			"Wenn Sie Änderungen speichern und beide Einträge behalten wollen, drücken Sie 'Behalten und weiter'; wenn sie einen Eintrag löschen wollen, drücken Sie 'Anwenden und weiter'.">
 <!ENTITY handleDuplicates.options			"Optionen">
 
 <!-- text after process has finished -->
@@ -54,7 +54,7 @@
 <!ENTITY handleDuplicates.startbutton.accesskey		"S">
 <!ENTITY handleDuplicates.applynextbutton.label		"Anwenden und weiter &#62;">
 <!ENTITY handleDuplicates.applynextbutton.accesskey	"A">
-<!ENTITY handleDuplicates.keepnextbutton.label		"Beibehalten und weiter &#62;">
+<!ENTITY handleDuplicates.keepnextbutton.label		"Behalten und weiter &#62;">
 <!ENTITY handleDuplicates.keepnextbutton.accesskey	"B">
 <!ENTITY handleDuplicates.skipnextbutton.label		"Überspringen &#62;">
 <!ENTITY handleDuplicates.skipnextbutton.accesskey	"Ü">
