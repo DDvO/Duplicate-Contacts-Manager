@@ -33,6 +33,7 @@
 
 // TODO: add option to prune and transform contents of individual or all cards
 // TODO: add option to automatically and/or manually merge fields (e.g., buttons with arrow)
+// TODO: generalize matching/comparison and manual treatment to more than two entries
 
 /*
    References:
@@ -161,6 +162,10 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 
 		isText: function(property) {
 			return property.match(/(Name|GoogleTalk|Address[2]?|City|State|Country|Title|Department|Company|Custom[1-4]Notes)$/);
+		},
+
+		isFirstLastDisplayName: function(property) {
+			return property.match(/^(FirstName|LastName|DisplayName)$/);
 		},
 
 		isMailAddress: function(property) {
@@ -672,7 +677,7 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			var value = this.getPrunedProperty(card, property);
 
 			// second step: tranformation
-			if (property == 'FirstName' || property == 'LastName' || property == 'DisplayName') {
+			if (this.isFirstLastDisplayName(property)) {
 				var p;
 				if (property == 'DisplayName') {
 					// correct order of first and last name
@@ -742,15 +747,7 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			const cardsEqu = document.getElementById('cardsEqu');
 			cardsEqu.value = !comparable ? '' :
 			                               comparison == 0 ? '≅' : // &cong; yields syntax error; &#8773; verbatim
-			                               comparison <  0 ? '<' : '>';
-			if (!comparable) { // even in this case determine some preference for deletion
-				if (comparison == 0)
-					comparison = card1.getProperty('PopularityIndex' , 0) -
-					             card2.getProperty('PopularityIndex' , 0);
-				if (comparison == 0)
-					comparison = card1.getProperty('LastModifiedDate', 0) -
-					             card2.getProperty('LastModifiedDate', 0);
-			}
+			                               comparison <  0 ? '⋦' : '⋧';
 			const diffProps = this.nonequivalentProperties;
 			this.displayedFields = new Array();
 			this.editableFields = new Array();
@@ -848,7 +845,7 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 							const value2 = this.getAbstractedTransformedProperty(card2, property);
 							if (value1 == value2)
 								equ = '≅'; // equivalent; &cong; yields syntax error; &#8773; verbatim
-							else if (property == 'FirstName' || property == 'LastName' || property == 'DisplayName') {
+							else if (this.isText(property)) {
 								if      (value2.indexOf(value1) >= 0) // value1 is substring of value2
 									equ = '<';
 								else if (value1.indexOf(value2) >= 0) // value2 is substring of value1
@@ -856,7 +853,7 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 								else
 								equ = ''; // incomparable
 							}
-							else if (property == 'PopularityIndex' || property == 'LastModifiedDate') {
+							else if (this.isInteger(property)) {
 								const comparison = card1.getProperty(property, 0) - card2.getProperty(property, 0);
 								if (comparison < 0)
 									equ = '<';
@@ -866,9 +863,9 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 									equ = '≡'; // this case (leftValue == rightValue) is already covered above
 							}
 							else if (value1 == defaultValue)
-								equ = '<';
+								equ = '⋦';
 							else if (value2 == defaultValue)
-								equ = '>';
+								equ = '⋧';
 							else
 								equ = '';
 						}
@@ -971,7 +968,7 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 		noNamesMatch: function(vcard) {
 			// strings are already abstracted, e.g., normalized to lowercase
 			// numbers are already abstracted, e.g., non-digits are stripped
-			return vcard['FirstName'] == "" && vcard['LastName'] == "" &&
+			return vcard[  'FirstName'] == "" && vcard['LastName'] == "" &&
 			       vcard['DisplayName'] == "" && vcard['_AimScreenName'] == "";
 		},
 
@@ -1319,10 +1316,10 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 					pushIfNew(diffProp, this.nonequivalentProperties);
 					nDiffs++;
 					// this.debug("abCardsCompare: "+property+" = "+value1+" vs. "+value2);
-					if (property == 'FirstName' || property == 'LastName' || property == 'DisplayName') {
-						if      (value2.indexOf(value1) < 0) // name in c1 is not substring of name in c2
+					if (this.isText(property)) {
+						if      (value2.indexOf(value1) < 0) // text in c1 is not substring of text in c2
 							c1_less_complete = false;
-						else if (value1.indexOf(value2) < 0) // name in c2 is not substring of name in c1
+						else if (value1.indexOf(value2) < 0) // text in c2 is not substring of text in c1
 							c2_less_complete = false;
 						else
 							c1_less_complete = c2_less_complete = false; // incomparable
@@ -1338,26 +1335,31 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 						c1_less_complete = false;
 					else if (value1 == defaultValue)
 						c2_less_complete = false;
-					else if (property != 'PopularityIndex' && property != 'LastModifiedDate')
+					else if (!this.isInteger(property))
 						c1_less_complete = c2_less_complete = false; // incomparable
 				}
 			}
 			const debug_msg = "abCardsCompare: less_complete = "+c1_less_complete+" vs. "+c2_less_complete+
 			                                ", charweight = "   +c1_charweight   +" vs. "+c2_charweight;
 			// this.debug(debug_msg);
-			var comparable = 1;
-			var comparison = 0;
-			if (c1_less_complete && c2_less_complete) { // cards equivalent (equal modulo abstraction)
-				comparison = c1_charweight - c2_charweight;
-				if (comparison == 0)
-					comparison = c1.getProperty('PopularityIndex' , 0) -
-					             c2.getProperty('PopularityIndex' , 0);
-				if (comparison == 0)
-					comparison = c1.getProperty('LastModifiedDate', 0) -
-					             c2.getProperty('LastModifiedDate', 0);
-			} else if (c2_less_complete) comparison =  1;
-			  else if (c1_less_complete) comparison = -1;
-			  else comparable = false;
+			var comparable = true;
+			/*
+			 * even for the case that 'comparable' will be set to 'false'
+			 * determine some preference for deletion for one card of matching pairs,
+			 * using those properties satisfying this.isInteger()
+			 */
+			var comparison = c1_charweight - c2_charweight;
+			if (comparison == 0)
+				comparison = c1.getProperty('PopularityIndex' , 0) -
+				             c2.getProperty('PopularityIndex' , 0);
+			if (comparison == 0)
+				comparison = c1.getProperty('LastModifiedDate', 0) -
+				             c2.getProperty('LastModifiedDate', 0);
+			if (c1_less_complete && c2_less_complete) // cards equivalent (equal modulo abstraction)
+				; // use 'comparison' as computed above
+			else if (c2_less_complete) comparison =  1;
+			else if (c1_less_complete) comparison = -1;
+			else comparable = false; // use 'comparison' as computed above
 			// this.debug("abCardsCompare: "+[comparable, comparison]+" for "+this.getProperty(card1, 'DisplayName')+" vs. "+this.getProperty(card2, 'DisplayName'));
 			return [comparable, comparison];
 		},
@@ -1407,7 +1409,7 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			var value = this.pruneText(this.getProperty(card, property), property);
 
 			// Strip any stray email address duplicates from names, which get inserted by some email clients as default names:
-			if (property == 'FirstName' || property == 'LastName' || property == 'DisplayName')
+			if (this.isFirstLastDisplayName(property))
 				if (value == this.getPrunedProperty(card, 'PrimaryEmail') ||
 				    value == this.getPrunedProperty(card,  'SecondEmail'))
 					return defaultValue;

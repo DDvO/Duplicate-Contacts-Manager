@@ -1,9 +1,28 @@
 # [Duplicate Contact Manager for Thunderbird](duplicatecontactsmanager-1.0.xpi)
 
 This Thunderbird extension facilitates handling of redundant entries in address books.
-After installation, it can be invoked via the <span class="tt">Tools->Duplicate Contacts Manager..</span> menu entry. One can also customize the <span class="tt">Toolbar</span> of the <span class="tt">Address Book</span> window with a <span class="tt">Find Duplicates</span> button.
+After installation it can be invoked via the `Tools->Duplicate Contacts Manager...` menu entry.
+One can also customize the `Toolbar` of the `Address Book` window with a `Find Duplicates` button.
 
-The Duplicate Contacts Manager searches address books for matching contact entries, also known as _cards_. It can automatically delete all cards that match and have equivalent or less information than some other one. Any remaining pairs of matching cards are presented to the user as potential duplicates for manual treatment. Each two cards are shown side-by-side with a comparison of all fields containing data, including any photo. Some important fields are always shown such that they can be filled in when they have been empty so far. The user can modify the data in the cards and can decide to delete one of the cards.
+The Duplicate Contacts Manager searches address books for matching contact entries, also known as _cards_.
+It can automatically delete all cards that match and have equivalent or less information than some other one.
+Any remaining pairs of matching cards are presented as potential duplicates for manual treatment.
+Each two cards are shown side-by-side with a comparison of all fields containing data, including any photo.
+Some important fields are always shown such that they can be filled in when they have been empty so far.
+
+When pairs of candidate duplicates are presented, the reason why they are considered matching is given in the status line.
+
+* The '≡' symbol is shown between fields with identical values.  
+All other relations are determined after abstraction of values (see the definitions below).
+* The '≅' symbol is used for indicating equivalent fields and equivalent cards.
+* The '⋦' and '⋧' symbols indicate that a field or a whole card contains less/more information than the other.
+* The '⊆' and '⊇' symbols indicate the subset/superset relation on email addresses or phone numbers.
+* The '<' and '>' symbols indicate comparison on numerical values or the substring/superstring relation on names and other texts.
+
+During manual treatment of a pair of matching cards the user can skip them, can modify one or both of them, and can decide to delete one of them.
+When a card is deleted and it has a primary email address that is contained in one or more mailing lists and the other card does not have the same primary email address, the address is also deleted from the respective mailing lists.
+
+## Matching contact entries
 
 There are two _search modes_ for finding matching cards:
 
@@ -17,26 +36,33 @@ Two cards are considered _matching_ if any of the following conditions hold, whe
 *   they contain matching phone numbers, or
 *   both cards do not contain any name, email address, or phone number that might match.
 
-Yet cards with non-equivalent <span class="tt">AIMScreenName</span> are never considered matching, which is convenient for preventing cards from being repeatedly presented for manual treatment.
+Yet cards with non-equivalent `AIMScreenName` are never considered matching, which is convenient for preventing cards from being repeatedly presented for manual treatment.
 
-_Matching_ of names, email addresses, and phone numbers is based upon equivalence of fields modulo abstraction, described below. As a result, for example, names differing only in letter case are considered to match. For the matching process, names are completed and their order is normalized — for example, if two name parts are detected in the <span class="tt">DisplayName</span> (e.g., "John Doe") or in an email address (e.g., "John.Doe@company.com"), they are taken as first and last name. Both multiple email addresses within a card and multiple phone numbers within a card are treated as sets, i.e., their order is ignored as well as their types.
+_Matching_ of names, email addresses, and phone numbers is based upon equivalence of fields modulo abstraction, described below.
+As a result, for example, names differing only in letter case are considered to match.
+For the matching process, names are completed and their order is normalized —
+for example, if two name parts are detected in the `DisplayName` (e.g., "John Doe") or in an email address (e.g., "John.Doe`@`company.com"), they are taken as first and last name.
+Both multiple email addresses within a card and multiple phone numbers within a card are treated as sets, i.e., their order is ignored as well as their types.
 
 *   Two cards are considered to have _matching names_ if
-    *   their <span class="tt">DisplayName</span>s are not empty and are equivalent, or
-    *   both their <span class="tt">FirstName</span>s and their <span class="tt">LastName</span>s are not empty and are equivalent, or
-    *   their <span class="tt">DisplayName</span>s are empty and their <span class="tt">FirstName</span>s or <span class="tt">LastName</span>s are not empty and are equivalent, or
-    *   in one card the <span class="tt">DisplayName</span> is empty and either the <span class="tt">FirstName</span> or <span class="tt">LastName</span> is not empty and is equivalent to the <span class="tt">DisplayName</span> of the other card, or
-    *   their <span class="tt">AIMScreenName</span>s are not empty and are equivalent.
-*   Two cards are considered to contain _matching email address_ if any of their <span class="tt">PrimaryEmail</span> or <span class="tt">SecondEmail</span> are equivalent.
-*   Two cards are considered to contain _matching phone numbers_ if any of their <span class="tt">CellularNumber</span>, <span class="tt">WorkPhone</span>, or <span class="tt">PagerNumber</span> are equivalent. The <span class="tt">HomePhone</span> and <span class="tt">FaxNumber</span> fields are not considered for matching because such numbers are often shared by a group of people.
+    *   their `DisplayName` is not empty and is equivalent, or
+    *   both their `FirstName` and their `LastName` are not empty and are pairwise equivalent, or
+    *   their `DisplayName` is empty but their `FirstName` and `LastName` are not empty and are pairwise equivalent, or
+    *   in one card the `DisplayName` is empty and either the `FirstName` or `LastName` is not empty and is equivalent to the `DisplayName` of the other card, or
+    *   their `AIMScreenName` is not empty and is equivalent.
+*   Two cards are considered to contain _matching email address_ if any of their `PrimaryEmail` or `SecondEmail` are equivalent.
+*   Two cards are considered to contain _matching phone numbers_ if any of their `CellularNumber`, `WorkPhone`, or `PagerNumber` are equivalent.
+    The `HomePhone` and `FaxNumber` fields are not considered for matching because such numbers are often shared by a group of people.
+
+## Abstraction of field values
 
 Before card fields are compared their values are _abstracted_ using the following steps.
 
 1.  _Pruning_, which removes stray contents irrelevant for comparison:
-    1.  ignore values of certain field types — the set of ignored fields is configurable with the default being <span class="tt">UID, UUID, CardUID, groupDavKey, groupDavVersion, groupDavVersionPrev, RecordKey, DbRowID, PhotoType, PhotoName, LowercasePrimaryEmail, LowercaseSecondEmail, unprocessed:rev, unprocessed:x-ablabel</span>,
+    1.  ignore values of certain field types — the set of ignored fields is configurable with the default being `UID, UUID, CardUID, groupDavKey, groupDavVersion, groupDavVersionPrev, RecordKey, DbRowID, PhotoType, PhotoName, LowercasePrimaryEmail, LowercaseSecondEmail, unprocessed:rev, unprocessed:x-ablabel`,
     2.  remove leading/trailing/multiple whitespace and strip non-digit characters from phone numbers,
     3.  strip any stray email address duplicates from names, which get inserted by some email clients as default names, and
-    4.  replace <span class="tt">@googlemail.com</span> by <span class="tt">@gmail.com</span> in email addresses.
+    4.  replace `@googlemail.com` by `@gmail.com` in email addresses.
 2.  _Transformation_, which re-arranges information for better comparison:
     1.  correct the order of first and last name (for instance, re-order "Doe, John"),
     2.  move middle initials such as "M" from last name to first name, and
@@ -56,17 +82,19 @@ If automatic removal is chosen, only cards preferred for deletion (which implies
 When a pair of matching cards is presented for manual inspection, the card flagged by default with red color for removal is
 
 *   the one preferred for deletion, or else (i.e., if the cards are not comparable):
-*   the one used less frequently (i.e., having a smaller <span class="tt">PopularityIndex</span>, or else
-*   the one modified/created earlier (i.e., having a smaller <span class="tt">LastModifiedDate</span>), or else
+*   the one used less frequently (i.e., having a smaller `PopularityIndex`, or else
+*   the one modified/created earlier (i.e., having a smaller `LastModifiedDate`), or else
 *   the one found in the second address book or the one found later in case the two address books are the same.
+
+## Equivalence of information
 
 A card is considered to have _equivalent or less information_ than another if for each non-ignored field:
 
 *   the field is equivalent to the corresponding field of the other card, or else
 *   it is a set and its value is a subset of the corresponding field value of the other card, or
-*   it is the <span class="tt">FirstName</span>, <span class="tt">LastName</span>, or <span class="tt">DisplayName</span> and its value is a substring of the corresponding field value of the other card, or
-*   it is the <span class="tt">PopularityIndex</span> or <span class="tt">LastModifiedDate</span> (which are ignored here), or
-*   it has the default value, i.e., it is empty for text fields or its value is <span class="tt">0</span> for number fields or <span class="tt">false</span> for Boolean fields.
+*   it is the `FirstName`, `LastName`, or `DisplayName` and its value is a substring of the corresponding field value of the other card, or
+*   it is the `PopularityIndex` or `LastModifiedDate` (which are ignored here), or
+*   it has the default value, i.e., it is empty for text fields or its value is `0` for number fields or `false` for Boolean fields.
 
 For the above field-wise comparison, the email addresses of a card are treated as a set, the phone numbers of a card are also treated as a set, and the set of names of mailing lists a card belongs to is taken as an additional field.
 
@@ -75,8 +103,8 @@ A card with equivalent or less information than another is _preferred for deleti
 *   not all non-ignored fields are equivalent (which implies that it has less information), or else
 *   the character weight of the card is smaller, i.e.,
     its pruned and transformed (non-ignored) field values have an equal or smaller total number of uppercase letters and special characters than the other card, or else the character weight is equal and
-*   its <span class="tt">PopularityIndex</span> is smaller, or else
-*   its <span class="tt">LastModifiedDate</span> is smaller.
+*   its `PopularityIndex` is smaller, or else
+*   its `LastModifiedDate` is smaller.
 
 Here is an example.
 
@@ -88,7 +116,7 @@ The card on the right will be preferred for deletion because it contains less in
 
 <tr>
 
-<td><span class="tt">NickName</span>:</td>
+<td><code>NickName</code></td>
 
 <td>"Péte"</td>
 
@@ -100,7 +128,7 @@ The card on the right will be preferred for deletion because it contains less in
 
 <tr>
 
-<td><span class="tt">FirstName</span>:</td>
+<td><code>FirstName</code></td>
 
 <td>"Peter"</td>
 
@@ -112,7 +140,7 @@ The card on the right will be preferred for deletion because it contains less in
 
 <tr>
 
-<td><span class="tt">LastName</span>:</td>
+<td><code>LastName</code></td>
 
 <td>"van Müller"</td>
 
@@ -124,7 +152,7 @@ The card on the right will be preferred for deletion because it contains less in
 
 <tr>
 
-<td><span class="tt">DisplayName</span>:</td>
+<td><code>DisplayName</code></td>
 
 <td>"Hans Peter van Müller"</td>
 
@@ -136,7 +164,7 @@ The card on the right will be preferred for deletion because it contains less in
 
 <tr>
 
-<td><span class="tt">PreferDisplayName</span>:</td>
+<td><code>PreferDisplayName</code></td>
 
 <td>'yes'</td>
 
@@ -148,7 +176,7 @@ The card on the right will be preferred for deletion because it contains less in
 
 <tr>
 
-<td><span class="tt">AimScreenName</span>:</td>
+<td><code>AimScreenName</code></td>
 
 <td>""</td>
 
@@ -160,7 +188,7 @@ The card on the right will be preferred for deletion because it contains less in
 
 <tr>
 
-<td><span class="tt">PreferMailFormat</span>:</td>
+<td><code>PreferMailFormat</code></td>
 
 <td>'HTML'</td>
 
@@ -172,7 +200,7 @@ The card on the right will be preferred for deletion because it contains less in
 
 <tr>
 
-<td><span class="tt">PrimaryEmail</span>:</td>
+<td><code>PrimaryEmail</code></td>
 
 <td>"Peter.vanMueller@company.com"</td>
 
@@ -184,7 +212,7 @@ The card on the right will be preferred for deletion because it contains less in
 
 <tr>
 
-<td><span class="tt">SecondaryEmail</span>:</td>
+<td><code>SecondaryEmail</code></td>
 
 <td>"p.van.mueller@gmx.de"</td>
 
@@ -196,7 +224,7 @@ The card on the right will be preferred for deletion because it contains less in
 
 <tr>
 
-<td><span class="tt">WorkPhone</span>:</td>
+<td><code>WorkPhone</code></td>
 
 <td>"089/1234-5678"</td>
 
@@ -208,19 +236,19 @@ The card on the right will be preferred for deletion because it contains less in
 
 <tr>
 
-<td><span class="tt">PopularityIndex</span>:</td>
+<td><code>PopularityIndex</code></td>
 
 <td>5</td>
 
 <td>3</td>
 
-<td>field ignored for infomation comparison</td>
+<td>field ignored for information comparison</td>
 
 </tr>
 
 <tr>
 
-<td><span class="tt">LastModifiedDate</span>:</td>
+<td><code>LastModifiedDate</code></td>
 
 <td>2018-02-25 07:51:28</td>
 
@@ -232,7 +260,7 @@ The card on the right will be preferred for deletion because it contains less in
 
 <tr>
 
-<td><span class="tt">UUID</span>:</td>
+<td><code>UUID</code></td>
 
 <td>""</td>
 
@@ -245,3 +273,8 @@ The card on the right will be preferred for deletion because it contains less in
 </tbody>
 
 </table>
+
+## Configuration variables
+
+The options/configuration/preferences used by this Thunderbird extension are are saved in configuration keys starting with `extensions.DuplicateContactsManager.` —
+for instance, the list of ignored fields is stored in the variable `ignoreFields`.
