@@ -27,6 +27,7 @@
 <!ENTITY handleDuplicates.durationWarning		"En fonction du nombre d'adresses et du CPU de votre ordinateur, ce processus peut prendre plusieurs minutes.">
 <!ENTITY handleDuplicates.natTrunkPrefix		"Préfixe de numéro de téléphone national, par ex. '0'">
 <!ENTITY handleDuplicates.countryCallingCode		"Code international par défaut, par ex. '+33'">
+<!ENTITY handleDuplicates.considerFields		"Champs à considérer">
 <!ENTITY handleDuplicates.ignoreFields			"Champs à ignorer">
 <!ENTITY handleDuplicates.introtext3			"Vous pouvez tout arrêter à n'importe quel moment en pressant sur 'Annuler'. Si vous ne voulez pas traiter un doublon, utilisez le bouton 'Passer'.">
 <!ENTITY handleDuplicates.introtext4			"Si vous souhaitez enregistrer les modifications et conserver les deux entrées, cliquez sur 'Conserver les deux et continuer'; pour supprimer une entrée, cliquez sur 'Appliquer et continuer'.">

@@ -25,6 +25,7 @@
 <!ENTITY handleDuplicates.durationWarning		"Abhängig von der Anzahl der Einträge in Ihrem Adressbuch und der Leistung Ihres Rechners kann dieser Vorgang mehrere Minuten in Anspruch nehmen.">
 <!ENTITY handleDuplicates.natTrunkPrefix		"Anfangsziffer der Ortsvorwahl, z.B. '0'">
 <!ENTITY handleDuplicates.countryCallingCode		"Standard-Landesvorwahl, z.B. '+49'">
+<!ENTITY handleDuplicates.considerFields		"Zu berücksichtigende Felder">
 <!ENTITY handleDuplicates.ignoreFields			"Zu ignorierende Felder">
 <!ENTITY handleDuplicates.introtext3			"Sie können den Prozess unterbrechen, indem Sie 'Halt' drücken. Wenn Sie ein Paar nicht behandeln wollen, klicken Sie 'Überspringen'.">
 <!ENTITY handleDuplicates.introtext4			"Wenn Sie Änderungen speichern und beide Einträge behalten wollen, drücken Sie 'Behalten und weiter'; wenn sie einen Eintrag löschen wollen, drücken Sie 'Anwenden und weiter'.">

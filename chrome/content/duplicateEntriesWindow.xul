@@ -94,14 +94,16 @@
 				<checkbox id="preservefirst" label="&handleDuplicates.preserveFirst;" />
 				<checkbox id="deferInteractive" label="&handleDuplicates.deferInteractive;" />
 				<!--description>&handleDuplicates.durationWarning;</description-->
-                                <hbox>
-                                  <description>&handleDuplicates.natTrunkPrefix;: </description>
-                                  <textbox class="low" id="natTrunkPrefix" cols="1" size="2" />
-                                  <description>&handleDuplicates.countryCallingCode;: </description>
-                                  <textbox class="low" id="countryCallingCode" cols="1" size="7" />
-                                </hbox>
-                                  <description>&handleDuplicates.ignoreFields;: </description>
-                                  <textbox multiline="true" id="ignoreFields" cols="90" />
+				<hbox>
+					<description>&handleDuplicates.natTrunkPrefix;: </description>
+					<textbox class="low" id="natTrunkPrefix" cols="1" size="2" />
+					<description>&handleDuplicates.countryCallingCode;: </description>
+					<textbox class="low" id="countryCallingCode" cols="1" size="7" />
+				</hbox>
+				<description>&handleDuplicates.considerFields;: </description>
+				<description class="text-line value" id="considerFields" style="width: 600px;"></description>
+				<description>&handleDuplicates.ignoreFields;: </description>
+				<textbox multiline="true" id="ignoreFields" cols="90" />
 			</vbox>
 		</hbox>
 		<hbox flex="1" id="tablepane" style="display: none">
@@ -144,10 +146,12 @@
 					      <description class="text-line  value" id="resultNumChanged" value="0" /></hbox>
 					<hbox><description class="text-line" value="&handleDuplicates.endtext.numSkipped;:" />
 					      <description class="text-line  value" id="resultNumSkipped" value="0" /></hbox>
-					<hbox><description class="text-line" value="&handleDuplicates.endtext.ignoredFields;:" />
-					      <description class="text-line  value" id="resultIgnoredFields" style="width: 600px;" /></hbox>
 					<hbox><description class="text-line" value="&handleDuplicates.endtext.diffProps;:" />
-					      <description class="text-line  value" id="resultDiffProps" style="width: 400px;" /></hbox>
+					      <description class="text-line  value fields_narrow" id="resultDiffProps" /></hbox>
+					<hbox><description class="text-line" value="&handleDuplicates.considerFields;:" />
+					      <description class="text-line  value fields_wide" id="resultConsideredFields" /></hbox>
+					<hbox><description class="text-line" value="&handleDuplicates.endtext.ignoredFields;:" />
+					      <description class="text-line  value fields_wide" id="resultIgnoredFields" /></hbox>
 				</vbox>
 				<vbox class="tbox">
 					<description>&handleDuplicates.endtext.helpDevelopment;</description>

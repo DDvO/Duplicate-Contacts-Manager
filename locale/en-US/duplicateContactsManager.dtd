@@ -25,6 +25,7 @@
 <!ENTITY handleDuplicates.durationWarning		"Depending on the number of addresses and the speed of your computer, this process might take several minutes.">
 <!ENTITY handleDuplicates.natTrunkPrefix		"National phone number prefix, e.g., '1' or '0'">
 <!ENTITY handleDuplicates.countryCallingCode		"Default country calling code, e.g., '+1' or '+44'">
+<!ENTITY handleDuplicates.considerFields		"Fields to consider">
 <!ENTITY handleDuplicates.ignoreFields			"Fields to ignore">
 <!ENTITY handleDuplicates.introtext3			"If you do not want to treat a potential duplicate, use 'Skip'. You can abort the process by pressing 'Stop'.">
 <!ENTITY handleDuplicates.introtext4			"If you want to save changes and keep both entries, press 'Keep both and continue'; for deleting one entry, press 'Apply and continue'.">

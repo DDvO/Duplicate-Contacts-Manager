@@ -36,6 +36,12 @@ description.value {
 	margin-left: 0px;
 	padding-left: 0px;
 }
+description.fields_wide {
+	width: 600px;
+}
+description.fields_narrow {
+	width: 400px;
+}
 
 #handleDuplicates-window {
 /*	height: 700px; */

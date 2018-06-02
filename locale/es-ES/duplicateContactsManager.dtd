@@ -27,6 +27,7 @@
 <!ENTITY handleDuplicates.durationWarning		"Dependiendo del número de contactos y la velocidad del CPU de la computadora, será el tiempo que se tarde,  y puede tomar varios minutos.">
 <!ENTITY handleDuplicates.natTrunkPrefix		"Prefijo de número de teléfono nacional, p. '0'">
 <!ENTITY handleDuplicates.countryCallingCode		"Prefijo internacional predeterminado, p. '+34'">
+<!ENTITY handleDuplicates.considerFields		"Campos a considerar">
 <!ENTITY handleDuplicates.ignoreFields			"Campos para ignorar">
 <!ENTITY handleDuplicates.introtext3			"Se puede abandonar el proceso en cualquier momento presionando la tecla 'Cancelar'. Si no se quieren hacer cambios a un duplicado, se usa la tecla 'Saltar'.">
 <!ENTITY handleDuplicates.introtext4			"Si desea guardar los cambios y mantener ambas entradas, haga clic en 'Conservar ambos y continuar'; para eliminar una entrada, haga clic en 'Aplicar y continuar'.">

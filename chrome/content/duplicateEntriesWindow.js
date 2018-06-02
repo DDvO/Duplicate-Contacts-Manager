@@ -122,12 +122,38 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 		autoremoveDups: false,
 		preserveFirst: false,
 		nonequivalentProperties : [],
-		ignoreFields : "UID, UUID, CardUID, groupDavKey, groupDavVersion, groupDavVersionPrev, RecordKey, DbRowID, "+
-		  "PhotoType, PhotoName, LowercasePrimaryEmail, LowercaseSecondEmail, unprocessed:rev, unprocessed:x-ablabel",
-		ignoreList : [], // will be derived from ignoreFields string
+		addressBookFields: new Array(
+			"PhotoURI",
+			"NickName", "FirstName", "PhoneticFirstName", "LastName", "PhoneticLastName",
+			"SpouseName", "FamilyName", "DisplayName", "_PhoneticName", "PreferDisplayName",
+			"_AimScreenName", "_GoogleTalk", "CardType", "Category", "AllowRemoteContent",
+			"PreferMailFormat", "MailListNames"/* virtual */, "PrimaryEmail", "SecondEmail", "DefaultEmail",
+			"CellularNumber", "CellularNumberType", "HomePhone", "HomePhoneType",
+			"WorkPhone", "WorkPhoneType", "FaxNumber", "FaxNumberType", "PagerNumber", "PagerNumberType",
+			"DefaultAddress",
+			"HomeAddress", "HomeAddress2", "HomeCity", "HomeState",	"HomeZipCode", "HomeCountry",
+			"WorkAddress", "WorkAddress2", "WorkCity", "WorkState", "WorkZipCode", "WorkCountry",
+			"JobTitle", "Department", "Company",
+			// "AnniversaryYear", "AnniversaryMonth", "AnniversaryDay",
+			"BirthYear", "BirthMonth", "BirthDay",
+			"WebPage1", "WebPage2",
+			"Custom1", "Custom2", "Custom3", "Custom4", "Notes",
+			"PopularityIndex", "LastModifiedDate"),
+		ignoreFieldsDefault : new Array("UID", "UUID", "CardUID",
+						"groupDavKey", "groupDavVersion", "groupDavVersionPrev",
+						"RecordKey", "DbRowID", 
+						"PhotoType", "PhotoName",
+						"LowercasePrimaryEmail", "LowercaseSecondEmail",
+						"unprocessed:rev", "unprocessed:x-ablabel"),
+		ignoreList : [], // will be derived from ignoreFieldsDefault
 		natTrunkPrefix : "", // national phone number prefix
 		natTrunkPrefixReqExp : /^0([1-9])/, // typical RegExp for national phone number prefix
 		countryCallingCode : "", // international phone number prefix
+
+		consideredFields: function() {
+			return this.addressBookFields.concat(this.ignoreFieldsDefault).
+				filter(x => !this.ignoreList.includes(x)).join(", ");
+		},
 
 		debug: function(str) {
 			console.log(str);
@@ -180,8 +206,8 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 				      this.natTrunkPrefixReqExp = new RegExp("^"+this.natTrunkPrefix+"([1-9])"); } catch(e) {}
 				try { this.countryCallingCode = this.prefsBranch.getCharPref("countryCallingCode"); } catch(e) {}
 				try { var prefStringValue = this.prefsBranch.getCharPref("ignoreFields");
-					if (prefStringValue != "")
-						this.ignoreFields = prefStringValue;
+				      this.ignoreList = prefStringValue != "" ?
+				                        prefStringValue.split(/\s*,\s*/) : ignoreFieldsDefault;
 					} catch(e) {}
 			} while (0);
 			document.getElementById("autoremove").checked = this.autoremoveDups;
@@ -189,7 +215,8 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			document.getElementById("deferInteractive").checked = this.deferInteractive;
 			document.getElementById("natTrunkPrefix").value = this.natTrunkPrefix;
 			document.getElementById("countryCallingCode").value = this.countryCallingCode;
-			document.getElementById("ignoreFields").value = this.ignoreFields;
+			document.getElementById("considerFields").textContent = this.consideredFields();
+			document.getElementById("ignoreFields").value = this.ignoreList.join(", ");
 
 			this.stringBundle = document.getElementById("bundle_duplicateContactsManager");
 			this.running = true;
@@ -285,15 +312,14 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 				if (!this.countryCallingCode.match(/^(\+|[0-9])[0-9]{1,6}$/))
 					alert("Default country calling code '"+this.countryCallingCode+"' should contain a leading '+' or digit followed by one to six digits");
 			}
-			this.ignoreFields = document.getElementById("ignoreFields").value;
-			this.ignoreList = this.ignoreFields.split(/\s*,\s*/);
+			this.ignoreList = document.getElementById("ignoreFields").value.split(/\s*,\s*/);
 
 			this.prefsBranch.setBoolPref("autoremoveDups", this.autoremoveDups);
 			this.prefsBranch.setBoolPref("preserveFirst", this.preserveFirst);
 			this.prefsBranch.setBoolPref("deferInteractive", this.deferInteractive);
 			this.prefsBranch.setCharPref("natTrunkPrefix", this.natTrunkPrefix);
 			this.prefsBranch.setCharPref("countryCallingCode", this.countryCallingCode);
-			this.prefsBranch.setCharPref("ignoreFields", this.ignoreFields);
+			this.prefsBranch.setCharPref("ignoreFields", this.ignoreList.join(", "));
 
 			// hide intro info, show table, progress, etc.
 			this.hide('explanation');
@@ -525,6 +551,8 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 				if (simplified_card1['_AimScreenName'] != simplified_card2['_AimScreenName'])
 					continue; // useful for manual differentiation to prevent repeated treatment
 				var namesmatch = this.namesMatch(simplified_card1, simplified_card2);
+				/* if (simplified_card1['DisplayName'] == simplified_card2['DisplayName'])
+					this.debug(simplified_card1['DisplayName']+" vs. "+simplified_card2['DisplayName']+": "+namesmatch); */
 				var mailsmatch = this.mailsMatch(simplified_card1, simplified_card2);
 				var phonesmatch = this.phonesMatch(simplified_card1, simplified_card2);
 				var nomailsphonesmatch = this.noMailsPhonesMatch(simplified_card1) &&
@@ -592,6 +620,7 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			document.getElementById('resultNumRemovedAuto').value = this.totalCardsDeletedAuto;
 			document.getElementById('resultNumChanged').value = this.totalCardsChanged;
 			document.getElementById('resultNumSkipped').value = this.totalCardsSkipped;
+			document.getElementById('resultConsideredFields').textContent = this.consideredFields();
 			document.getElementById('resultIgnoredFields').textContent = this.ignoreList.join(", ");
 			document.getElementById('resultDiffProps').textContent = this.nonequivalentProperties.join(", ");
 			this.show('endinfo');
@@ -1497,23 +1526,5 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			menulist.appendChild(menupopup);
 			return menulist;
 		},
-
-		addressBookFields: new Array(
-			"PhotoURI",
-			"NickName", "FirstName", "PhoneticFirstName", "LastName", "PhoneticLastName",
-			"SpouseName", "FamilyName", "DisplayName", "_PhoneticName", "PreferDisplayName",
-			"_AimScreenName", "_GoogleTalk", "CardType", "Category", "AllowRemoteContent",
-			"PreferMailFormat", "MailListNames"/* virtual */, "PrimaryEmail", "SecondEmail", "DefaultEmail",
-			"CellularNumber", "CellularNumberType", "HomePhone", "HomePhoneType",
-			"WorkPhone", "WorkPhoneType", "FaxNumber", "FaxNumberType", "PagerNumber", "PagerNumberType",
-			"DefaultAddress",
-			"HomeAddress", "HomeAddress2", "HomeCity", "HomeState",	"HomeZipCode", "HomeCountry",
-			"WorkAddress", "WorkAddress2", "WorkCity", "WorkState", "WorkZipCode", "WorkCountry",
-			"JobTitle", "Department", "Company",
-			// "AnniversaryYear", "AnniversaryMonth", "AnniversaryDay",
-			"BirthYear", "BirthMonth", "BirthDay",
-			"WebPage1", "WebPage2",
-			"Custom1", "Custom2", "Custom3", "Custom4", "Notes",
-			"PopularityIndex", "LastModifiedDate"),
 	}
 }
