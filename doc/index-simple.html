@@ -1,0 +1,175 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html> <head>
+<title>Duplicate Contacts Manager for Thunderbird by David von Oheimb</title>
+</head>
+
+<body>
+<h1>Duplicate Contacts Manager for Thunderbird</h1>
+
+This Thunderbird extension facilitates handling of redundant entries in address books.
+After installation, it can be invoked via the <code>`Tools->Duplicate Contacts Manager...`</code> menu entry.
+One can also customize the<code>Toolbar</code> of the<code>Address Book</code> window with a<code>Find Duplicates</code> button.
+
+The Duplicate Contacts Manager searches address books for matching contact entries,
+also known as <i>cards</i>.
+It can automatically delete all cards that match and have equivalent or less information than some other one.
+Any remaining pairs of matching cards <!-- plus any cards that have nothing to match -->
+are presented to the user as potential duplicates for manual treatment.
+Each two cards are shown side-by-side with a comparison of all fields containing data, including any photo.
+Some important fields are always shown such that they can be filled in when they have been empty so far.
+
+When pairs of candidate duplicates are presented, the reason why they are considered matching is given in the status line. 
+<ul>
+<li> The '≡' symbol is shown between fields with identical values.  
+All other relations are determined after abstraction of values (see the definitions below).
+<li> The '≃' symbol is used for indicating matching names, email addresses, or phone numbers.
+<li> The '≅' symbol is used for indicating equivalent fields and equivalent cards.
+<li> The '⋦' and '⋧' symbols indicate that a field or a card contains less/more information than the other.
+<li> The '⊆' and '⊇' symbols indicate the subset/superset relation on email addresses or phone numbers.
+<li> The '<' and '>' symbols indicate comparison on numerical values or the substring/superstring relation on names and other texts.
+</ul>
+
+During manual treatment of a pair of matching cards the user can skip them, can modify one or both of them, and can decide to delete one of them. When a card is deleted and it has a primary email address that is contained in one or more mailing lists and the other card does not have the same primary email address, the address is also deleted from the respective mailing lists.
+
+There are two <i>search modes</i> for finding matching cards:
+<ul>
+  <li>within a single address book with n cards, comparing each card with all other cards,
+  resulting in n*(n-1)/2 card comparisons.
+  <li>with two different address books with n and m cards, comparing each card in the first one
+  with each card of the second one, resulting in n*m card comparisons.
+</ul>
+
+Two cards are considered <i>matching</i> if any of the following conditions hold, where the details are explained below.
+<ul>
+  <li>The cards contain matching names, or
+  <li>they contain matching email addresses, or
+  <li>they contain matching phone numbers, or
+  <li>both cards do not contain any name, email address, or phone number that might match.
+</ul>
+Yet cards with non-equivalent<code>AIMScreenName</code> are never considered matching,
+which is convenient for preventing cards from being repeatedly presented for manual treatment.
+
+The matching relation is designed to be rather weak, such that it tends to yield more pairs of candidate duplicates.
+
+<i>Matching</i> of names, email addresses, and phone numbers is based upon
+equivalence of fields modulo abstraction, described below.
+As a result, for example, names differing only in letter case are considered to match.
+For the matching process, names are completed and their order is normalized &mdash; for example, if two name parts are detected in the<code>DisplayName</code>
+(e.g., "John Doe") or in an email address (e.g., "John.Doe@company.com"), they are taken as first and last name.
+Both multiple email addresses within a card and multiple phone numbers within a card
+are treated as sets, i.e., their order is ignored as well as their types.
+<ul>
+  <li>Two cards are considered to have <i>matching names</i> if
+  <ul>
+    <li>their <code>DisplayName</code> is not empty and is equivalent, or
+    <li>both their <code>FirstName</code> and their <code>LastName</code> are not empty and are pairwise equivalent, or
+    <li>their <code>DisplayName</code> is empty but their <code>FirstName</code> and <code>LastName</code> are not empty and are equivalent, or
+    <li>in one card the<code>DisplayName</code> is empty and either the<code>FirstName</code> or<code>LastName</code> is not empty and is equivalent to the<code>DisplayName</code> of the other card, or
+    <li>their<code>AIMScreenName</code> is not empty and is equivalent.
+    </ul>
+  <li>Two cards are considered to contain <i>matching email address</i> if any of their<code>PrimaryEmail</code> or<code>SecondEmail</code> are equivalent.
+  <li>Two cards are considered to contain <i>matching phone numbers</i> if any of their<code>CellularNumber</code>,<code>WorkPhone</code>, or<code>PagerNumber</code> are equivalent. The<code>HomePhone</code> and<code>FaxNumber</code> fields are not considered for matching because such numbers are often shared by a group of people.
+</ul>
+
+Before card fields are compared their values are <i>abstracted</i> using the following steps.
+<ol>
+  <li> <i>Pruning</i>, which removes stray contents irrelevant for comparison:
+  <ol>
+    <li>ignore values of certain field types &mdash; the set of ignored fields is configurable
+    <!-- in the preferences variable<code>extensions.DuplicateContactsManager.ignoreFields</code> -->
+    with the default being<code>UID, UUID, CardUID, groupDavKey, groupDavVersion, groupDavVersionPrev, RecordKey, DbRowID,
+    PhotoType, PhotoName, LowercasePrimaryEmail, LowercaseSecondEmail, unprocessed:rev, unprocessed:x-ablabel</code>,
+    <li>remove leading/trailing/multiple whitespace and strip non-digit characters from phone numbers,
+    <li>strip any stray email address duplicates from names, which get inserted by some email clients as default names, and
+    <li>replace<code>@googlemail.com</code> by<code>@gmail.com</code> in email addresses.
+  </ol>
+  <li> <i>Transformation</i>, which re-arranges information for better comparison:
+  <ol>
+    <li>correct the order of first and last name (for instance, re-order "Doe, John"),
+    <li>move middle initials such as "M" from last name to first name, and
+    <li>move name prefixes such as "von" to the last name.
+  </ol>
+  <li> <i>Normalization</i>, which equalizes representation variants:
+  <ol>
+    <li>convert to lowercase (except for name part of AOL email addresses),
+    <li>convert texts by transcribing umlauts and ligatures, and
+    <li>if configured, replace in phone numbers the national <a href="https://en.wikipedia.org/wiki/Trunk_prefix">trunk prefix</a> (such as '0'<!--, if configured in the preferences variable<code>extensions.DuplicateContactsManager.natTrunkPrefix</code>-->)
+    with the default <a href="https://en.wikipedia.org/wiki/List_of_country_calling_codes">country calling code</a> (such as '+49'<!--, if configured in the preferences variable<code>extensions.DuplicateContactsManager.countryCallingCode</code>-->).
+  </ol>
+  <li> <i>Simplification</i>, which strips less relevant information from texts:
+  <ol>
+    <li>remove accents and punctuation, and
+    <li>remove singleton digits and letters (such as initials).
+  </ol>
+</ol>
+Corresponding fields in two cards are considered <i>equivalent</i> if their abstracted values are equal.
+
+Note that the value adaptations mentioned above are computed only for the comparison, i.e., they do not change the actual card fields.
+
+If automatic removal is chosen, only cards preferred for deletion (which implies equivalent or less information than some other card; for details see below) are removed.
+When a pair of matching cards is presented for manual inspection, the card flagged by default with red color for removal is
+<ul>
+  <li>the one preferred for deletion, or else (i.e., if the cards are not comparable):
+  <li>the one used less frequently (i.e., having a smaller<code>PopularityIndex</code>, or else
+  <li>the one modified/created earlier (i.e., having a smaller<code>LastModifiedDate</code>), or else
+  <li>the one found in the second address book or the one found later in case the two address books are the same. <!--Then it is displayed on the right-hand side. -->
+</ul>
+
+A card is considered to have <i>equivalent or less information</i> than another if for each non-ignored field:
+<ul>
+  <li>the field is equivalent to the corresponding field of the other card, or else
+  <li>it is a set and its value is a subset of the corresponding field value of the other card, or
+  <li>it is the<code>FirstName</code>,<code>LastName</code>, or<code>DisplayName</code> and its value is a substring of the corresponding field value of the other card, or
+  <li>it is the<code>PopularityIndex</code> or<code>LastModifiedDate</code> (which are ignored here), or
+  <li>it has the default value, i.e., it is empty for text fields or its value is<code>0</code> for number fields or<code>false</code> for Boolean fields.
+</ul>
+For the above field-wise comparison, the email addresses of a card are treated as a set,
+the phone numbers of a card are also treated as a set, and
+the set of names of mailing lists a card belongs to is taken as an additional field.
+
+A card with equivalent or less information than another is <i>preferred for deletion</i> if:
+<ul>
+  <li>not all non-ignored fields are equivalent (which implies that it has less information), or else
+  <li>the character weight of the card is smaller, i.e.,
+  its pruned and transformed (non-ignored) field values have an equal or smaller total number of uppercase letters and special characters than the other card, or else the character weight is equal and
+  <li>its <code>PopularityIndex</code> is smaller, or else
+  <li>its <code>LastModifiedDate</code> is smaller.
+</ul>
+
+Here is an example.
+The card on the right will be preferred for deletion because it contains less information.
+<ul>
+  <li>
+	<code>NickName</code>:		...........	"Péte"	..............................	"&nbsp;&nbsp;pete&nbsp;!&nbsp;"	....................	accent, punctuation, letter case, and whitespace ignored
+<li>
+	<code>FirstName</code>:		..........	"Peter"	.............................	"Peter Y van"	............	name prefix "van" moved to last name, middle initial "Y" ignored
+<li>
+	<code>LastName</code>:		...........	"van Müller"	..................	"Mueller"	....................	name prefix "van" moved to last name, umlauts transcribed
+<li>
+	<code>DisplayName</code>:	....	"Hans Peter van Müller"  ..	"van Müller, Peter"	..	first name moved to the front, name is substring
+<li>
+	<code>PreferDisplayName</code>:	..	'yes'	...........................	'yes'	............................	same truth value
+<li>
+	<code>AimScreenName</code>:	......	""	.................................	""	..................................	same AIM name
+<li>
+	<code>PreferMailFormat</code>:	...	'HTML'	.........................	'unknown'	..............	default ('unknown') considered less information
+<li>
+	<code>PrimaryEmail</code>:	....	"Peter.vanMueller@company.com"	..	"P.van.Mueller@gmx.de"	..	emails treated as sets, letter case ignored
+<li>
+	<code>SecondaryEmail</code>:	....	"p.van.mueller@gmx.de"	..	""	.........................	emails treated as sets, letter case ignored
+<li>
+	<code>WorkPhone</code>:	.............	"089/1234-5678"	........	"+49 89 12345678"	...	national prefix normalized and non-digits ignored
+<li>
+	<code>PopularityIndex</code>:	....	5	........................................	3	...................................	field ignored for information comparison
+<li>
+	<code>LastModifiedDate</code>:	..	2018-02-25 07:51:28	..	2018-02-25 08:30:37	..	field ignored for information comparison
+<li>
+	<code>UUID</code>:	.........................	""	.......................	"903a61be-64d5-4844-802a"	...	field ignored
+</ul>
+
+Technical information: The options/configuration/preferences used by this Thunderbird extension are are saved in configuration keys starting with `extensions.DuplicateContactsManager.` - for instance, the list of ignored fields is stored in the variable ignoreFields.
+
+<hr>
+<address></address>
+<!-- hhmts start -->Last modified: Mon Jun  4 00:11:04 CEST 2018 <!-- hhmts end -->
+</body> </html>
