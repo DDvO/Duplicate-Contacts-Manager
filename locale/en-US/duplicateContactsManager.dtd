@@ -32,7 +32,7 @@
 <!ENTITY handleDuplicates.options			"Options">
 
 <!-- text after process has finished -->
-<!ENTITY handleDuplicates.endheader			"That’s it.">
+<!ENTITY handleDuplicates.endheader			"Results">
 <!ENTITY handleDuplicates.endtext			"You just got rid of these duplicates and can now continue with something that’s more fun :-)">
 <!ENTITY handleDuplicates.endtext.numBefore		"Number of entries before">
 <!ENTITY handleDuplicates.endtext.numAfter		"Number of entries after">

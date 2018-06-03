@@ -8,7 +8,7 @@
 	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
 	xmlns:html="http://www.w3.org/1999/xhtml"
 	onload="DuplicateEntriesWindow.init()"
-    onunload="DuplicateEntriesWindow.OnUnloadWindow()">
+	onunload="DuplicateEntriesWindow.OnUnloadWindow()">
 	<script type="application/x-javascript" src="chrome://duplicatecontactsmanager/content/duplicateEntriesWindow.js"/>
 	<stringbundleset id="duplicateContactsManagerStringbundleset">
 		<stringbundle id="bundle_duplicateContactsManager" src="chrome://duplicatecontactsmanager/locale/duplicateContactsManager.properties" />
@@ -16,30 +16,6 @@
 
 	<vbox id="mainbox">
 		<!--image src="chrome://duplicatecontactsmanager/content/kate.png" height="40" alt="DCM logo" /-->
-		<statusbar id="duplicates-status-bar">
-			<statusbarpanel id="statusAddressBook1" flex="1">
-				<label id="statusAddressBook1_label" value="AddressBook1" class="addressbookname" />
-				<label id="statusAddressBook1_size" value="" />
-				<spacer flex="1"/>
-			</statusbarpanel>
-			<statusbarpanel id="progressText" flex="1">
-				<spacer flex="4"/>
-				<label id="progressText_label" value="" />
-			</statusbarpanel>
-			<statusbarpanel flex="0">
-				<progressmeter id="progressMeter" mode="determined" value="0%" style="display: none" />
-				<spacer flex="1"/>
-			</statusbarpanel>
-			<statusbarpanel id="statusText" flex="1">
-				<label id="statusText_label" value="&handleDuplicates.status_default;" />
-				<spacer flex="4"/>
-			</statusbarpanel>
-			<statusbarpanel id="statusAddressBook2" flex="1">
-				<label id="statusAddressBook2_label" value="AddressBook2" class="addressbookname" />
-				<label id="statusAddressBook2_size" value="" />
-				<spacer flex="2"/>
-			</statusbarpanel>
-		</statusbar>
 		<hbox align="center" id="duplicatesButtonsBox">
 			<button	id="startbutton"
 				class="dialog"
@@ -53,14 +29,14 @@
 				disabled="true"
 				accesskey="&handleDuplicates.skipnextbutton.accesskey;"
 				oncommand="DuplicateEntriesWindow.skipAndSearchNextDuplicate()" />
-			<button	id="keepnextbutton" flex="1"
+			<button	id="keepnextbutton"
 				class="dialog"
 				label="&handleDuplicates.keepnextbutton.label;"
 				disabled="true"
 				visibility="hidden"
 				accesskey="&handleDuplicates.keepnextbutton.accesskey;"
 				oncommand="DuplicateEntriesWindow.keepAndSearchNextDuplicate();" />
-			<button	id="applynextbutton" flex="1"
+			<button	id="applynextbutton"
 				class="dialog"
 				label="&handleDuplicates.applynextbutton.label;"
 				disabled="true"
@@ -79,7 +55,29 @@
 				disabled="false"
 				oncommand="window.close();" />
 		</hbox>
-		<hbox flex="1" id="explanation" style="display: block">
+		<hbox id="statusBar">
+			<hbox id="statusText" flex="3">
+				<label id="statusText_label" value="&handleDuplicates.status_default;" />
+			</hbox>
+			<spacer flex="1"/>
+			<hbox id="statusAddressBook1" flex="3">
+				<label id="statusAddressBook1_label" value="AddressBook1" class="addressbookname" />
+				<label id="statusAddressBook1_size" value="" />
+			</hbox>
+			<spacer flex="1"/>
+			<hbox id="progress" flex="3">
+				<label id="progressText" value="" />
+				<progressmeter id="progressMeter" mode="determined" value="0%" style="display: none" />
+			</hbox>
+			<spacer flex="1"/>
+			<hbox id="statusAddressBook2" flex="3">
+				<label id="statusAddressBook2_label" value="AddressBook2" class="addressbookname" />
+				<label id="statusAddressBook2_size" value="" />
+			</hbox>
+			<spacer flex="1"/>
+		</hbox>
+		<hbox id="explanation" style="display: block">
+			<grid><!-- hack such that minimal window height expands automatically -->
 			<vbox flex="1" style="text-align: center">
 				<description class="explheader">&handleDuplicates.introheader;</description>
 				<description>&handleDuplicates.introtext;</description>
@@ -101,12 +99,13 @@
 					<textbox class="low" id="countryCallingCode" cols="1" size="7" />
 				</hbox>
 				<description>&handleDuplicates.considerFields;: </description>
-				<description class="text-line value" id="considerFields" style="width: 600px;"></description>
+				<description class="text-line value fields_wide" id="considerFields"></description>
 				<description>&handleDuplicates.ignoreFields;: </description>
 				<textbox multiline="true" id="ignoreFields" cols="90" />
 			</vbox>
+			</grid>
 		</hbox>
-		<hbox flex="1" id="tablepane" style="display: none">
+		<hbox id="tablepane" style="display: none">
 			<radiogroup>
 				<grid id="AttributesTable" flex="1">
 					<columns><column flex="1" /><column flex="2" /><column class="equivalence" /><column flex="2" /></columns>
@@ -130,7 +129,8 @@
 				</grid>
 			</radiogroup>
 		</hbox>
-		<hbox flex="1" id="endinfo" style="display: none">
+		<hbox id="endinfo" style="display: none">
+			<grid><!-- hack such that minimal window height expands automatically -->
 			<vbox flex="1" style="text-align: center">
 				<description class="explheader">&handleDuplicates.endheader;</description>
 				<vbox class="tbox">
@@ -162,6 +162,10 @@
 -->
 				</vbox>
 			</vbox>
+			</grid>
 		</hbox>
+		<statusbar id="bottom">
+			<spacer flex="1"/>
+		</statusbar>
 	</vbox>
 </window>

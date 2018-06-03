@@ -14,6 +14,7 @@ When pairs of candidate duplicates are presented, the reason why they are consid
 
 * The '≡' symbol is shown between fields with identical values.  
 All other relations are determined after abstraction of values (see the definitions below).
+* The '≃' symbol is used for indicating matching names, email addresses, or phone numbers.
 * The '≅' symbol is used for indicating equivalent fields and equivalent cards.
 * The '⋦' and '⋧' symbols indicate that a field or a whole card contains less/more information than the other.
 * The '⊆' and '⊇' symbols indicate the subset/superset relation on email addresses or phone numbers.
@@ -37,6 +38,8 @@ Two cards are considered _matching_ if any of the following conditions hold, whe
 *   both cards do not contain any name, email address, or phone number that might match.
 
 Yet cards with non-equivalent `AIMScreenName` are never considered matching, which is convenient for preventing cards from being repeatedly presented for manual treatment.
+
+The matching relation is designed to be rather weak, such that it tends to yield more pairs of candidate duplicates.
 
 _Matching_ of names, email addresses, and phone numbers is based upon equivalence of fields modulo abstraction, described below.
 As a result, for example, names differing only in letter case are considered to match.

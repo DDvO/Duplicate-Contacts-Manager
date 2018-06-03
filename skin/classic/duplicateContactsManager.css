@@ -75,6 +75,11 @@ label#columnKeptInfoLeft, label#columnKeptInfoRight {
 	padding: 0px 0px 6px 10px;
 }
 
+#statusBar {
+	margin-left: 15px;
+	margin-bottom: 10px;
+}
+
 #statusText {
 	color: #aa0000;
 }
@@ -170,6 +175,10 @@ hbox.addressbooklists .addressbookname {
 
 checkbox {
 	text-align: left;
+}
+
+#bottom{
+	margin-top: -15px;
 }
 
 #mainbox{

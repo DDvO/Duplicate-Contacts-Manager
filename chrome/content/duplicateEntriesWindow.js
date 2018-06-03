@@ -124,12 +124,14 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 		preserveFirst: false,
 		nonequivalentProperties : [],
 		addressBookFields: new Array(
-			"PhotoURI",
-			"NickName", "FirstName", "PhoneticFirstName", "LastName", "PhoneticLastName",
+			"PhotoURI", "PhotoType", "PhotoName",
+			"NickName", "Names"/* label */, "FirstName", "PhoneticFirstName", "LastName", "PhoneticLastName",
 			"SpouseName", "FamilyName", "DisplayName", "_PhoneticName", "PreferDisplayName",
 			"_AimScreenName", "_GoogleTalk", "CardType", "Category", "AllowRemoteContent",
-			"PreferMailFormat", "MailListNames"/* virtual */, "PrimaryEmail", "SecondEmail", "DefaultEmail",
-			"CellularNumber", "CellularNumberType", "HomePhone", "HomePhoneType",
+			"PreferMailFormat", "MailListNames"/* virtual */,
+			"Emails"/* label */, "PrimaryEmail", /* "LowercasePrimaryEmail", */
+			"SecondEmail", /* "LowercaseSecondEmail", */"DefaultEmail",
+			"PhoneNumbers"/* label */, "CellularNumber", "CellularNumberType", "HomePhone", "HomePhoneType",
 			"WorkPhone", "WorkPhoneType", "FaxNumber", "FaxNumberType", "PagerNumber", "PagerNumberType",
 			"DefaultAddress",
 			"HomeAddress", "HomeAddress2", "HomeCity", "HomeState",	"HomeZipCode", "HomeCountry",
@@ -139,12 +141,17 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			"BirthYear", "BirthMonth", "BirthDay",
 			"WebPage1", "WebPage2",
 			"Custom1", "Custom2", "Custom3", "Custom4", "Notes",
-			"PopularityIndex", "LastModifiedDate"),
-		ignoreFieldsDefault : new Array("UID", "UUID", "CardUID",
+			"PopularityIndex", "LastModifiedDate",
+			"UID", "UUID", "CardUID",
+			"groupDavKey", "groupDavVersion", "groupDavVersionPrev",
+			"RecordKey", "DbRowID",
+			"unprocessed:rev", "unprocessed:x-ablabel"),
+		labelsList : new Array("Names", "Emails", "PhoneNumbers"),
+		ignoreFieldsDefault : new Array("PhotoType", "PhotoName",
+						/* "LowercasePrimaryEmail", "LowercaseSecondEmail", */
+						"UID", "UUID", "CardUID",
 						"groupDavKey", "groupDavVersion", "groupDavVersionPrev",
 						"RecordKey", "DbRowID", 
-						"PhotoType", "PhotoName",
-						"LowercasePrimaryEmail", "LowercaseSecondEmail",
 						"unprocessed:rev", "unprocessed:x-ablabel"),
 		ignoreList : [], // will be derived from ignoreFieldsDefault
 		natTrunkPrefix : "", // national phone number prefix
@@ -153,6 +160,7 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 
 		consideredFields: function() {
 			return this.addressBookFields.concat(this.ignoreFieldsDefault).
+				filter(x => !this.labelsList.includes(x)).
 				filter(x => !this.ignoreList.includes(x)).join(", ");
 		},
 
@@ -181,7 +189,7 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 		},
 
 		isInteger: function(property) {
-			return property.match(/^(PopularityIndex|LastModifiedDate)$/);
+			return property.match(/^(PopularityIndex|LastModifiedDate|RecordKey|DbRowID)$/);
 		},
 
 		defaultValue: function(property) {
@@ -226,7 +234,7 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			this.stringBundle = document.getElementById("bundle_duplicateContactsManager");
 			this.running = true;
 			this.statustext = document.getElementById('statusText_label');
-			this.progresstext = document.getElementById('progressText_label');
+			this.progresstext = document.getElementById('progressText');
 			this.progressmeter = document.getElementById('progressMeter');
 			this.window = document.getElementById('handleDuplicates-window');
 			this.attributesTableRows = document.getElementById('AttributesTableRows');
@@ -588,15 +596,8 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 							this.enable('applynextbutton');
 							this.window.removeAttribute('wait-cursor');
 							this.statustext.value = this.stringBundle.getString(
-								namesmatch && mailsmatch && phonesmatch ? 'matchingNamesEmailsPhones' :
-								namesmatch && mailsmatch                ? 'matchingNamesEmails' :
-								namesmatch &&               phonesmatch ? 'matchingNamesPhones' :
-								              mailsmatch && phonesmatch ? 'matchingEmailsPhones' :
-								namesmatch                              ? 'matchingNames' :
-								              mailsmatch                ? 'matchingEmailAddresses' :
-								                            phonesmatch ? 'matchingPhones' :
-								                                          'noMatch');
-							this.displayCardData(card1, card2, comparable, comparison);
+								nomatch? 'noMatch' : 'matchFound');
+							this.displayCardData(card1, card2, comparable, comparison, namesmatch, mailsmatch, phonesmatch);
 							return;
 						}
 					}
@@ -739,217 +740,236 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 		},
 
 		/**
-		 * Creates the table with address book field for side by side comparison
+		 * Creates table with address book fields for side-by-side comparison
 		 * and editing. Editable fields will be listed in this.editableFields.
 		 */
-		displayCardData: function(card1, card2, comparable, comparison) {
+		displayCardData: function(card1, card2, comparable, comparison, namesmatch, mailsmatch, phonesmatch) {
 			this.purgeAttributesTable();
+			this.displayedFields = new Array();
+			this.editableFields = new Array();
+			this.make_visible('tableheader');
 			const cardsEqu = document.getElementById('cardsEqu');
 			cardsEqu.value = !comparable ? '' :
 			                               comparison == 0 ? '≅' : // &cong; yields syntax error; &#8773; verbatim
 			                               comparison <  0 ? '⋦' : '⋧';
-			const diffProps = this.nonequivalentProperties;
-			this.displayedFields = new Array();
-			this.editableFields = new Array();
 
 			// if two different mail primary addresses are available, show SecondEmail field such that it can be filled in
-			var mail1 = this.getAbstractedTransformedProperty(card1, 'PrimaryEmail');
-			var mail2 = this.getAbstractedTransformedProperty(card2, 'PrimaryEmail');
-			var displaySecondMail = (mail1 != '' && mail2 != '' && mail1 != mail2);
+			const mail1 = this.getAbstractedTransformedProperty(card1, 'PrimaryEmail');
+			const mail2 = this.getAbstractedTransformedProperty(card2, 'PrimaryEmail');
+			const displaySecondMail = (mail1 != '' && mail2 != '' && mail1 != mail2);
 			// if combination of first and last name is different from display name, show nickname field such that it can be filled in
-			var dn1 = this.getAbstractedTransformedProperty(card1, 'DisplayName');
-			var dn2 = this.getAbstractedTransformedProperty(card2, 'DisplayName');
-			var displayNickName = (dn1 != '' && dn1 != this.getAbstractedTransformedProperty(card1,'FirstName')+" "+
+			const dn1 = this.getAbstractedTransformedProperty(card1, 'DisplayName');
+			const dn2 = this.getAbstractedTransformedProperty(card2, 'DisplayName');
+			const displayNickName = (dn1 != '' && dn1 != this.getAbstractedTransformedProperty(card1,'FirstName')+" "+
 				this.getAbstractedTransformedProperty(card1, 'LastName'))
 				|| (dn2 != '' && dn2 != this.getAbstractedTransformedProperty(card2,'FirstName')+" "+
 				this.getAbstractedTransformedProperty(card2, 'LastName'))
 				|| (dn1 != dn2);
 
-			var fields = this.addressBookFields.slice(); // copy
+			var fields = this.addressBookFields.filter(x => !this.ignoreList.includes(x)); // copy
+			const diffProps = this.nonequivalentProperties;
 			for(let i = 0; i < diffProps.length; i++) { // add non-set fields for with so far had non-equivalent values have been found
 				const property = diffProps[i];
 				if (!property.match(/^\{/))
 					pushIfNew(property, fields);
 			}
-			const displayOnlyIfDifferent = new Array('UID', 'UUID', 'CardUID');
-			fields.concat(displayOnlyIfDifferent);
-			const displayAlways = /^(FirstName|LastName|DisplayName|_AimScreenName|PrimaryEmail|SecondEmail|CellularNumber|HomePhone|WorkPhone|FaxNumber|Notes)$/;
-			this.make_visible('tableheader');
 			for(let i=0; i<fields.length; i++) {
 				const property = fields[i];
-				const defaultValue = this.defaultValue(property);
-				const  leftValue = this.getProperty(card1, property);
-				const rightValue = this.getProperty(card2, property);
-				if ((!displayOnlyIfDifferent.includes(property) || leftValue != rightValue) &&
-				    (   ( leftValue &&  leftValue != defaultValue)
-				     || (rightValue && rightValue != defaultValue)
-				     || (property=='SecondEmail' && displaySecondMail)
-				     || (property=='NickName'    && displayNickName)
-				     || property.match(displayAlways)
-				   )) {
-					var row = document.createElement('row');
-					var labelcell = document.createElement('label');
-					var localName = property;
-					var editable = property != 'PhotoURI' && property != 'MailListNames' && property != 'LastModifiedDate';
-					try {
-						localName = this.stringBundle.getString(property + '_label');
-					}
-					catch (e) {
-						/*
-						// alert("Internal error: cannot get localized field name for "+property+": "+e);
-						editable = false;
-						// leftValue = rightValue = defaultValue; // hide internal values
-						*/
-					}
-					this.displayedFields.push(property);
-					if (editable) {
-						// save field in list for later retrieval if edited values
-						pushIfNew(property, this.editableFields);
-					}
-
-					labelcell.setAttribute('value', localName + ':');
-					labelcell.setAttribute('class', 'field');
-
-					const cell1 = document.createElement('hbox');
-					const cell2 = document.createElement('hbox');
+				var row = document.createElement('row');
+				var labelcell = document.createElement('label');
+				var localName = property;
+				try {
+					localName = this.stringBundle.getString(property + '_label');
+				}
+				catch (e) {
+					/*
+					// alert("Internal error: cannot get localized field name for "+property+": "+e);
+					// leftValue = rightValue = defaultValue; // hide internal values
+					*/
+				}
+				labelcell.setAttribute('value', localName + ':');
+				labelcell.setAttribute('class', 'field');
+				row.appendChild(labelcell);
+				if (this.labelsList.includes(property)) {
+					const cell1 = document.createElement('label');
 					const cellEqu = document.createElement('hbox');
 					const descEqu = document.createElement('description');
 					cellEqu.className = 'equivalence';
 					cellEqu.appendChild(descEqu);
-
-					// highlight values that differ; show equality or equivalence
-					let equ = '≡'; // should indicate: identical
-					var both_empty = 0;
-					if (this.isMailAddress(property) || this.isPhoneNumber(property)) {
-						const defaultValue_Set = new Set();
-						const prop = this.isMailAddress(property) ? '__MailAddresses' : '__PhoneNumbers';
-						const value1 = card1.getProperty(prop, defaultValue_Set);
-						const value2 = card2.getProperty(prop, defaultValue_Set);
-						both_empty = value1.size == 0 && value2.size == 0;
-						// value1 and value2 are essentially result of getAbstractedTransformedProperty()
-						if (value1.isSuperset(value2)) {
-							if (value2.isSuperset(value1))
-								equ = '≅';
-							else
-								equ = '⊇';
-						} else {
-							if (value2.isSuperset(value1))
-								equ = '⊆';
-							else
-								equ = '';
-						}
-					} else {
-						both_empty = leftValue == defaultValue && rightValue == defaultValue;
-						if (leftValue != rightValue) {
-							const value1 = this.getAbstractedTransformedProperty(card1, property);
-							const value2 = this.getAbstractedTransformedProperty(card2, property);
-							if (value1 == value2)
-								equ = '≅'; // equivalent; &cong; yields syntax error; &#8773; verbatim
-							else if (this.isText(property)) {
-								if      (value2.indexOf(value1) >= 0) // value1 is substring of value2
-									equ = '<';
-								else if (value1.indexOf(value2) >= 0) // value2 is substring of value1
-									equ = '>';
-								else
-								equ = ''; // incomparable
-							}
-							else if (this.isInteger(property)) {
-								const comparison = card1.getProperty(property, 0) - card2.getProperty(property, 0);
-								if (comparison < 0)
-									equ = '<';
-								else if (comparison > 0)
-									equ = '>';
-								else
-									equ = '≡'; // this case (leftValue == rightValue) is already covered above
-							}
-							else if (value1 == defaultValue)
-								equ = '⋦';
-							else if (value2 == defaultValue)
-								equ = '⋧';
-							else
-								equ = '';
-						}
-					}
-					// only non-identical and not set-equal properties should be hightlighted by color
-					if (equ != (this.isMailAddress(property) || this.isPhoneNumber(property) ? '≅' : '≡')) {
-						cell1.setAttribute('class', this.sideUsed == 'left' ? 'used' : 'unused');
-						cell2.setAttribute('class', this.sideUsed == 'left' ? 'unused' : 'used');
-					}
-					if (both_empty)
-						equ = '';
-					else if (property == 'SecondEmail' || (this.isPhoneNumber(property) && property != 'CellularNumber')) {
-						equ = '⋮'; // sets displayed over multiple lines lead to multiple lines with same symbol
-					}
-					if (property == 'PhotoURI')
-						descEqu.setAttribute('style', 'margin-top: 1em;'); // move a bit lower
-					descEqu.setAttribute('value', equ);
-
-					// create input/display fields, depending on field type
-					let cell1valuebox;
-					let cell2valuebox;
-
-					if (property == 'PhotoURI') {
-						cell1valuebox = this.previewImage("preliminary src  leftValue");
-						cell2valuebox = this.previewImage("preliminary src rightValue");
-					} else if (this.isSelection(property)) {
-						if (property == 'PreferMailFormat') {
-							labels = [this.stringBundle.getString('unknown_label'),
-								  this.stringBundle.getString('plaintext_label'),
-								  this.stringBundle.getString('html_label')];
-						}
-						else {
-							var labels = [this.stringBundle.getString('false_label'),
-							              this.stringBundle.getString('true_label')];
-						}
-						var values = [0, 1, 2];
-						cell1valuebox = this.createMenuList(null, labels, values,  leftValue, true);
-						cell2valuebox = this.createMenuList(null, labels, values, rightValue, true);
-					}
-					else {
-						function make_valuebox(value) {
-							const valuebox = editable ? document.createElement('textbox') :
-							                            document.createElement('label');
-							valuebox.className = 'textbox';
-							valuebox.setAttribute('value',  value);
-							if (property == 'MailListNames' || property == 'Notes') {
-								valuebox.setAttribute('multiline', "true");
-							}
-							return valuebox;
-						}
-						cell1valuebox = make_valuebox( leftValue);
-						cell2valuebox = make_valuebox(rightValue);
-					}
-
-					cell1valuebox.setAttribute('flex', '2');
-					cell2valuebox.setAttribute('flex', '2');
-					cell1valuebox.setAttribute('id',  'left_'+property);
-					cell2valuebox.setAttribute('id', 'right_'+property);
-
-					// add valueboxes to cells
-					cell1.appendChild(cell1valuebox);
-					cell1.setAttribute('id', 'cell_left_' +property);
-					cell2.appendChild(cell2valuebox);
-					cell2.setAttribute('id', 'cell_right_'+property);
-
-					// add cells to row
-					row.appendChild(labelcell);
+					if ( namesmatch && property == "Names" ||
+					     mailsmatch && property == "Emails" ||
+					    phonesmatch && property == "PhoneNumbers")
+						descEqu.setAttribute('value', '≃');
 					row.appendChild(cell1);
 					row.appendChild(cellEqu);
-					row.appendChild(cell2);
-
-					// add row to table
 					this.attributesTableRows.appendChild(row);
-					if (property == 'PhotoURI') {
-						 // preserve aspect ratio:
-						cell1valuebox.setAttribute('flex', "");
-						cell2valuebox.setAttribute('flex', "");
-						// would be ignored if done before appendChild(row):
-						cell1valuebox.src=card1.getProperty('PhotoURI', "");
-						cell2valuebox.src=card2.getProperty('PhotoURI', "");
-					}
+				} else {
+					const defaultValue = this.defaultValue(property);
+					const  leftValue = this.getProperty(card1, property);
+					const rightValue = this.getProperty(card2, property);
+					const displayOnlyIfDifferent = /^(PhotoType|UID|UUID|CardUID)$/;
+					const displayAlways = /^(FirstName|LastName|DisplayName|_AimScreenName|PrimaryEmail|SecondEmail|CellularNumber|HomePhone|WorkPhone|FaxNumber|Notes)$/;
+					if ((!property.match(displayOnlyIfDifferent) || leftValue != rightValue) &&
+					    (   ( leftValue &&  leftValue != defaultValue)
+					     || (rightValue && rightValue != defaultValue)
+					     || (property=='SecondEmail' && displaySecondMail)
+					     || (property=='NickName'    && displayNickName)
+					     || property.match(displayAlways)
+					   ))
+						this.displayCardField(card1, card2, defaultValue, leftValue, rightValue, property, row);
 				}
 			}
 			this.toggleContactLeftRight(comparison < 0 ? 'right' : 'left'); // if comparison == 0, prefer to delete c2
+		},
+
+		/**
+		 * Creates a table row for one address book field for side-by-side
+		 * comparison and editing. Editable fields will be listed in this.editableFields.
+		 */
+		displayCardField: function(card1, card2, defaultValue, leftValue, rightValue, property, row) {
+			this.displayedFields.push(property);
+			var editable = property != 'PhotoURI' && property != 'MailListNames' && property != 'LastModifiedDate';
+			if (editable) {
+				// save field in list for later retrieval if edited values
+				pushIfNew(property, this.editableFields);
+			}
+
+			const cell1 = document.createElement('hbox');
+			const cell2 = document.createElement('hbox');
+			const cellEqu = document.createElement('hbox');
+			const descEqu = document.createElement('description');
+			cellEqu.className = 'equivalence';
+			cellEqu.appendChild(descEqu);
+
+			// highlight values that differ; show equality or equivalence
+			let equ = '≡'; // should indicate: identical
+			var both_empty = 0;
+			if (this.isMailAddress(property) || this.isPhoneNumber(property)) {
+				const defaultValue_Set = new Set();
+				const prop = this.isMailAddress(property) ? '__MailAddresses' : '__PhoneNumbers';
+				const value1 = card1.getProperty(prop, defaultValue_Set);
+				const value2 = card2.getProperty(prop, defaultValue_Set);
+				both_empty = value1.size == 0 && value2.size == 0;
+				// value1 and value2 are essentially result of getAbstractedTransformedProperty()
+				if (value1.isSuperset(value2)) {
+					if (value2.isSuperset(value1))
+						equ = '≅';
+					else
+						equ = '⊇';
+				} else {
+					if (value2.isSuperset(value1))
+						equ = '⊆';
+					else
+						equ = '';
+				}
+			} else {
+				both_empty = leftValue == defaultValue && rightValue == defaultValue;
+				if (leftValue != rightValue) {
+					const value1 = this.getAbstractedTransformedProperty(card1, property);
+					const value2 = this.getAbstractedTransformedProperty(card2, property);
+					if (value1 == value2)
+						equ = '≅'; // equivalent; &cong; yields syntax error; &#8773; verbatim
+					else if (this.isText(property)) {
+						if      (value2.indexOf(value1) >= 0) // value1 is substring of value2
+							equ = '<';
+						else if (value1.indexOf(value2) >= 0) // value2 is substring of value1
+							equ = '>';
+						else
+							equ = ''; // incomparable
+					}
+					else if (this.isInteger(property)) {
+						const comparison = card1.getProperty(property, 0) - card2.getProperty(property, 0);
+						if (comparison < 0)
+							equ = '<';
+						else if (comparison > 0)
+							equ = '>';
+						else
+							equ = '≡'; // this case (leftValue == rightValue) is already covered above
+					}
+					else if (value1 == defaultValue)
+						equ = '⋦';
+					else if (value2 == defaultValue)
+						equ = '⋧';
+					else
+						equ = '';
+				}
+			}
+			// only non-identical and not set-equal properties should be hightlighted by color
+			if (equ != (this.isMailAddress(property) || this.isPhoneNumber(property) ? '≅' : '≡')) {
+				cell1.setAttribute('class', this.sideUsed == 'left' ? 'used' : 'unused');
+				cell2.setAttribute('class', this.sideUsed == 'left' ? 'unused' : 'used');
+			}
+			if (both_empty)
+				equ = '';
+			else if (property == 'SecondEmail' || (this.isPhoneNumber(property) && property != 'CellularNumber')) {
+				equ = '⋮'; // sets displayed over multiple lines lead to multiple lines with same symbol
+			}
+			if (property == 'PhotoURI')
+				descEqu.setAttribute('style', 'margin-top: 1em;'); // move a bit lower
+			descEqu.setAttribute('value', equ);
+
+			// create input/display fields, depending on field type
+			let cell1valuebox;
+			let cell2valuebox;
+
+			if (property == 'PhotoURI') {
+				cell1valuebox = this.previewImage("preliminary src  leftValue");
+				cell2valuebox = this.previewImage("preliminary src rightValue");
+			} else if (this.isSelection(property)) {
+				if (property == 'PreferMailFormat') {
+					labels = [this.stringBundle.getString('unknown_label'),
+						  this.stringBundle.getString('plaintext_label'),
+						  this.stringBundle.getString('html_label')];
+				}
+				else {
+					var labels = [this.stringBundle.getString('false_label'),
+						      this.stringBundle.getString('true_label')];
+				}
+				var values = [0, 1, 2];
+				cell1valuebox = this.createMenuList(null, labels, values,  leftValue, true);
+				cell2valuebox = this.createMenuList(null, labels, values, rightValue, true);
+			}
+			else {
+				function make_valuebox(value) {
+					const valuebox = editable ? document.createElement('textbox') :
+					      document.createElement('label');
+					valuebox.className = 'textbox';
+					valuebox.setAttribute('value',  value);
+					if (property == 'MailListNames' || property == 'Notes') {
+						valuebox.setAttribute('multiline', "true");
+					}
+					return valuebox;
+				}
+				cell1valuebox = make_valuebox( leftValue);
+				cell2valuebox = make_valuebox(rightValue);
+			}
+
+			cell1valuebox.setAttribute('flex', '2');
+			cell2valuebox.setAttribute('flex', '2');
+			cell1valuebox.setAttribute('id',  'left_'+property);
+			cell2valuebox.setAttribute('id', 'right_'+property);
+
+			// add valueboxes to cells
+			cell1.appendChild(cell1valuebox);
+			cell1.setAttribute('id', 'cell_left_' +property);
+			cell2.appendChild(cell2valuebox);
+			cell2.setAttribute('id', 'cell_right_'+property);
+
+			// add remaining cells to row
+			row.appendChild(cell1);
+			row.appendChild(cellEqu);
+			row.appendChild(cell2);
+
+			// add row to table
+			this.attributesTableRows.appendChild(row);
+			if (property == 'PhotoURI') {
+				// preserve aspect ratio:
+				cell1valuebox.setAttribute('flex', "");
+				cell2valuebox.setAttribute('flex', "");
+				// would be ignored if done before appendChild(row):
+				cell1valuebox.src=card1.getProperty('PhotoURI', "");
+				cell2valuebox.src=card2.getProperty('PhotoURI', "");
+			}
 		},
 
 		/**

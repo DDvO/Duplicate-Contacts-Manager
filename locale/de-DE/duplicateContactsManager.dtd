@@ -32,7 +32,7 @@
 <!ENTITY handleDuplicates.options			"Optionen">
 
 <!-- text after process has finished -->
-<!ENTITY handleDuplicates.endheader			"Das war’s.">
+<!ENTITY handleDuplicates.endheader			"Resultate">
 <!ENTITY handleDuplicates.endtext			"Sie haben sich von Ihren Dubletten getrennt und können Sich nun wieder angenehmeren Dingen widmen :-)">
 <!ENTITY handleDuplicates.endtext.numBefore		"Anzahl der Einträge vorher">
 <!ENTITY handleDuplicates.endtext.numAfter		"Anzahl der Einträge nachher">

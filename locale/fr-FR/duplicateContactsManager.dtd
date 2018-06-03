@@ -34,7 +34,7 @@
 <!ENTITY handleDuplicates.options			"Options">
 
 <!-- text after process has finished -->
-<!ENTITY handleDuplicates.endheader			"C'est bon.">
+<!ENTITY handleDuplicates.endheader			"Résultats">
 <!ENTITY handleDuplicates.endtext			"Vous venez de vous débarrasser des doublons et pouvez maintenant continuer avec quelque chose de plus amusant  :-)">
 <!ENTITY handleDuplicates.endtext.numBefore		"Nombre de contacts avant">
 <!ENTITY handleDuplicates.endtext.numAfter		"Nombre de contacts après">
