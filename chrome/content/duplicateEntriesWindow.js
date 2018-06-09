@@ -4,12 +4,14 @@
 // This file includes UTF-8 encoding. Please make sure your text editor can deal with this prior to saving any changes!
 
 /* Change history:
+ * Version 1.0.5:
+ * - correction of mistake in packaging version 1.0.4 that prevented it from running
  * Version 1.0.4:
  * - various small UI improvments: indication for card matching, layout, language, doc
  * Version 1.0.3:
  * - fixed syntax error in de-DE locale that lead to obscure initialization error
  * - minor improvements of localization in the extension and of the entry in the TB add-ons list
- * Version 1.0.2 and 1.0.2:
+ * Version 1.0.1 and 1.0.2:
  * - improved label of DCM menu entry for address book window
  * Version 1.0:
  * - major speedup in particular when searching for duplicates in large address books

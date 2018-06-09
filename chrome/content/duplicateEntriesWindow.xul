@@ -2,6 +2,7 @@
 <!DOCTYPE overlay SYSTEM "chrome://duplicatecontactsmanager/locale/duplicateContactsManager.dtd">
 <?xml-stylesheet href="chrome://messenger/skin/addressbook/addressbook.css" type="text/css"?>
 <?xml-stylesheet href="chrome://duplicatecontactsmanager/skin/duplicateContactsManager.css" type="text/css"?>
+<?xml-stylesheet href="chrome://messenger/content/bindings.css" type="text/css"?>
 <window
     id="handleDuplicates-window"
     title="&handleDuplicates.windowtitle;"
@@ -35,25 +36,25 @@
 				disabled="true"
 				visibility="hidden"
 				accesskey="&handleDuplicates.keepnextbutton.accesskey;"
-				oncommand="DuplicateEntriesWindow.keepAndSearchNextDuplicate();" />
+				oncommand="DuplicateEntriesWindow.keepAndSearchNextDuplicate()" />
 			<button	id="applynextbutton"
 				class="dialog"
 				label="&handleDuplicates.applynextbutton.label;"
 				disabled="true"
 				visibility="hidden"
 				accesskey="&handleDuplicates.applynextbutton.accesskey;"
-				oncommand="DuplicateEntriesWindow.applyAndSearchNextDuplicate();" />
+				oncommand="DuplicateEntriesWindow.applyAndSearchNextDuplicate()" />
 			<spacer flex="3" />
 			<button	id="stopbutton" style="display: none"
 				class="dialog"
 				label="&handleDuplicates.stopbutton.label;"
 				disabled="false"
-				oncommand="DuplicateEntriesWindow.endSearch();" />
+				oncommand="DuplicateEntriesWindow.endSearch()" />
 			<button	id="quitbutton"
 				class="dialog"
 				label="&handleDuplicates.quitbutton.label;"
 				disabled="false"
-				oncommand="window.close();" />
+				oncommand="window.close()" />
 		</hbox>
 		<hbox id="statusBar">
 			<hbox id="statusText" flex="3">
