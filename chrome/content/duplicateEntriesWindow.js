@@ -4,40 +4,40 @@
 // This file includes UTF-8 encoding. Please make sure your text editor can deal with this prior to saving any changes!
 
 /* Change history:
- * Version 1.0.5:
- * - correction of mistake in packaging version 1.0.4 that prevented it from running
- * Version 1.0.4:
- * - various small UI improvments: indication for card matching, layout, language, doc
- * Version 1.0.3:
- * - fixed syntax error in de-DE locale that lead to obscure initialization error
- * - minor improvements of localization in the extension and of the entry in the TB add-ons list
- * Version 1.0.1 and 1.0.2:
- * - improved label of DCM menu entry for address book window
- * Version 1.0:
- * - major speedup in particular when searching for duplicates in large address books
- * - improved user guidance; new Tools menu entry with default address book selection
- * - various improvements of content matching and card comparison for equivalence
- * - cards may be excluded from being presented as matching by setting a different AIM name
- * - photos are compared for equality and are shown during manual inspection
- * - mailing list membership is taken into account for comparison and shown during inspection
- * - during manual inspection, field-by-field (resp. set-by-set) comparison information is shown
- * - option to consider phone numbers with national prefix and with default country code equivalent
- * - option to customize list of ignored fields; output summary of different fields
- * - option to preserve entries of first address book when auto-deleting redundant entries
- * - options are saved in TB configuration/preferences at extensions.DuplicateContactsManager.*
- * Version 0.9.2:
- * - few critical bug fixes
- * - layout improvements
- * Version 0.9:
- * - Can now edit contacts.
- * - Auto-removal of contacts which only contain some less fields.
- * - Can work across two address books.
- * - Option to collect all potential duplicates before interacting with the user.
- * - Progress bar and other usability improvements
- * Version 0.8:
- * - Offer to delete exact duplicates without asking
- * - Correctly search for exact duplicates
- * - upgrade to support Thunderbird 7
+## Version 1.0.5:
+ * correction of mistake in packaging version 1.0.4 that prevented it from running
+## Version 1.0.4:
+ * various small UI improvements: indication for card matching, layout, language, doc
+## Version 1.0.3:
+ * fixed syntax error in de-DE locale that lead to obscure initialization error
+ * minor improvements of localization in the extension and of the entry in the TB add-ons list
+## Version 1.0.1 and 1.0.2:
+ * improved label of DCM menu entry for address book window
+## Version 1.0:
+ * major speedup in particular when searching for duplicates in large address books
+ * improved user guidance; new Tools menu entry with default address book selection
+ * various improvements of content matching and card comparison for equivalence
+ * cards may be excluded from being presented as matching by setting a different AIM name
+ * photos are compared for equality and are shown during manual inspection
+ * mailing list membership is taken into account for comparison and shown during inspection
+ * during manual inspection, field-by-field (resp. set-by-set) comparison information is shown
+ * option to consider phone numbers with national prefix and with default country code equivalent
+ * option to customize list of ignored fields; output summary of different fields
+ * option to preserve entries of first address book when auto-deleting redundant entries
+ * options are saved in TB configuration/preferences at `extensions.DuplicateContactsManager.*`
+## Version 0.9.2:
+ * few critical bug fixes
+ * layout improvements
+## Version 0.9:
+ * Can now edit contacts.
+ * Auto-removal of contacts which only contain some less fields.
+ * Can work across two address books.
+ * Option to collect all potential duplicates before interacting with the user.
+ * Progress bar and other usability improvements
+## Version 0.8:
+ * Offer to delete exact duplicates without asking
+ * Correctly search for exact duplicates
+ * upgrade to support Thunderbird 7
  */
 
 // TODO: add option to prune and transform contents of individual or all cards
