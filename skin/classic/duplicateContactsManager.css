@@ -15,16 +15,16 @@
 [iconsize="small"] .custombutton:hover
   {-moz-image-region: rect(24px 40px 40px 24px);}
 
-.text-link {
+#handleDuplicates-window .text-link {
 	color: blue;
 	text-decoration: underline;
 }
 
-.error-message {
+#handleDuplicates-window .error-message {
 	color: red;
 }
 
-description.text-line {
+#handleDuplicates-window description.text-line {
 	padding-top: 2px;
 	padding-bottom: 2px;
 	margin-top: 0px;
@@ -32,80 +32,69 @@ description.text-line {
 	line-height: 1em;
 }
 
-description.value {
+#handleDuplicates-window description.value {
 	margin-left: 0px;
 	padding-left: 0px;
 }
-description.fields_wide {
-	width: 600px;
+#handleDuplicates-window description.fields_wide {
+	width: 450px;
 }
-description.fields_narrow {
-	width: 400px;
+#handleDuplicates-window description.fields_narrow {
+	width: 100px; /* used only for empty description */
 }
 
 #handleDuplicates-window {
-/*	height: 700px; */
+/*	height: 700px; *//* somehow gets ignored anyway */
+	min-height: 700px;
+	max-height: 900px;
+	min-width: 700px;
 	width: 850px;
 }
-.tbox {
+#handleDuplicates-window #explanation, #handleDuplicates-window #AttributesTable, #handleDuplicates-window #endinfo {
+/*	min-height: 400px;*//* somehow gets ignored anyway */
+	height: 800px; /* max? */
+	overflow-y: auto; /* scrollbar when needed */
+}
+
+#handleDuplicates-window .tbox {
 	background-color: #FFFFFF;
 	margin: 10px 20px 5px 15px;
 	padding: 10px;
 	border: 1px inset;
 }
-#AttributesTable {
-	margin: 10px 20px 5px 15px;
-/*	width: 800px; */
-/*	height: 680px;
-	min-height: 450px;
-	overflow-y: auto;
-*/
-}
-#duplicatesButtonsBox {
+#handleDuplicates-window #duplicatesButtonsBox {
 	padding-bottom: 10px;
 }
 
-radio#columnUseLeft, radio#columnUseRight {
+#handleDuplicates-window radio#columnUseLeft, #handleDuplicates-window radio#columnUseRight {
 	padding: 4px 0px 0px 0px;
 	font-weight: bold;
 /*	background-color: #cccc00 !important; does not work - why? */
 }
 
-label#columnKeptInfoLeft, label#columnKeptInfoRight {
+#handleDuplicates-window label#columnKeptInfoLeft, #handleDuplicates-window label#columnKeptInfoRight {
 	padding: 0px 0px 6px 10px;
 }
 
-#statusBar {
-	margin-left: 15px;
+#handleDuplicates-window #statusBar {
+	margin-left: 10px;
 	margin-bottom: 10px;
 }
 
-#statusText {
+#handleDuplicates-window #statusText_label {
+	width: 9em; /* wrapping text does not work, not even for <description> */
 	color: #aa0000;
 }
 
-#AttributesTableRows row hbox {
-	width: 100px;
-	padding: 0px;
+#handleDuplicates-window #progressMeter {
+	min-width: 7em;
+	max-height: 1.2em;
 }
-
-#AttributesTableRows row label.textbox {
-	padding: 8px 4px 8px 4px;
+#handleDuplicates-window #AttributesTable {
+	margin: 10px 20px 5px 15px;
+	width: 1000px; /* max */
 }
-
-.equivalence {
-	width: 16px;
-	font-size: 20px;
-	text-align: center;
-}
-
-/* unused */
-row label.empty, row hbox.empty {
-	color: #ccc;
-	font-style: italic;
-}
-
-AttributesTable tableheader {
+#handleDuplicates-window AttributesTable tableheader {
 	font-weight: bold;
 	padding: 4px;
 	margin: 1px;
@@ -113,75 +102,96 @@ AttributesTable tableheader {
 	border: 1px solid white;
 }
 
-#duplicatesButtonsBox {
+#handleDuplicates-window #AttributesTableRows {
+}
+
+#handleDuqplicates-window #AttributesTableRows row hbox {
+	/*width: 100px;*/
+	padding: 0px;
+}
+
+#handleDuplicates-window #AttributesTableRows row label.textbox {
+	padding: 8px 4px 8px 4px;
+}
+
+#handleDuplicates-window #AttributesTableRows row label.field {
+	padding: 3px;
+}
+
+#handleDuplicates-window .equivalence description {
+	/*width: 16px;*/
+	font-size: 20px;
+}
+
+/* unused */
+#handleDuplicates-window row label.empty, #handleDuplicates-window row hbox.empty {
+	color: #ccc;
+	font-style: italic;
+}
+
+#handleDuplicates-window #duplicatesButtonsBox {
 	margin: 10px;
 	text-align: center;
 }
 
-.used {
+#handleDuplicates-window .used {
 	background-color: #D3FFD3;
 }
-.unused {
+#handleDuplicates-window .unused {
 	background-color: #FFBFBF;
 }
-#explanation {
+#handleDuplicates-window #explanation {
 	font-size: 12px;
 	margin: 20px;
-/*	height: 600px;
-	min-height: 450px;
-	overflow-y: auto; */
 	width: auto;
 	text-align: center;
 }
-#explanation description {
+#handleDuplicates-window #explanation description {
 	padding: 4px;
 	display: block;
 	width: auto;
 /*	height: auto; */
 	text-align: left;
 }
-#explanation .low {
+#handleDuplicates-window #explanation .low {
 /*	height: 10px !important;  does not work - why? */
 }
 
-#endinfo {
-	width: auto;
-}
-.explheader {
+#handleDuplicates-window .explheader {
 	font-size: 14px;
 	font-weight: bold;
 	font-size: 1.2em;
 	text-align: center;
 }
 
-#explanation .strong {
+#handleDuplicates-window #explanation .strong {
 	font-weight: bold;
 }
-#explanation .em {
+#handleDuplicates-window #explanation .em {
 	font-style: italic;
 }
 
-#AttributesTableRows row label.field {
-	padding: 3px;
+#handleDuplicates-window #endinfo {
+	text-align: center; /* aligns the sub-box; align, box-align, and box-pack do not help */
 }
 
-hbox.addressbooklists .addressbookname {
+#handleDuplicates-window hbox.addressbooklists .addressbookname {
 	margin-left: 3em;
 }
-.addressbookname {
+#handleDuplicates-window .addressbookname {
 	text-align: left;
 	font-weight: bold;
 }
 
-checkbox {
+#handleDuplicates-window checkbox {
 	text-align: left;
 }
 
-#bottom{
+#handleDuplicates-window #bottom{
 	margin-top: -15px;
 }
 
-#mainbox{
+#handleDuplicates-window #mainbox{
 /*	min-width: 850px;
 	overflow: auto; */
 }
