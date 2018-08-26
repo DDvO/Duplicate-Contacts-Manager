@@ -18,7 +18,7 @@
 <!ENTITY handleDuplicates.windowtitle			"Encuentra y administra contactos duplicados">
 <!ENTITY handleDuplicates.introheader			"¿Como se maneja?">
 <!ENTITY handleDuplicates.introtext			"La libreta de direcciones seleccionada será revisada para encontrar contactos coincidencias potencialmente duplicadas.">
-<!ENTITY handleDuplicates.chooseSecondary		"Si elige dos libretas de direcciones diferentes, los duplicados se manejarán en las dos libretas de direcciones seleccionadas, de lo contrario, dentro de la misma libreta de direcciones.">
+<!ENTITY handleDuplicates.chooseSecondary		"Si elige dos libretas de direcciones diferentes, los duplicados se manejarán (solo) en las dos libretas de direcciones seleccionadas, de lo contrario, dentro de la misma libreta de direcciones.">
 <!ENTITY handleDuplicates.introtext2			"Cada vez que se presenta un par de candidatos, puede decidir omitirlos, editarlos y conservarlos, o eliminar uno y editar el otro.">
 <!ENTITY handleDuplicates.differentiator		"Si desea evitar que las entradas se muestren como posibles duplicados cada vez, puede darles diferentes nombres AIM.">
 <!ENTITY handleDuplicates.removeWithoutAsking		"Eliminar un contacto idénticos sin pedir permiso.">

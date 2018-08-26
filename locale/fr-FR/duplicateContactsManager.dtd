@@ -18,7 +18,7 @@
 <!ENTITY handleDuplicates.windowtitle			"Recherche et traitement des doublons du Carnet d'Adresses">
 <!ENTITY handleDuplicates.introheader			"Comment ça marche ?">
 <!ENTITY handleDuplicates.introtext			"Les entrées correspondantes potentiellement dupliquées vont maintenant être recherchées dans le(s) carnet(s) d'adresses sélectionné(s) ci-dessous.">
-<!ENTITY handleDuplicates.chooseSecondary		"Les contacts du premier carnet d’adresse seront comparés à ceux du second. Mettre deux fois le même carnet permet de rechercher les contacts similaires dans celui-ci.">
+<!ENTITY handleDuplicates.chooseSecondary		"Les contacts du premier carnet d’adresse seront comparés (uniquement) à ceux du second. Mettre deux fois le même carnet permet de rechercher les contacts similaires dans celui-ci.">
 <!ENTITY handleDuplicates.introtext2			"Chaque fois qu'une paire de candidats est présentée, vous pouvez décider de les ignorer, de les modifier et de les conserver tous les deux, ou d'en supprimer un et de modifier l'autre.">
 <!ENTITY handleDuplicates.differentiator		"Si vous souhaitez empêcher les entrées d'être affichées en tant que doublons potentiels à chaque fois, vous pouvez leur donner différents pseudos AIM.">
 <!ENTITY handleDuplicates.removeWithoutAsking		"Automatiquement supprimer un des contacts lorsqu’ils sont totalement identiques (ou conserver celui qui a un champs en plus).">
