@@ -4,6 +4,8 @@
 // This file includes UTF-8 encoding. Please make sure your text editor can deal with this prior to saving any changes!
 
 /* Change history:
+## Version 1.0.6:
+ * various UI layout (width, vertical scrolling) and small documentation improvements
 ## Version 1.0.5:
  * correction of mistake in packaging version 1.0.4 that prevented it from running
 ## Version 1.0.4:
