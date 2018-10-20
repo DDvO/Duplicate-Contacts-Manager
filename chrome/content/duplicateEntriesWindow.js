@@ -1036,6 +1036,8 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			else if (fn == "" || ln == "" || dn == "") {
 				function getFirstLastFromEmail(email) {
 					var p = email.match(/^\s*([A-Za-z0-9\x80-\uFFFF]+)[\.\-_]+([A-Za-z0-9\x80-\uFFFF]+)@/);
+					if (p && p[1] == "no" /* && p[2] == "reply"*/)
+						p = undefined;
 					if (!p) // second attempt works because email has not been converted to lower-case:
 						p = email.match(/^\s*([A-Z][a-z0-9_\x80-\uFFFF]*)([A-Z][a-z0-9_\x80-\uFFFF]*)@/);
 					return p;
