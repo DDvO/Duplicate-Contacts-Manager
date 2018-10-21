@@ -133,8 +133,9 @@ Before card fields are compared their values are <i>abstracted</i> using the fol
   <ol>
     <li>convert to lowercase (except for name part of AOL email addresses),
     <li>convert texts by transcribing umlauts and ligatures, and
-    <li>if configured, replace in phone numbers the national <a href="https://en.wikipedia.org/wiki/Trunk_prefix">trunk prefix</a> (such as '0'<!--, if configured in the preferences variable <code>extensions.DuplicateContactsManager.natTrunkPrefix</code>-->)
-    with the default <a href="https://en.wikipedia.org/wiki/List_of_country_calling_codes">country calling code</a> (such as '+49'<!--, if configured in the preferences variable <code>extensions.DuplicateContactsManager.countryCallingCode</code>-->).
+    <li>if configured, replace in phone numbers the <a href="https://en.wikipedia.org/wiki/List_of_international_call_prefixes">international call prefix</a> (such as '00'<!--, if configured in the preferences variable <code>extensions.DuplicateContactsManager.intCallPrefix</code>-->) by '+'
+    and the national <a href="https://en.wikipedia.org/wiki/Trunk_prefix">trunk prefix</a> (such as '0'<!--, if configured in the preferences variable <code>extensions.DuplicateContactsManager.natTrunkPrefix</code>-->)
+    by the default <a href="https://en.wikipedia.org/wiki/List_of_country_calling_codes">country calling code</a> (such as '+49'<!--, if configured in the preferences variable <code>extensions.DuplicateContactsManager.countryCallingCode</code>-->).
   </ol>
   <li> <i>Simplification</i>, which strips less relevant information from texts:
   <ol>
@@ -206,7 +207,7 @@ The card on the right will be preferred for deletion because it contains less in
 <tr>
 <td><code>SecondaryEmail</code>:     <td>"p.van.mueller@gmx.de"            <td>""                       <td> emails treated as sets, letter case ignored
 <tr>
-<td><code>WorkPhone</code>:          <td>"089/1234-5678"                    <td>"+49 89 12345678"       <td> national prefix normalized and non-digits ignored
+<td><code>WorkPhone</code>:          <td>"089/1234-5678"                    <td>"+49 89 12345678"       <td> trunk prefix and international call (IDD) prefix normalized and non-digits ignored
 <tr>
 <td><code>PopularityIndex</code>:    <td>5                                 <td>3                        <td> field ignored for infomation comparison
 <tr>
@@ -242,14 +243,14 @@ for instance, the list of ignored fields is stored in the variable <code>ignoreF
 
 <ul>
   <li> major speedup in particular when searching for duplicates in large address books<br>
-  For instance, automatically removing 13340 duplicates of 14702 recently took 2 minutes 43 seconds.
+  For instance, automatically removing 13340 duplicates of 14702 recently took 2 minutes and 43 seconds.
   <li> improved user guidance; new <code>Tools</code> menu entry with default address book selection
   <li> various improvements of content matching and card comparison for equivalence
   <li> cards may be excluded from being shown as matching by setting a different AIM name
   <li> photos are compared for equality and are shown during manual inspection
   <li> mailing list membership is taken into account for comparison and shown during inspection
   <li> during manual inspection, field-by-field (resp. set-by-set) comparison information is shown
-  <li> option to consider phone numbers with national prefix and with default country code equivalent
+  <li> option to consider phone numbers preceded by international call prefix or trunk prefix equivalent with numbers preceded by '+' and the default country calling code
   <li> option to customize list of ignored fields; output summary of different fields
   <li> option to preserve entries of first address book when auto-deleting redundant entries
   <li> options are saved in TB configuration/preferences at <code>extensions.DuplicateContactsManager.*</code>
@@ -294,7 +295,7 @@ The change log is:
 <a href="http://validator.w3.org/check?uri=referer"><IMG src="../pic/html5.png" alt="[Valid HTML5]" height="12" width="33"></a>
 URL: <span class="URL">http://ddvo.net/DuplicateContactsManager/index.html</span>,&nbsp;
 <!-- Created: Sat Apr  7 17:33:21 CEST 2012 -->
-<!-- hhmts start -->Last modified: Sat Jun 30 23:36:07 CEST 2018 <!-- hhmts end -->
+<!-- hhmts start -->Last modified: Sun Oct 21 21:30:08 CEST 2018 <!-- hhmts end -->
 </ADDRESS>
 
 </BODY>

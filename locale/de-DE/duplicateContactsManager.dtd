@@ -24,6 +24,7 @@
 <!ENTITY handleDuplicates.deferInteractive		"Sammle erst alle wahrscheinlichen Dubletten, die manuelle Behandlung erfordern, und präesentiere sie interaktiv.">
 <!ENTITY handleDuplicates.durationWarning		"Abhängig von der Anzahl der Einträge in Ihrem Adressbuch und der Leistung Ihres Rechners kann dieser Vorgang mehrere Minuten in Anspruch nehmen.">
 <!ENTITY handleDuplicates.natTrunkPrefix		"Anfangsziffer der Ortsvorwahl, z.B. '0'">
+<!ENTITY handleDuplicates.intCallPrefix			"Internationale Anfangsziffer, z.B. '00'">
 <!ENTITY handleDuplicates.countryCallingCode		"Standard-Landesvorwahl, z.B. '+49'">
 <!ENTITY handleDuplicates.considerFields		"Zu berücksichtigende Felder">
 <!ENTITY handleDuplicates.ignoreFields			"Zu ignorierende Felder">

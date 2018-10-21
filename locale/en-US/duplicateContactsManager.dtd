@@ -23,7 +23,8 @@
 <!ENTITY handleDuplicates.preserveFirst			"When using two different address books, do not automatically remove entries from the first one.">
 <!ENTITY handleDuplicates.deferInteractive		"First collect all potential duplicates requiring manual treatment and then present them interactively.">
 <!ENTITY handleDuplicates.durationWarning		"Depending on the number of addresses and the speed of your computer, this process might take several minutes.">
-<!ENTITY handleDuplicates.natTrunkPrefix		"National phone number prefix, e.g., '1' or '0'">
+<!ENTITY handleDuplicates.natTrunkPrefix		"National phone number trunk prefix, e.g., '1' or '0'">
+<!ENTITY handleDuplicates.intCallPrefix			"International call (IDD) prefix, e.g., '011' or '00'">
 <!ENTITY handleDuplicates.countryCallingCode		"Default country calling code, e.g., '+1' or '+44'">
 <!ENTITY handleDuplicates.considerFields		"Fields to consider">
 <!ENTITY handleDuplicates.ignoreFields			"Fields to ignore">

@@ -26,6 +26,7 @@
 <!ENTITY handleDuplicates.deferInteractive		"Primero recopile todos los duplicados potenciales que requieran tratamiento manual y luego preséntelos de manera interactiva..">
 <!ENTITY handleDuplicates.durationWarning		"Dependiendo del número de contactos y la velocidad del CPU de la computadora, será el tiempo que se tarde,  y puede tomar varios minutos.">
 <!ENTITY handleDuplicates.natTrunkPrefix		"Prefijo de número de teléfono nacional, p. '0'">
+<!ENTITY handleDuplicates.intCallPrefix			"Prefijo de número de teléfono internacional, p. '00'">
 <!ENTITY handleDuplicates.countryCallingCode		"Prefijo internacional predeterminado, p. '+34'">
 <!ENTITY handleDuplicates.considerFields		"Campos a considerar">
 <!ENTITY handleDuplicates.ignoreFields			"Campos para ignorar">

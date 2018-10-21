@@ -73,7 +73,8 @@ Before card fields are compared their values are _abstracted_ using the followin
 3.  _Normalization_, which equalizes representation variants:
     1.  convert to lowercase (except for name part of AOL email addresses),
     2.  convert texts by transcribing umlauts and ligatures, and
-    3.  if configured, replace in phone numbers the national [trunk prefix](https://en.wikipedia.org/wiki/Trunk_prefix) (such as '0') with the default [country calling code](https://en.wikipedia.org/wiki/List_of_country_calling_codes) (such as '+49').
+    3.  if configured, replace in phone numbers the [international call (IDD) prefix](https://en.wikipedia.org/wiki/List_of_international_call_prefixes) (such as '00') by '+' and
+    the national [trunk prefix](https://en.wikipedia.org/wiki/Trunk_prefix) (such as '0') by the default [country calling code](https://en.wikipedia.org/wiki/List_of_country_calling_codes) (such as '+49').
 4.  _Simplification_, which strips less relevant information from texts:
     1.  remove accents and punctuation, and
     2.  remove singleton digits and letters (such as initials).

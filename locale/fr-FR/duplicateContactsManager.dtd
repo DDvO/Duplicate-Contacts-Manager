@@ -26,6 +26,7 @@
 <!ENTITY handleDuplicates.deferInteractive		"Collecter tous les duplicats potentiels avant de les présenter.">
 <!ENTITY handleDuplicates.durationWarning		"En fonction du nombre d'adresses et du CPU de votre ordinateur, ce processus peut prendre plusieurs minutes.">
 <!ENTITY handleDuplicates.natTrunkPrefix		"Préfixe de numéro de téléphone national, par ex. '0'">
+<!ENTITY handleDuplicates.intCallPrefix			"Préfixe de numéro de téléphone international, par ex. '00'">
 <!ENTITY handleDuplicates.countryCallingCode		"Code international par défaut, par ex. '+33'">
 <!ENTITY handleDuplicates.considerFields		"Champs à considérer">
 <!ENTITY handleDuplicates.ignoreFields			"Champs à ignorer">

@@ -93,8 +93,9 @@ Before card fields are compared their values are <i>abstracted</i> using the fol
   <ol>
     <li>convert to lowercase (except for name part of AOL email addresses),
     <li>convert texts by transcribing umlauts and ligatures, and
-    <li>if configured, replace in phone numbers the national <a href="https://en.wikipedia.org/wiki/Trunk_prefix">trunk prefix</a> (such as '0'<!--, if configured in the preferences variable<code>extensions.DuplicateContactsManager.natTrunkPrefix</code>-->)
-    with the default <a href="https://en.wikipedia.org/wiki/List_of_country_calling_codes">country calling code</a> (such as '+49'<!--, if configured in the preferences variable<code>extensions.DuplicateContactsManager.countryCallingCode</code>-->).
+    <li>if configured, replace in phone numbers the <a href="https://en.wikipedia.org/wiki/List_of_international_call_prefixes">international call (IDD) prefix</a> (such as '00'<!--, if configured in the preferences variable <code>extensions.DuplicateContactsManager.intCallPrefix</code>-->) by '+'
+    and the national <a href="https://en.wikipedia.org/wiki/Trunk_prefix">trunk prefix</a> (such as '0'<!--, if configured in the preferences variable <code>extensions.DuplicateContactsManager.natTrunkPrefix</code>-->)
+    by the default <a href="https://en.wikipedia.org/wiki/List_of_country_calling_codes">country calling code</a> (such as '+49'<!--, if configured in the preferences variable<code>extensions.DuplicateContactsManager.countryCallingCode</code>-->).
   </ol>
   <li> <i>Simplification</i>, which strips less relevant information from texts:
   <ol>
@@ -158,7 +159,7 @@ The card on the right will be preferred for deletion because it contains less in
 <li>
 	<code>SecondaryEmail</code>:	....	"p.van.mueller@gmx.de"	..	""	.........................	emails treated as sets, letter case ignored
 <li>
-	<code>WorkPhone</code>:	.............	"089/1234-5678"	........	"+49 89 12345678"	...	national prefix normalized and non-digits ignored
+	<code>WorkPhone</code>:	.............	"089/1234-5678"	........	"+49 89 12345678"	...	trunk prefix and international call prefix normalized and non-digits ignored
 <li>
 	<code>PopularityIndex</code>:	....	5	........................................	3	...................................	field ignored for information comparison
 <li>
@@ -171,5 +172,5 @@ Technical information: The options/configuration/preferences used by this Thunde
 
 <hr>
 <address></address>
-<!-- hhmts start -->Last modified: Mon Jun  4 00:11:04 CEST 2018 <!-- hhmts end -->
+<!-- hhmts start -->Last modified: Sun Oct 21 08:22:37 CEST 2018 <!-- hhmts end -->
 </body> </html>

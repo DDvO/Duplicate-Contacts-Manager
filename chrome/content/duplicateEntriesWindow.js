@@ -4,6 +4,8 @@
 // This file includes UTF-8 encoding. Please make sure your text editor can deal with this prior to saving any changes!
 
 /* Change history:
+## Version 1.0.7:
+ * add option for normalizing international call prefix
 ## Version 1.0.6:
  * various UI layout (width, vertical scrolling) and small documentation improvements
 ## Version 1.0.5:
@@ -165,9 +167,11 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 						"RecordKey", "DbRowID", 
 						"unprocessed:rev", "unprocessed:x-ablabel"),
 		ignoreList : [], // will be derived from ignoreFieldsDefault
-		natTrunkPrefix : "", // national phone number prefix
-		natTrunkPrefixReqExp : /^0([1-9])/, // typical RegExp for national phone number prefix
-		countryCallingCode : "", // international phone number prefix
+		natTrunkPrefix : "", // national phone number trunk prefix
+		natTrunkPrefixReqExp : /^0([1-9])/, // typical RegExp for national trunk prefix
+		intCallPrefix : "", // international call prefix
+		intCallPrefixReqExp : /^00([1-9])/, // typical RegExp for international call prefix
+		countryCallingCode : "", // international country calling code
 
 		consideredFields: function() {
 			return this.addressBookFields.concat(this.ignoreFieldsDefault).
@@ -228,6 +232,8 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 
 				try { this.natTrunkPrefix  = this.prefsBranch.getCharPref("natTrunkPrefix");
 				      this.natTrunkPrefixReqExp = new RegExp("^"+this.natTrunkPrefix+"([1-9])"); } catch(e) {}
+				try { this.intCallPrefix  = this.prefsBranch.getCharPref("intCallPrefix");
+				      this.intCallPrefixReqExp = new RegExp("^"+this.intCallPrefix+"([1-9])"); } catch(e) {}
 				try { this.countryCallingCode = this.prefsBranch.getCharPref("countryCallingCode"); } catch(e) {}
 				try { var prefStringValue = this.prefsBranch.getCharPref("ignoreFields");
 				      this.ignoreList = prefStringValue != "" ?
@@ -238,6 +244,7 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			document.getElementById("preservefirst").checked = this.preserveFirst;
 			document.getElementById("deferInteractive").checked = this.deferInteractive;
 			document.getElementById("natTrunkPrefix").value = this.natTrunkPrefix;
+			document.getElementById("intCallPrefix").value = this.intCallPrefix;
 			document.getElementById("countryCallingCode").value = this.countryCallingCode;
 			document.getElementById("considerFields").textContent = this.consideredFields();
 			document.getElementById("ignoreFields").value = this.ignoreList.join(", ");
@@ -329,19 +336,21 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			this.preserveFirst = document.getElementById("preservefirst").getAttribute("checked");
 			this.deferInteractive = document.getElementById("deferInteractive").getAttribute("checked");
 			this.natTrunkPrefix = document.getElementById("natTrunkPrefix").value;
+			this.intCallPrefix = document.getElementById("intCallPrefix").value;
 			this.countryCallingCode = document.getElementById("countryCallingCode").value;
-			if (this.natTrunkPrefix != ""){
-				if (!this.natTrunkPrefix.match(/^[0-9]{1,2}$/))
-					alert("National phone number prefix '"+this.natTrunkPrefix+"' should contain one or two digits");
-				if (!this.countryCallingCode.match(/^(\+|[0-9])[0-9]{1,6}$/))
-					alert("Default country calling code '"+this.countryCallingCode+"' should contain a leading '+' or digit followed by one to six digits");
-			}
+			if (this.natTrunkPrefix != "" && !this.natTrunkPrefix.match(/^[0-9]{1,2}$/))
+				alert("National phone number trunk prefix '"+this.natTrunkPrefix+"' should contain one or two digits");
+			if (this.intCallPrefix != "" && !this.intCallPrefix.match(/^[0-9]{2,4}$/))
+				alert("International call prefix '"+this.intCallPrefix+"' should contain two to four digits");
+			if (this.countryCallingCode != "" && !this.countryCallingCode.match(/^(\+|[0-9])[0-9]{1,6}$/))
+				alert("Default country calling code '"+this.countryCallingCode+"' should contain a leading '+' or digit followed by one to six digits");
 			this.ignoreList = document.getElementById("ignoreFields").value.split(/\s*,\s*/);
 
 			this.prefsBranch.setBoolPref("autoremoveDups", this.autoremoveDups);
 			this.prefsBranch.setBoolPref("preserveFirst", this.preserveFirst);
 			this.prefsBranch.setBoolPref("deferInteractive", this.deferInteractive);
 			this.prefsBranch.setCharPref("natTrunkPrefix", this.natTrunkPrefix);
+			this.prefsBranch.setCharPref("intCallPrefix", this.intCallPrefix);
 			this.prefsBranch.setCharPref("countryCallingCode", this.countryCallingCode);
 			this.prefsBranch.setCharPref("ignoreFields", this.ignoreList.join(", "));
 
@@ -1429,7 +1438,7 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			}
 			if (this.isPhoneNumber(property)) {
 				text = text.replace(/[^+0-9]/g, ''); // strip non-digits
-				text = text.replace(/^\+/g, '00').replace(/\+/g, '').replace(/^00/g, '+'); // strip irrelevant '+'
+				text = text.replace(/^\+/g, 'X').replace(/\+/g, '').replace(/^X/g, '+'); // strip irrelevant '+'
 			}
 			return text;
 		},
@@ -1472,9 +1481,11 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			// fourth step: simplification
 			if (this.isText(property))
 				text = this.simplifyText(text);
-			if (this.isPhoneNumber(property) && this.natTrunkPrefix != "" && this.countryCallingCode != "") {
-				if (text.match(this.natTrunkPrefixReqExp))
+			if (this.isPhoneNumber(property)) {
+				if (this.natTrunkPrefix != "" && this.countryCallingCode != "" && text.match(this.natTrunkPrefixReqExp))
 					text = this.countryCallingCode+text.substr(this.natTrunkPrefix.length);
+				if (this.intCallPrefix != "" && text.match(this.intCallPrefixReqExp))
+					text = '+'+text.substr(this.intCallPrefix.length);
 				/* if (text.match(/^0([1-9])/)) text = text.substr(1); // strip national prefix
 				strip country codes according to https://en.wikipedia.org/wiki/List_of_country_calling_codes
 				text = text.replace(/^\+1/, '');

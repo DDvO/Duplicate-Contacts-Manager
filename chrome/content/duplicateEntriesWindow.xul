@@ -116,10 +116,16 @@
 				<checkbox id="deferInteractive" label="&handleDuplicates.deferInteractive;" />
 				<!--description>&handleDuplicates.durationWarning;</description-->
 				<hbox>
-					<description>&handleDuplicates.natTrunkPrefix;: </description>
-					<textbox class="low" id="natTrunkPrefix" cols="1" size="2" />
-					<description>&handleDuplicates.countryCallingCode;: </description>
-					<textbox class="low" id="countryCallingCode" cols="1" size="7" />
+					<textbox class="slim" id="natTrunkPrefix" style="width: 2.5em" />
+					<description>&handleDuplicates.natTrunkPrefix;</description>
+				</hbox>
+				<hbox>
+					<textbox class="slim" id="intCallPrefix" style="width: 3.7em" />
+					<description>&handleDuplicates.intCallPrefix;</description>
+				</hbox>
+				<hbox>
+					<textbox class="slim" id="countryCallingCode" style="width: 5.5em" />
+					<description>&handleDuplicates.countryCallingCode;</description>
 				</hbox>
 				<description>&handleDuplicates.considerFields;: </description>
 				<description class="text-line value fields_wide" id="considerFields"></description>
