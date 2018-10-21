@@ -37,18 +37,15 @@
 	padding-left: 0px;
 }
 #handleDuplicates-window description.fields_wide {
-	width: 450px;
-}
-#handleDuplicates-window description.fields_narrow {
-	width: 100px; /* used only for empty description */
+	/* width: 450px; is ignored anyway */
 }
 
 #handleDuplicates-window {
-/*	height: 700px; *//* somehow gets ignored anyway */
-	min-height: 700px;
-	max-height: 900px;
+/*	height: 780px; *//* somehow gets ignored anyway */
+	min-height: 780px;
+/*	max-height: 900px; */
 	min-width: 700px;
-	width: 850px;
+	width: 810px;
 }
 #handleDuplicates-window #explanation, #handleDuplicates-window #AttributesTable, #handleDuplicates-window #endinfo {
 /*	min-height: 400px;*//* somehow gets ignored anyway */
@@ -92,7 +89,7 @@
 }
 #handleDuplicates-window #AttributesTable {
 	margin: 10px 20px 5px 15px;
-	width: 1000px; /* max */
+	width: 2000px; /* max; used to spread the cells */
 }
 #handleDuplicates-window AttributesTable tableheader {
 	font-weight: bold;
@@ -143,7 +140,7 @@
 #handleDuplicates-window #explanation {
 	font-size: 12px;
 	margin: 20px;
-	width: auto;
+/*	width: 700px; */
 	text-align: center;
 }
 #handleDuplicates-window #explanation description {

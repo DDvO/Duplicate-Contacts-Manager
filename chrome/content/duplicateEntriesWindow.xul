@@ -81,7 +81,7 @@
 		<hbox id="tablepane" style="display: none">
 			<radiogroup>
 				<grid id="AttributesTable">
-					<columns><column flex="1" /><column flex="3" /><column class="equivalence" flex="0" /><column flex="3" /></columns>
+					<columns><column flex="0" /><column flex="3" /><column class="equivalence" flex="0" /><column flex="3" /></columns>
 					<rows id="AttributesTableRows">
 						<row id="tableheader">
 							<label id="fieldLabels" class="field" value=" " />
@@ -100,7 +100,6 @@
 			</radiogroup>
 		</hbox>
 		<hbox id="explanation" style="display: block">
-			<grid><!-- hack such that minimal window height expands automatically -->
 			<vbox flex="1" style="text-align: center">
 				<description class="explheader">&handleDuplicates.introheader;</description>
 				<description>&handleDuplicates.introtext;</description>
@@ -132,10 +131,8 @@
 				<description>&handleDuplicates.ignoreFields;: </description>
 				<textbox multiline="true" id="ignoreFields" cols="90" />
 			</vbox>
-			</grid>
 		</hbox>
 		<hbox id="endinfo" style="display: none">
-			<grid><!-- hack such that minimal window height expands automatically -->
 			<vbox flex="1" style="text-align: center">
 				<description class="explheader">&handleDuplicates.endheader;</description>
 				<vbox class="tbox">
@@ -151,14 +148,12 @@
 					      <description class="text-line  value" id="resultNumChanged" value="0" /></hbox>
 					<hbox><description class="text-line" value="&handleDuplicates.endtext.numSkipped;:" />
 					      <description class="text-line  value" id="resultNumSkipped" value="0" /></hbox>
-					<hbox><description class="text-line" value="&handleDuplicates.endtext.diffProps;:" />
-					      <description class="text-line  value fields_narrow" id="resultDiffProps_empty" /></hbox>
-					<hbox><description class="text-line" style="width: 10em" />
-					      <description class="text-line  value fields_wide" id="resultDiffProps" /></hbox>
-					<hbox><description class="text-line" value="&handleDuplicates.considerFields;:" />
-					      <description class="text-line  value fields_wide" id="resultConsideredFields" /></hbox>
-					<hbox><description class="text-line" value="&handleDuplicates.endtext.ignoredFields;:" />
-					      <description class="text-line  value fields_wide" id="resultIgnoredFields" /></hbox>
+					<hbox><description>&handleDuplicates.endtext.diffProps;: </description></hbox>
+					      <description class="text-line value fields_wide" id="resultDiffProps" />
+					<hbox><description>&handleDuplicates.considerFields;: </description></hbox>
+					      <description class="text-line value fields_wide" id="resultConsideredFields" />
+					<hbox><description>&handleDuplicates.endtext.ignoredFields;: </description></hbox>
+					      <description class="text-line value fields_wide" id="resultIgnoredFields" />
 				</vbox>
 				<vbox class="tbox">
 					<description>&handleDuplicates.endtext.helpDevelopment;</description>
@@ -169,7 +164,6 @@
 -->
 				</vbox>
 			</vbox>
-			</grid>
 		</hbox>
 		<statusbar id="bottom">
 			<spacer flex="1"/>

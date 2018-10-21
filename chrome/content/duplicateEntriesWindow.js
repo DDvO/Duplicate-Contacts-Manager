@@ -5,7 +5,7 @@
 
 /* Change history:
 ## Version 1.0.7:
- * add option for normalizing international call prefix
+ * add option for normalizing international call prefix; fix horizontal layout issues
 ## Version 1.0.6:
  * various UI layout (width, vertical scrolling) and small documentation improvements
 ## Version 1.0.5:
