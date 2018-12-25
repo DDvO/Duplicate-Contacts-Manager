@@ -5,7 +5,10 @@
 
 /* Change history:
 ## Version 1.0.7:
- * add option for normalizing international call prefix; fix horizontal layout issues
+ * add option for normalizing international call prefix
+ * fix horizontal layout issues, automatic width of contents
+ * improve name matching: allow substrings, stop removing singleton digits and letters
+ * mail user names like no-reply@... or no.service@... not anymore taken as first+last names
 ## Version 1.0.6:
  * various UI layout (width, vertical scrolling) and small documentation improvements
 ## Version 1.0.5:
@@ -136,7 +139,7 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 		autoremoveDups: false,
 		preserveFirst: false,
 		nonequivalentProperties : [],
-		addressBookFields: new Array(
+		addressBookFields: new Array( /* all potentially available fields */
 			"PhotoURI", "PhotoType", "PhotoName",
 			"NickName", "Names"/* label */, "FirstName", "PhoneticFirstName", "LastName", "PhoneticLastName",
 			"SpouseName", "FamilyName", "DisplayName", "_PhoneticName", "PreferDisplayName",
@@ -167,17 +170,12 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 						"RecordKey", "DbRowID", 
 						"unprocessed:rev", "unprocessed:x-ablabel"),
 		ignoreList : [], // will be derived from ignoreFieldsDefault
+		consideredFields : [], // this.addressBookFields - this.ignoreList
 		natTrunkPrefix : "", // national phone number trunk prefix
 		natTrunkPrefixReqExp : /^0([1-9])/, // typical RegExp for national trunk prefix
 		intCallPrefix : "", // international call prefix
 		intCallPrefixReqExp : /^00([1-9])/, // typical RegExp for international call prefix
 		countryCallingCode : "", // international country calling code
-
-		consideredFields: function() {
-			return this.addressBookFields.concat(this.ignoreFieldsDefault).
-				filter(x => !this.labelsList.includes(x)).
-				filter(x => !this.ignoreList.includes(x)).join(", ");
-		},
 
 		debug: function(str) {
 			console.log(str);
@@ -246,7 +244,7 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			document.getElementById("natTrunkPrefix").value = this.natTrunkPrefix;
 			document.getElementById("intCallPrefix").value = this.intCallPrefix;
 			document.getElementById("countryCallingCode").value = this.countryCallingCode;
-			document.getElementById("considerFields").textContent = this.consideredFields();
+			document.getElementById("considerFields").textContent = this.consideredFields.join(", ");
 			document.getElementById("ignoreFields").value = this.ignoreList.join(", ");
 
 			this.stringBundle = document.getElementById("bundle_duplicateContactsManager");
@@ -345,6 +343,10 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			if (this.countryCallingCode != "" && !this.countryCallingCode.match(/^(\+|[0-9])[0-9]{1,6}$/))
 				alert("Default country calling code '"+this.countryCallingCode+"' should contain a leading '+' or digit followed by one to six digits");
 			this.ignoreList = document.getElementById("ignoreFields").value.split(/\s*,\s*/);
+			this.consideredFields = this.addressBookFields./*
+				concat(this.ignoreFieldsDefault).
+				filter(x => !this.labelsList.includes(x)). */
+				filter(x => !this.ignoreList.includes(x));
 
 			this.prefsBranch.setBoolPref("autoremoveDups", this.autoremoveDups);
 			this.prefsBranch.setBoolPref("preserveFirst", this.preserveFirst);
@@ -646,7 +648,7 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			document.getElementById('resultNumRemovedAuto').value = this.totalCardsDeletedAuto;
 			document.getElementById('resultNumChanged').value = this.totalCardsChanged;
 			document.getElementById('resultNumSkipped').value = this.totalCardsSkipped;
-			document.getElementById('resultConsideredFields').textContent = this.consideredFields();
+			document.getElementById('resultConsideredFields').textContent = this.consideredFields.join(", ");
 			document.getElementById('resultIgnoredFields').textContent = this.ignoreList.join(", ");
 			document.getElementById('resultDiffProps').textContent = this.nonequivalentProperties.join(", ");
 			this.show('endinfo');
@@ -684,7 +686,7 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			}
 			// move any wrongly attached name prefix(es) from first name to last name
 			var nameprefixes = "";
-			while ((p = fn.match(/^(.+)\s(von|van|und|and|für|for|zur|der|de|geb|ben)\s*$/))) {
+			while ((p = fn.match(/^(.+)\s(von|van|und|and|für|for|zum|zur|der|de|geb|ben)\s*$/))) {
 				fn = p[1];
 				nameprefixes = p[2]+" "+nameprefixes;
 			}
@@ -764,6 +766,7 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 		 * and editing. Editable fields will be listed in this.editableFields.
 		 */
 		displayCardData: function(card1, card2, comparable, comparison, namesmatch, mailsmatch, phonesmatch) {
+			this.debug("## "+this.getProperty(card1, 'PopularityIndex')+ " # " +this.getProperty(card1, 'LastModifiedDate'));
 			this.purgeAttributesTable();
 			this.displayedFields = new Array();
 			this.editableFields = new Array();
@@ -786,9 +789,9 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 				this.getAbstractedTransformedProperty(card2, 'LastName'))
 				|| (dn1 != dn2);
 
-			var fields = this.addressBookFields.filter(x => !this.ignoreList.includes(x)); // copy
+			var fields = this.consideredFields.slice(); // copy
 			const diffProps = this.nonequivalentProperties;
-			for(let i = 0; i < diffProps.length; i++) { // add non-set fields for with so far had non-equivalent values have been found
+			for(let i = 0; i < diffProps.length; i++) { // add non-set fields for which so far non-equivalent values have been found
 				const property = diffProps[i];
 				if (!property.match(/^\{/))
 					pushIfNew(property, fields);
@@ -828,7 +831,7 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 					const  leftValue = this.getProperty(card1, property);
 					const rightValue = this.getProperty(card2, property);
 					const displayOnlyIfDifferent = /^(PhotoType|UID|UUID|CardUID)$/;
-					const displayAlways = /^(FirstName|LastName|DisplayName|_AimScreenName|PrimaryEmail|SecondEmail|CellularNumber|HomePhone|WorkPhone|FaxNumber|Notes)$/;
+					const displayAlways = /^(FirstName|LastName|DisplayName|_AimScreenName|PrimaryEmail|SecondEmail|CellularNumber|HomePhone|WorkPhone|FaxNumber|Notes|PopularityIndex)$/;
 					if ((!property.match(displayOnlyIfDifferent) || leftValue != rightValue) &&
 					    (   ( leftValue &&  leftValue != defaultValue)
 					     || (rightValue && rightValue != defaultValue)
@@ -890,9 +893,9 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 					if (value1 == value2)
 						equ = '≅'; // equivalent; &cong; yields syntax error; &#8773; verbatim
 					else if (this.isText(property)) {
-						if      (value2.indexOf(value1) >= 0) // value1 is substring of value2
+						if      (value2.includes(value1))
 							equ = '<';
-						else if (value1.indexOf(value2) >= 0) // value2 is substring of value1
+						else if (value1.includes(value2)) // value2 is substring of value1
 							equ = '>';
 						else
 							equ = ''; // incomparable
@@ -1074,16 +1077,29 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 		namesMatch: function(vcard1, vcard2) {
 			// vcards  are already abstracted and with names completed
 			// strings are already abstracted, e.g., normalized to lowercase
+			function subEq(name1, name2) { /* Check if one name is equal to or non-empty substring (with ' ' border) of other name  */
+				function subEq1(name1, name2) { /* Check if name2 is non-empty substring (with ' ' border) of name1 */
+					return name2 != "" && name2.length + 2 <= name1.length && (
+					       name1.startsWith(name2+" ") ||
+					       name1.includes(" "+name2+" ") ||
+					       name1.endsWith(" "+name2));
+				}
+				return (name1 == name2) /* includes both empty */ ||
+				       subEq1(name1, name2) || subEq1(name2, name1);
+			}
 			const f1 = vcard1[  'FirstName'], l1 = vcard1[      'LastName'];
 			const f2 = vcard2[  'FirstName'], l2 = vcard2[      'LastName'];
 			const d1 = vcard1['DisplayName'], a1 = vcard1['_AimScreenName'];
 			const d2 = vcard2['DisplayName'], a2=  vcard2['_AimScreenName'];
-			return ( a1 != "" &&               a1 == a2             ) || // _AimScreenNames exist and match
-			       ( d1 != "" &&               d1 == d2             ) || // DisplayNames exist and match
-			       ( f1 != "" && l1 != ""  &&  f1 == f2 && l1 == l2 ) || // FirstNames and LastNames exist and match
-       (d1 == "" && d2 == "" && (f1 != "" || l1 != "") &&  f1 == f2 && l1 == l2 ) || // no DisplayNames, but FirstNames and LastNames match
-       (d1 == "" && d2 != "" && (f1 == "")!=(l1 == "") && (f1 == d2 || l1 == d2)) || // only First/Last exists and matches other DisplayName
-       (d2 == "" && d1 != "" && (f2 == "")!=(l2 == "") && (f2 == d1 || l2 == d1));   // only First/Last exists and matches other DisplayName
+			return ( a1 != "" &&               subEq(a1,a2)                 ) || // _AimScreenNames exist and match
+			       ( d1 != "" &&               subEq(d1,d2)                 ) || // DisplayNames exist and match
+			       ( f1 != "" && l1 != ""  &&  subEq(f1,f2) && subEq(l1,l2) ) || // FirstNames and LastNames exist and match
+			       ( d1 == "" && d2 == "" &&
+			        (f1 != "" || l1 != "") &&  subEq(f1,f2) && subEq(l1,l2) ) || // no DisplayNames, but FirstNames and LastNames match
+			       ( d1 == "" && d2 != "" &&
+			        (f1 == "")!=(l1 == "") && (subEq(f1,d2) || subEq(l1,d2))) || // only First/Last exists and matches other DisplayName
+			       ( d2 == "" && d1 != "" &&
+			        (f2 == "")!=(l2 == "") && (subEq(f2,d1) || subEq(l2,d1)));   // only First/Last exists and matches other DisplayName
 		},
 
 		readAddressBooks: function() {
@@ -1359,9 +1375,9 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 					nDiffs++;
 					// this.debug("abCardsCompare: "+property+" = "+value1+" vs. "+value2);
 					if (this.isText(property)) {
-						if      (value2.indexOf(value1) < 0) // text in c1 is not substring of text in c2
+						if      (!value2.includes(value1))
 							c1_less_complete = false;
-						else if (value1.indexOf(value2) < 0) // text in c2 is not substring of text in c1
+						else if (!value1.includes(value2))
 							c2_less_complete = false;
 						else
 							c1_less_complete = c2_less_complete = false; // incomparable
@@ -1538,11 +1554,11 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			  .replace(/[Ŵŵ]/g, 'w')
 			  .replace(/[ŹźŻżŽž]/g, 'z')
 
-			// remove singleton digits and letters (like initials)
+			/* would be too aggressive: // remove singleton digits and letters (like initials)
 			  .replace(/ [A-Za-z0-9] /g, ' ') // does not work recursively, just non-overlapping
 			  .replace(/ [A-Za-z0-9] /g, ' ') // needed if there are two consecutive initials!
 			  .replace(/^[A-Za-z0-9] /g, '')
-			  .replace(/ [A-Za-z0-9]$/g, '')
+			  .replace(/ [A-Za-z0-9]$/g, '') */
 
 			// remove any (newly produced) leading or trailing whitespace
 			  .replace(/^\s+/, "")

@@ -22,8 +22,8 @@ When pairs of candidate duplicates are presented, the reason why they are consid
 <ul>
 <li> The '≡' symbol is shown between fields with identical values.  
 All other relations are determined after abstraction of values (see the definitions below).
-<li> The '≃' symbol is used for indicating matching names, email addresses, or phone numbers.
-<li> The '≅' symbol is used for indicating equivalent fields and equivalent cards.
+<li> The '≅' symbol indicates equivalent fields and equivalent cards.
+<li> The '≃' symbol indicates matching names, email addresses, or phone numbers.
 <li> The '⋦' and '⋧' symbols indicate that a field or a card contains less/more information than the other.
 <li> The '⊆' and '⊇' symbols indicate the subset/superset relation on email addresses or phone numbers.
 <li> The '<' and '>' symbols indicate comparison on numerical values or the substring/superstring relation on names and other texts.
@@ -52,7 +52,7 @@ which is convenient for preventing cards from being repeatedly presented for man
 The matching relation is designed to be rather weak, such that it tends to yield more pairs of candidate duplicates.
 
 <i>Matching</i> of names, email addresses, and phone numbers is based upon
-equivalence of fields modulo abstraction, described below.
+equivalence and sub-equivalence of fields modulo abstraction, described below.
 As a result, for example, names differing only in letter case are considered to match.
 For the matching process, names are completed and their order is normalized &mdash; for example, if two name parts are detected in the<code>DisplayName</code>
 (e.g., "John Doe") or in an email address (e.g., "John.Doe@company.com"), they are taken as first and last name.
@@ -61,11 +61,11 @@ are treated as sets, i.e., their order is ignored as well as their types.
 <ul>
   <li>Two cards are considered to have <i>matching names</i> if
   <ul>
-    <li>their <code>DisplayName</code> is not empty and is equivalent, or
-    <li>both their <code>FirstName</code> and their <code>LastName</code> are not empty and are pairwise equivalent, or
-    <li>their <code>DisplayName</code> is empty but their <code>FirstName</code> and <code>LastName</code> are not empty and are equivalent, or
-    <li>in one card the<code>DisplayName</code> is empty and either the<code>FirstName</code> or<code>LastName</code> is not empty and is equivalent to the<code>DisplayName</code> of the other card, or
-    <li>their<code>AIMScreenName</code> is not empty and is equivalent.
+    <li>their <code>DisplayName</code> is not empty and is sub-equivalent, or
+    <li>both their <code>FirstName</code> and their <code>LastName</code> are not empty and are pairwise sub-equivalent, or
+    <li>their <code>DisplayName</code> is empty but their <code>FirstName</code> and <code>LastName</code> are not empty and are sub-equivalent, or
+    <li>in one card the<code>DisplayName</code> is empty and either the<code>FirstName</code> or<code>LastName</code> is not empty and is sub-equivalent to the<code>DisplayName</code> of the other card, or
+    <li>their<code>AIMScreenName</code> is not empty and is sub-equivalent.
     </ul>
   <li>Two cards are considered to contain <i>matching email address</i> if any of their<code>PrimaryEmail</code> or<code>SecondEmail</code> are equivalent.
   <li>Two cards are considered to contain <i>matching phone numbers</i> if any of their<code>CellularNumber</code>,<code>WorkPhone</code>, or<code>PagerNumber</code> are equivalent. The<code>HomePhone</code> and<code>FaxNumber</code> fields are not considered for matching because such numbers are often shared by a group of people.
@@ -87,7 +87,7 @@ Before card fields are compared their values are <i>abstracted</i> using the fol
   <ol>
     <li>correct the order of first and last name (for instance, re-order "Doe, John"),
     <li>move middle initials such as "M" from last name to first name, and
-    <li>move name prefixes such as "von" to the last name.
+    <li>move last name prefixes such as "von" from first name to last name.
   </ol>
   <li> <i>Normalization</i>, which equalizes representation variants:
   <ol>
@@ -97,13 +97,16 @@ Before card fields are compared their values are <i>abstracted</i> using the fol
     and the national <a href="https://en.wikipedia.org/wiki/Trunk_prefix">trunk prefix</a> (such as '0'<!--, if configured in the preferences variable <code>extensions.DuplicateContactsManager.natTrunkPrefix</code>-->)
     by the default <a href="https://en.wikipedia.org/wiki/List_of_country_calling_codes">country calling code</a> (such as '+49'<!--, if configured in the preferences variable<code>extensions.DuplicateContactsManager.countryCallingCode</code>-->).
   </ol>
-  <li> <i>Simplification</i>, which strips less relevant information from texts:
+  <li> <i>Simplification</i>, which strips less relevant information from texts<!--:--> by removing<!--
   <ol>
-    <li>remove accents and punctuation, and
+    <li>remove--> accents and punctuation.<!--, and
     <li>remove singleton digits and letters (such as initials).
-  </ol>
+  </ol>-->
 </ol>
 Corresponding fields in two cards are considered <i>equivalent</i> if their abstracted values are equal.
+
+Parts of names are considered <i>sub-equivalent</i> if their abstracted values are equal
+or the abstracted value of one of them is a non-empty whole-word substring of the abstracted value of the other.
 
 Note that the value adaptations mentioned above are computed only for the comparison, i.e., they do not change the actual card fields.
 
@@ -145,7 +148,7 @@ The card on the right will be preferred for deletion because it contains less in
 <li>
 	<code>FirstName</code>:		..........	"Peter"	.............................	"Peter Y van"	............	name prefix "van" moved to last name, middle initial "Y" ignored
 <li>
-	<code>LastName</code>:		...........	"van Müller"	..................	"Mueller"	....................	name prefix "van" moved to last name, umlauts transcribed
+	<code>LastName</code>:		...........	"Y  van Müller"	..............	"Mueller"	....................	name prefix "van" moved to last name, umlauts transcribed
 <li>
 	<code>DisplayName</code>:	....	"Hans Peter van Müller"  ..	"van Müller, Peter"	..	first name moved to the front, name is substring
 <li>
@@ -172,5 +175,5 @@ Technical information: The options/configuration/preferences used by this Thunde
 
 <hr>
 <address></address>
-<!-- hhmts start -->Last modified: Sun Oct 21 08:22:37 CEST 2018 <!-- hhmts end -->
+<!-- hhmts start -->Last modified: Tue Dec 25 21:05:13 CET 2018 <!-- hhmts end -->
 </body> </html>
