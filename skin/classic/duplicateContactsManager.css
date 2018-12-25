@@ -80,6 +80,7 @@
 
 #handleDuplicates-window #statusText_label {
 	width: 9em; /* wrapping text does not work, not even for <description> */
+	font-weight: bold;
 	color: #aa0000;
 }
 
@@ -91,12 +92,12 @@
 	margin: 10px 20px 5px 15px;
 	width: 2000px; /* max; used to spread the cells */
 }
-#handleDuplicates-window AttributesTable tableheader {
+#handleDuplicates-window #tableheader {
 	font-weight: bold;
-	padding: 4px;
-	margin: 1px;
+	margin-bottom: 5px;
+/*	padding: 4px;
 	background-color: #D3FFD3;
-	border: 1px solid white;
+	border: 1px solid white; */
 }
 
 #handleDuplicates-window #AttributesTableRows {
@@ -115,7 +116,7 @@
 	padding: 3px;
 }
 
-#handleDuplicates-window .equivalence description {
+#handleDuplicates-window .equivalence {
 	/*width: 16px;*/
 	font-size: 20px;
 }
