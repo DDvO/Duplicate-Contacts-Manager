@@ -17,7 +17,7 @@
 <!ENTITY handleDuplicates.introheader			"What’s happening here?">
 <!ENTITY handleDuplicates.introtext			"The selected address book(s) will be searched for matching potentially duplicate entries.">
 <!ENTITY handleDuplicates.chooseSecondary		"If you choose two different address books, duplicates will be handled (only) across the two selected address books, otherwise within the same address book.">
-<!ENTITY handleDuplicates.introtext2			"Each time a pair of candidate is presented, you can decide to skip them, edit and keep them both, or delete one and possibly edit the other.">
+<!ENTITY handleDuplicates.introtext2			"Each time a pair of candidates is presented, you can decide to skip them, to edit and keep them both, or to possibly edit one and remove the other.">
 <!ENTITY handleDuplicates.differentiator		"If you wish to prevent entries from being shown as potential duplicates each time, you may give them different AIM names.">
 <!ENTITY handleDuplicates.removeWithoutAsking		"Remove without asking all duplicates containing less information when the rest is the same between the two.">
 <!ENTITY handleDuplicates.preserveFirst			"When using two different address books, do not automatically remove entries from the first one.">
@@ -29,7 +29,7 @@
 <!ENTITY handleDuplicates.considerFields		"Fields to consider">
 <!ENTITY handleDuplicates.ignoreFields			"Fields to ignore">
 <!ENTITY handleDuplicates.introtext3			"If you do not want to treat a potential duplicate, use 'Skip'. You can abort the process by pressing 'Stop'.">
-<!ENTITY handleDuplicates.introtext4			"If you want to save changes and keep both entries, press 'Keep both and continue'; for deleting one entry, press 'Apply and continue'.">
+<!ENTITY handleDuplicates.introtext4			"If you want to save changes and keep both entries, press 'Keep both'; for deleting one entry and keeping the other, press 'Remove one'.">
 <!ENTITY handleDuplicates.options			"Options">
 
 <!-- text after process has finished -->
@@ -53,10 +53,10 @@
 <!ENTITY handleDuplicates.pleasepressstart		"Please press Start.">
 
 <!ENTITY handleDuplicates.startbutton.label		"Start">
-<!ENTITY handleDuplicates.startbutton.accesskey		"S">
-<!ENTITY handleDuplicates.applynextbutton.label		"Apply and continue &#62;">
-<!ENTITY handleDuplicates.applynextbutton.accesskey	"A">
-<!ENTITY handleDuplicates.keepnextbutton.label		"Keep both and continue &#62;">
+<!ENTITY handleDuplicates.startbutton.accesskey		"a">
+<!ENTITY handleDuplicates.applynextbutton.label		"Remove one &#62;">
+<!ENTITY handleDuplicates.applynextbutton.accesskey	"R">
+<!ENTITY handleDuplicates.keepnextbutton.label		"Keep both &#62;">
 <!ENTITY handleDuplicates.keepnextbutton.accesskey	"K">
 <!ENTITY handleDuplicates.skipnextbutton.label		"Skip &#62;">
 <!ENTITY handleDuplicates.skipnextbutton.accesskey	"i">

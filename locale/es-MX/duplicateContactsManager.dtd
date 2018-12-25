@@ -19,7 +19,7 @@
 <!ENTITY handleDuplicates.introheader			"¿Como se maneja?">
 <!ENTITY handleDuplicates.introtext			"La libreta de direcciones seleccionada será revisada para encontrar contactos coincidencias potencialmente duplicadas.">
 <!ENTITY handleDuplicates.chooseSecondary		"Si elige dos libretas de direcciones diferentes, los duplicados se manejarán (solo) en las dos libretas de direcciones seleccionadas, de lo contrario, dentro de la misma libreta de direcciones.">
-<!ENTITY handleDuplicates.introtext2			"Cada vez que se presenta un par de candidatos, puede decidir omitirlos, editarlos y conservarlos, o eliminar uno y editar el otro.">
+<!ENTITY handleDuplicates.introtext2			"Cada vez que se presenta un par de candidatos, puede decidir omitirlos, editarlos y conservarlos, o editar uno y eliminar el otro.">
 <!ENTITY handleDuplicates.differentiator		"Si desea evitar que las entradas se muestren como posibles duplicados cada vez, puede darles diferentes nombres AIM.">
 <!ENTITY handleDuplicates.removeWithoutAsking		"Eliminar un contacto idénticos sin pedir permiso.">
 <!ENTITY handleDuplicates.preserveFirst			"Cuando utilice dos libretas de direcciones diferentes, no elimine automáticamente las entradas de la primera.">
@@ -31,7 +31,7 @@
 <!ENTITY handleDuplicates.considerFields		"Campos a considerar">
 <!ENTITY handleDuplicates.ignoreFields			"Campos para ignorar">
 <!ENTITY handleDuplicates.introtext3			"Se puede abandonar el proceso en cualquier momento presionando la tecla 'Cancelar'. Si no se quieren hacer cambios a un duplicado, se usa la tecla 'Saltar'.">
-<!ENTITY handleDuplicates.introtext4			"Si desea guardar los cambios y mantener ambas entradas, haga clic en 'Conservar ambos y continuar'; para eliminar una entrada, haga clic en 'Aplicar y continuar'.">
+<!ENTITY handleDuplicates.introtext4			"Si desea guardar los cambios y mantener ambas entradas, haga clic en 'Conservar ambos'; para eliminar una entrada, haga clic en 'Eliminar uno'.">
 <!ENTITY handleDuplicates.options			"Opciones">
 
 <!-- text after process has finished -->
@@ -56,10 +56,10 @@
 
 <!ENTITY handleDuplicates.startbutton.label		"Inicio">
 <!ENTITY handleDuplicates.startbutton.accesskey		"I">
-<!ENTITY handleDuplicates.applynextbutton.label		"Aplicar y continuar &#62;">
-<!ENTITY handleDuplicates.applynextbutton.accesskey	"A">
-<!ENTITY handleDuplicates.keepnextbutton.label		"Conservar ambos y continuar &#62;">
-<!ENTITY handleDuplicates.keepnextbutton.accesskey	"C">
+<!ENTITY handleDuplicates.applynextbutton.label		"Eliminar uno &#62;">
+<!ENTITY handleDuplicates.applynextbutton.accesskey	"E">
+<!ENTITY handleDuplicates.keepnextbutton.label		"Conservar ambos &#62;">
+<!ENTITY handleDuplicates.keepnextbutton.accesskey	"a">
 <!ENTITY handleDuplicates.skipnextbutton.label		"Saltar &#62;">
 <!ENTITY handleDuplicates.skipnextbutton.accesskey	"S">
 <!ENTITY handleDuplicates.stopbutton.label		"Cancelar">

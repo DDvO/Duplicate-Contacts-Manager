@@ -19,7 +19,7 @@
 <!ENTITY handleDuplicates.introheader			"Comment ça marche ?">
 <!ENTITY handleDuplicates.introtext			"Les entrées correspondantes potentiellement dupliquées vont maintenant être recherchées dans le(s) carnet(s) d'adresses sélectionné(s) ci-dessous.">
 <!ENTITY handleDuplicates.chooseSecondary		"Les contacts du premier carnet d’adresse seront comparés (uniquement) à ceux du second. Mettre deux fois le même carnet permet de rechercher les contacts similaires dans celui-ci.">
-<!ENTITY handleDuplicates.introtext2			"Chaque fois qu'une paire de candidats est présentée, vous pouvez décider de les ignorer, de les modifier et de les conserver tous les deux, ou d'en supprimer un et de modifier l'autre.">
+<!ENTITY handleDuplicates.introtext2			"Chaque fois qu'une paire de candidats est présentée, vous pouvez décider de les ignorer, de les modifier et de les conserver tous les deux, ou de modifier un et d'en supprimer l'autre.">
 <!ENTITY handleDuplicates.differentiator		"Si vous souhaitez empêcher les entrées d'être affichées en tant que doublons potentiels à chaque fois, vous pouvez leur donner différents pseudos AIM.">
 <!ENTITY handleDuplicates.removeWithoutAsking		"Automatiquement supprimer un des contacts lorsqu’ils sont totalement identiques (ou conserver celui qui a un champs en plus).">
 <!ENTITY handleDuplicates.preserveFirst			"Lorsque vous utilisez deux carnets d'adresses différents, ne supprimez pas automatiquement les entrées du premier.">
@@ -31,7 +31,7 @@
 <!ENTITY handleDuplicates.considerFields		"Champs à considérer">
 <!ENTITY handleDuplicates.ignoreFields			"Champs à ignorer">
 <!ENTITY handleDuplicates.introtext3			"Vous pouvez tout arrêter à n'importe quel moment en pressant sur 'Annuler'. Si vous ne voulez pas traiter un doublon, utilisez le bouton 'Passer'.">
-<!ENTITY handleDuplicates.introtext4			"Si vous souhaitez enregistrer les modifications et conserver les deux entrées, cliquez sur 'Conserver les deux et continuer'; pour supprimer une entrée, cliquez sur 'Appliquer et continuer'.">
+<!ENTITY handleDuplicates.introtext4			"Si vous souhaitez enregistrer les modifications et conserver les deux entrées, cliquez sur 'Conserver les deux'; pour supprimer une entrée, cliquez sur 'Supprimer un'.">
 <!ENTITY handleDuplicates.options			"Options">
 
 <!-- text after process has finished -->
@@ -56,12 +56,12 @@
 
 <!ENTITY handleDuplicates.startbutton.label		"Démarrer">
 <!ENTITY handleDuplicates.startbutton.accesskey		"D">
-<!ENTITY handleDuplicates.applynextbutton.label		"Appliquer et continuer &#62;">
-<!ENTITY handleDuplicates.applynextbutton.accesskey	"A">
-<!ENTITY handleDuplicates.keepnextbutton.label		"Conserver les deux et continuer &#62;">
+<!ENTITY handleDuplicates.applynextbutton.label		"Supprimer un &#62;">
+<!ENTITY handleDuplicates.applynextbutton.accesskey	"S">
+<!ENTITY handleDuplicates.keepnextbutton.label		"Conserver les deux &#62;">
 <!ENTITY handleDuplicates.keepnextbutton.accesskey	"C">
 <!ENTITY handleDuplicates.skipnextbutton.label		"Passer &#62;">
-<!ENTITY handleDuplicates.skipnextbutton.accesskey	"s">
+<!ENTITY handleDuplicates.skipnextbutton.accesskey	"P">
 <!ENTITY handleDuplicates.stopbutton.label		"Annuler">
 <!ENTITY handleDuplicates.quitbutton.label		"Quitter">
 <!ENTITY handleDuplicates.firstcontact			"Premier Contact">
