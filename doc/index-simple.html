@@ -7,8 +7,8 @@
 <h1>Duplicate Contacts Manager for Thunderbird</h1>
 
 This Thunderbird extension facilitates handling of redundant entries in address books.
-After installation, it can be invoked via the <code>`Tools->Duplicate Contacts Manager...`</code> menu entry.
-One can also customize the<code>Toolbar</code> of the<code>Address Book</code> window with a<code>Find Duplicates</code> button.
+After installation, it can be invoked via the '<code>Tools->Duplicate Contacts Manager...</code>' menu entry.
+One can also customize the '<code>Toolbar</code>' of the '<code>Address Book</code>' window with a '<code>Find Duplicates</code>' button.
 
 The Duplicate Contacts Manager searches address books for matching contact entries,
 also known as <i>cards</i>.
@@ -46,7 +46,7 @@ Two cards are considered <i>matching</i> if any of the following conditions hold
   <li>they contain matching phone numbers, or
   <li>both cards do not contain any name, email address, or phone number that might match.
 </ul>
-Yet cards with non-equivalent<code>AIMScreenName</code> are never considered matching,
+Yet cards with non-equivalent <code>AIMScreenName</code> are never considered matching,
 which is convenient for preventing cards from being repeatedly presented for manual treatment.
 
 The matching relation is designed to be rather weak, such that it tends to yield more pairs of candidate duplicates.
@@ -54,7 +54,7 @@ The matching relation is designed to be rather weak, such that it tends to yield
 <i>Matching</i> of names, email addresses, and phone numbers is based upon
 equivalence and sub-equivalence of fields modulo abstraction, described below.
 As a result, for example, names differing only in letter case are considered to match.
-For the matching process, names are completed and their order is normalized &mdash; for example, if two name parts are detected in the<code>DisplayName</code>
+For the matching process, names are completed and their order is normalized &mdash; for example, if two name parts are detected in the <code>DisplayName</code>
 (e.g., "John Doe") or in an email address (e.g., "John.Doe@company.com"), they are taken as first and last name.
 Both multiple email addresses within a card and multiple phone numbers within a card
 are treated as sets, i.e., their order is ignored as well as their types.
@@ -64,11 +64,11 @@ are treated as sets, i.e., their order is ignored as well as their types.
     <li>their <code>DisplayName</code> is not empty and is sub-equivalent, or
     <li>both their <code>FirstName</code> and their <code>LastName</code> are not empty and are pairwise sub-equivalent, or
     <li>their <code>DisplayName</code> is empty but their <code>FirstName</code> and <code>LastName</code> are not empty and are sub-equivalent, or
-    <li>in one card the<code>DisplayName</code> is empty and either the<code>FirstName</code> or<code>LastName</code> is not empty and is sub-equivalent to the<code>DisplayName</code> of the other card, or
-    <li>their<code>AIMScreenName</code> is not empty and is sub-equivalent.
+    <li>in one card the <code>DisplayName</code> is empty and either the <code>FirstName</code> or <code>LastName</code> is not empty and is sub-equivalent to the <code>DisplayName</code> of the other card, or
+    <li>their <code>AIMScreenName</code> is not empty and is sub-equivalent.
     </ul>
-  <li>Two cards are considered to contain <i>matching email address</i> if any of their<code>PrimaryEmail</code> or<code>SecondEmail</code> are equivalent.
-  <li>Two cards are considered to contain <i>matching phone numbers</i> if any of their<code>CellularNumber</code>,<code>WorkPhone</code>, or<code>PagerNumber</code> are equivalent. The<code>HomePhone</code> and<code>FaxNumber</code> fields are not considered for matching because such numbers are often shared by a group of people.
+  <li>Two cards are considered to contain <i>matching email address</i> if any of their <code>PrimaryEmail</code> or <code>SecondEmail</code> are equivalent.
+  <li>Two cards are considered to contain <i>matching phone numbers</i> if any of their <code>CellularNumber</code>, <code>WorkPhone</code>, or <code>PagerNumber</code> are equivalent. The <code>HomePhone</code> and <code>FaxNumber</code> fields are not considered for matching because such numbers are often shared by a group of people.
 </ul>
 
 Before card fields are compared their values are <i>abstracted</i> using the following steps.
@@ -76,12 +76,12 @@ Before card fields are compared their values are <i>abstracted</i> using the fol
   <li> <i>Pruning</i>, which removes stray contents irrelevant for comparison:
   <ol>
     <li>ignore values of certain field types &mdash; the set of ignored fields is configurable
-    <!-- in the preferences variable<code>extensions.DuplicateContactsManager.ignoreFields</code> -->
-    with the default being<code>UID, UUID, CardUID, groupDavKey, groupDavVersion, groupDavVersionPrev, RecordKey, DbRowID,
+    <!-- in the preferences variable <code>extensions.DuplicateContactsManager.ignoreFields</code> -->
+    with the default being <code>UID, UUID, CardUID, groupDavKey, groupDavVersion, groupDavVersionPrev, RecordKey, DbRowID,
     PhotoType, PhotoName, LowercasePrimaryEmail, LowercaseSecondEmail, unprocessed:rev, unprocessed:x-ablabel</code>,
     <li>remove leading/trailing/multiple whitespace and strip non-digit characters from phone numbers,
     <li>strip any stray email address duplicates from names, which get inserted by some email clients as default names, and
-    <li>replace<code>@googlemail.com</code> by<code>@gmail.com</code> in email addresses.
+    <li>replace '<code>@googlemail.com</code>' by '<code>@gmail.com</code>' in email addresses.
   </ol>
   <li> <i>Transformation</i>, which re-arranges information for better comparison:
   <ol>
@@ -95,7 +95,7 @@ Before card fields are compared their values are <i>abstracted</i> using the fol
     <li>convert texts by transcribing umlauts and ligatures, and
     <li>if configured, replace in phone numbers the <a href="https://en.wikipedia.org/wiki/List_of_international_call_prefixes">international call (IDD) prefix</a> (such as '00'<!--, if configured in the preferences variable <code>extensions.DuplicateContactsManager.intCallPrefix</code>-->) by '+'
     and the national <a href="https://en.wikipedia.org/wiki/Trunk_prefix">trunk prefix</a> (such as '0'<!--, if configured in the preferences variable <code>extensions.DuplicateContactsManager.natTrunkPrefix</code>-->)
-    by the default <a href="https://en.wikipedia.org/wiki/List_of_country_calling_codes">country calling code</a> (such as '+49'<!--, if configured in the preferences variable<code>extensions.DuplicateContactsManager.countryCallingCode</code>-->).
+    by the default <a href="https://en.wikipedia.org/wiki/List_of_country_calling_codes">country calling code</a> (such as '+49'<!--, if configured in the preferences variable <code>extensions.DuplicateContactsManager.countryCallingCode</code>-->).
   </ol>
   <li> <i>Simplification</i>, which strips less relevant information from texts<!--:--> by removing<!--
   <ol>
@@ -114,8 +114,8 @@ If automatic removal is chosen, only cards preferred for deletion (which implies
 When a pair of matching cards is presented for manual inspection, the card flagged by default with red color for removal is
 <ul>
   <li>the one preferred for deletion, or else (i.e., if the cards are not comparable):
-  <li>the one used less frequently (i.e., having a smaller<code>PopularityIndex</code>, or else
-  <li>the one modified/created earlier (i.e., having a smaller<code>LastModifiedDate</code>), or else
+  <li>the one used less frequently (i.e., having a smaller <code>PopularityIndex</code>, or else
+  <li>the one modified/created earlier (i.e., having a smaller <code>LastModifiedDate</code>), or else
   <li>the one found in the second address book or the one found later in case the two address books are the same. <!--Then it is displayed on the right-hand side. -->
 </ul>
 
@@ -123,9 +123,9 @@ A card is considered to have <i>equivalent or less information</i> than another 
 <ul>
   <li>the field is equivalent to the corresponding field of the other card, or else
   <li>it is a set and its value is a subset of the corresponding field value of the other card, or
-  <li>it is the<code>FirstName</code>,<code>LastName</code>, or<code>DisplayName</code> and its value is a substring of the corresponding field value of the other card, or
-  <li>it is the<code>PopularityIndex</code> or<code>LastModifiedDate</code> (which are ignored here), or
-  <li>it has the default value, i.e., it is empty for text fields or its value is<code>0</code> for number fields or<code>false</code> for Boolean fields.
+  <li>it is the <code>FirstName</code>, <code>LastName</code>, or <code>DisplayName</code> and its value is a substring of the corresponding field value of the other card, or
+  <li>it is the <code>PopularityIndex</code> or <code>LastModifiedDate</code> (which are ignored here), or
+  <li>it has the default value, i.e., it is empty for text fields or its value is <code>0</code> for number fields or <code>false</code> for Boolean fields.
 </ul>
 For the above field-wise comparison, the email addresses of a card are treated as a set,
 the phone numbers of a card are also treated as a set, and
@@ -144,36 +144,36 @@ Here is an example.
 The card on the right will be preferred for deletion because it contains less information.
 <ul>
   <li>
-	<code>NickName</code>:		...........	"Péte"	..............................	"&nbsp;&nbsp;pete&nbsp;!&nbsp;"	....................	accent, punctuation, letter case, and whitespace ignored
+	 <code>NickName</code>:		...........	"Péte"	..............................	"&nbsp;&nbsp;pete&nbsp;!&nbsp;"	....................	accent, punctuation, letter case, and whitespace ignored
 <li>
-        <code>FirstName</code>:		..........	"Peter"	.............................	"Peter Y van"	............	name prefix "van" moved to last name
+	 <code>FirstName</code>: 	..........	"Peter"	.............................	"Peter Y van"	............	name prefix "van" moved to last name
 <li>
-	<code>LastName</code>:		...........	"Y  van Müller"	..............	"Mueller"	....................	middle initial "Y" moved to first name, umlauts transcribed
+	 <code>LastName</code>:		...........	"Y  van Müller"	..............	"Mueller"	....................	middle initial "Y" moved to first name, umlauts transcribed
 <li>
-	<code>DisplayName</code>:	....	"Hans Peter van Müller"  ..	"van Müller, Peter"	..	first name moved to the front, name is substring
+	 <code>DisplayName</code>:		..	"Hans Peter van Müller"  ..	"van Müller, Peter"	..	first name moved to the front, name is substring
 <li>
-	<code>PreferDisplayName</code>:	..	'yes'	...........................	'yes'	............................	same truth value
+	 <code>PreferDisplayName</code>:	..	'yes'	...........................	'yes'	............................	same truth value
 <li>
-	<code>AimScreenName</code>:	......	""	.................................	""	..................................	same AIM name
+	 <code>AimScreenName</code>:		......	""	.................................	""	..................................	same AIM name
 <li>
-	<code>PreferMailFormat</code>:	...	'HTML'	.........................	'unknown'	..............	default ('unknown') considered less information
+	 <code>PreferMailFormat</code>:		...	'HTML'	.........................	'unknown'	..............	default ('unknown') considered less information
 <li>
-	<code>PrimaryEmail</code>:	....	"Peter.vanMueller@company.com"	..	"P.van.Mueller@gmx.de"	..	emails treated as sets, letter case ignored
+	 <code>PrimaryEmail</code>:		..	"Peter.vanMueller@company.com"	..	"P.van.Mueller@gmx.de"	..	emails treated as sets, letter case ignored
 <li>
-	<code>SecondaryEmail</code>:	....	"p.van.mueller@gmx.de"	..	""	.........................	emails treated as sets, letter case ignored
+	 <code>SecondaryEmail</code>:		....	"p.van.mueller@gmx.de"	..	""	.........................	emails treated as sets, letter case ignored
 <li>
-	<code>WorkPhone</code>:	.............	"089/1234-5678"	........	"+49 89 12345678"	...	trunk prefix and international call prefix normalized and non-digits ignored
+	 <code>WorkPhone</code>:	.............	"089/1234-5678"	........	"+49 89 12345678"	...	trunk prefix and international call prefix normalized and non-digits ignored
 <li>
-	<code>PopularityIndex</code>:	....	5	........................................	3	...................................	field ignored for information comparison
+	 <code>PopularityIndex</code>:		....	5	........................................	3	...................................	field ignored for information comparison
 <li>
-	<code>LastModifiedDate</code>:	..	2018-02-25 07:51:28	..	2018-02-25 08:30:37	..	field ignored for information comparison
+	 <code>LastModifiedDate</code>:		..	2018-02-25 07:51:28	..	2018-02-25 08:30:37	..	field ignored for information comparison
 <li>
-	<code>UUID</code>:	.........................	""	.......................	"903a61be-64d5-4844-802a"	...	field ignored
+	 <code>UUID</code>:.........................	""	.......................	"903a61be-64d5-4844-802a"	...	field ignored
 </ul>
 
-Technical information: The options/configuration/preferences used by this Thunderbird extension are are saved in configuration keys starting with `extensions.DuplicateContactsManager.` - for instance, the list of ignored fields is stored in the variable ignoreFields.
+Technical information: The options/configuration/preferences used by this Thunderbird extension are are saved in configuration keys starting with '<code>extensions.DuplicateContactsManager</code>' - for instance, the list of ignored fields is stored in the variable '<code>ignoreFields</code>'.
 
 <hr>
 <address></address>
-<!-- hhmts start -->Last modified: Wed Dec 26 00:00:46 CET 2018 <!-- hhmts end -->
+<!-- hhmts start -->Last modified: Thu Dec 27 07:28:51 CET 2018 <!-- hhmts end -->
 </body> </html>
