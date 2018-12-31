@@ -15,91 +15,70 @@
 		<stringbundle id="bundle_duplicateContactsManager" src="chrome://duplicatecontactsmanager/locale/duplicateContactsManager.properties" />
 	</stringbundleset>
 
-	<vbox id="mainbox">
+	<!--<span id="mainbox">-->
 		<!--image src="chrome://duplicatecontactsmanager/content/kate.png" height="40" alt="DCM logo" /-->
 		<hbox align="center" id="duplicatesButtonsBox">
 			<button	id="startbutton"
 				class="dialog"
 				label="&handleDuplicates.startbutton.label;"
-				disabled="true"
+				disabled="false"
 				accesskey="&handleDuplicates.startbutton.accesskey;"
-				oncommand="DuplicateEntriesWindow.startSearch()" />
+				oncommand="DuplicateEntriesWindow.startSearch()" /> <!-- always visible-->
 			<button	id="skipnextbutton"
 				class="dialog"
 				label="&handleDuplicates.skipnextbutton.label;"
+				display = "visibility: visible"
 				disabled="true"
 				accesskey="&handleDuplicates.skipnextbutton.accesskey;"
 				oncommand="DuplicateEntriesWindow.skipAndSearchNextDuplicate()" />
 			<button	id="keepnextbutton"
 				class="dialog"
 				label="&handleDuplicates.keepnextbutton.label;"
+				display = "visibility: visible"
 				disabled="true"
-				visibility="hidden"
 				accesskey="&handleDuplicates.keepnextbutton.accesskey;"
 				oncommand="DuplicateEntriesWindow.keepAndSearchNextDuplicate()" />
 			<button	id="applynextbutton"
 				class="dialog"
 				label="&handleDuplicates.applynextbutton.label;"
+				display = "visibility: visible"
 				disabled="true"
-				visibility="hidden"
 				accesskey="&handleDuplicates.applynextbutton.accesskey;"
 				oncommand="DuplicateEntriesWindow.applyAndSearchNextDuplicate()" />
-			<spacer flex="3" />
-			<button	id="stopbutton" style="display: none"
+			<spacer flex="1" />
+			<button	id="stopbutton"
 				class="dialog"
 				label="&handleDuplicates.stopbutton.label;"
-				disabled="false"
-				oncommand="DuplicateEntriesWindow.endSearch()" />
+				style="display: none"
+				oncommand="DuplicateEntriesWindow.endSearch()" /> <!--disabled="false"-->
 			<button	id="quitbutton"
 				class="dialog"
 				label="&handleDuplicates.quitbutton.label;"
-				disabled="false"
-				oncommand="window.close()" />
+				style="display: none"
+				oncommand="window.close()" /> <!--disabled="false"-->
 		</hbox>
 		<hbox id="statusBar">
-			<hbox id="statusText" flex="3">
-				<label id="statusText_label" value="&handleDuplicates.status_default;" />
-			</hbox>
+			<div id="statusText" flex="2">
+				<description id="statusText_label">&handleDuplicates.status_default;</description> <!-- to enable wrapping text, textContent is used rather than 'value' attribute -->
+			</div>
 			<spacer flex="1"/>
-			<hbox id="statusAddressBook1" flex="3">
+			<span id="statusAddressBook1" flex="3" style="display: none">
 				<label id="statusAddressBook1_label" value="AddressBook1" class="addressbookname" />
 				<label id="statusAddressBook1_size" value="" />
-			</hbox>
+			</span>
 			<spacer flex="1"/>
-			<hbox id="progress" flex="3">
-                            <vbox>
+			<div id="progress" flex="2">
 				<progressmeter id="progressMeter" mode="determined" value="0%" style="display: none" />
 				<label id="progressText" value="" />
-                            </vbox>
-			</hbox>
+			</div>
 			<spacer flex="1"/>
-			<hbox id="statusAddressBook2" flex="3">
+			<div id="statusAddressBook2" flex="3" style="display: none">
 				<label id="statusAddressBook2_label" value="AddressBook2" class="addressbookname" />
 				<label id="statusAddressBook2_size" value="" />
-			</hbox>
+			</div>
+			<spacer flex="1"/>
 		</hbox>
-		<hbox id="tablepane" style="display: none">
-			<radiogroup>
-				<grid id="AttributesTable">
-					<columns><column flex="0" /><column flex="3" /><column class="equivalence" flex="0" /><column flex="3" /></columns>
-					<rows id="AttributesTableRows">
-						<row id="tableheader">
-							<label id="fieldLabels" class="field" value=" " />
-							<hbox id="columnHeaderLeft" class="used" oncommand="DuplicateEntriesWindow.toggleContactLeftRight('left')">
-								<radio id="columnUseLeft" label="&handleDuplicates.firstcontact;" selected="true" />
-								<label id="columnKeptInfoLeft" value="&handleDuplicates.will_be_kept;" />
-							</hbox>
-							<description id="cardsEqu" class="equivalence" value="" />
-							<hbox id="columnHeaderRight" class="unused" oncommand="DuplicateEntriesWindow.toggleContactLeftRight('right')">
-								<radio id="columnUseRight" label="&handleDuplicates.secondcontact;" selected="false" />
-								<label id="columnKeptInfoRight" value="&handleDuplicates.will_be_removed;" />
-							</hbox>
-						</row>
-					</rows>
-				</grid>
-			</radiogroup>
-		</hbox>
-		<hbox id="explanation" style="display: block">
+		<hbox id="explanation" flex="1" style="display: none"> <!-- flex is critical here for vertical scroll -->
 			<vbox flex="1" style="text-align: center">
 				<description class="explheader">&handleDuplicates.introheader;</description>
 				<description>&handleDuplicates.introtext;</description>
@@ -126,14 +105,41 @@
 					<textbox class="slim" id="countryCallingCode" style="width: 5.5em" />
 					<description>&handleDuplicates.countryCallingCode;</description>
 				</hbox>
-				<description>&handleDuplicates.considerFields;: </description>
-				<description class="text-line value fields_wide" id="considerFields"></description>
-				<description>&handleDuplicates.ignoreFields;: </description>
-				<textbox multiline="true" id="ignoreFields" cols="90" />
+				<description>&handleDuplicates.consideredFields;: </description>
+				<description class="text-line value fields_wide" id="consideredFields"></description>
+				<description>&handleDuplicates.ignoredFields;: </description>
+				<textbox multiline="true" id="ignoredFields" cols="90" />
 			</vbox>
 		</hbox>
-		<hbox id="endinfo" style="display: none">
-			<vbox flex="1" style="text-align: center">
+		<hbox id="tablepane" flex="1" style="display: none"> <!-- flex is critical here for vertical scroll -->
+				<grid id="AttributesTable">
+					<columns><column flex="0" /><column flex="3" /><column class="equivalence" flex="0" /><column flex="3" /></columns>
+					<rows id="AttributesTableRows">
+						<row id="tableheader">
+					                <radiogroup_disabled orient="horizontal" style="display: contents"><!-- would break layout unless display: contents is supported. Disabling it as minor drawback: on click, logs TypeError: this.control is null  radio.xml:521:13  onxblmousedown -->
+							<label id="fieldLabels" class="field" value=" " />
+							<hbox id="columnHeaderLeft" class="used" oncommand="DuplicateEntriesWindow.toggleContactLeftRight('left')">
+							<!--
+								<radio id="columnUseLeft" label="&handleDuplicates.firstcontact;" selected="true" />
+								<label id="columnKeptInfoLeft" value="&handleDuplicates.will_be_kept;" />
+							-->
+								<radio id="columnUseLeft" label="will_be_kept" />
+							</hbox>
+							<description id="cardsEqu" class="equivalence" value="" />
+							<hbox id="columnHeaderRight" class="unused" oncommand="DuplicateEntriesWindow.toggleContactLeftRight('right')">
+							<!--
+								<radio id="columnUseRight" label="&handleDuplicates.secondcontact;" selected="false" />
+								<label id="columnKeptInfoRight" value="&handleDuplicates.will_be_removed;" />
+							-->
+								<radio id="columnUseRight" label="will_be_removed" />
+							</hbox>
+					                </radiogroup_disabled>
+						</row>
+					</rows>
+				</grid>
+		</hbox>
+		<hbox id="endinfo" flex="1" style="display: none"> <!-- flex is helpful here for vertical scroll -->
+			<vbox flex="1">
 				<description class="explheader">&handleDuplicates.endheader;</description>
 				<vbox class="tbox">
 					<hbox><description class="text-line" value="&handleDuplicates.endtext.numBefore;:" />
@@ -150,7 +156,7 @@
 					      <description class="text-line  value" id="resultNumSkipped" value="0" /></hbox>
 					<hbox><description>&handleDuplicates.endtext.diffProps;: </description></hbox>
 					      <description class="text-line value fields_wide" id="resultDiffProps" />
-					<hbox><description>&handleDuplicates.considerFields;: </description></hbox>
+					<hbox><description>&handleDuplicates.consideredFields;: </description></hbox>
 					      <description class="text-line value fields_wide" id="resultConsideredFields" />
 					<hbox><description>&handleDuplicates.endtext.ignoredFields;: </description></hbox>
 					      <description class="text-line value fields_wide" id="resultIgnoredFields" />
@@ -168,5 +174,5 @@
 		<statusbar id="bottom">
 			<spacer flex="1"/>
 		</statusbar>
-	</vbox>
+	<!--</span>-->
 </window>

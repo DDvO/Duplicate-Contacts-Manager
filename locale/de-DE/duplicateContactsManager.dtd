@@ -26,8 +26,8 @@
 <!ENTITY handleDuplicates.natTrunkPrefix		"Anfangsziffer der Ortsvorwahl, z.B. '0'">
 <!ENTITY handleDuplicates.intCallPrefix			"Internationale Anfangsziffer, z.B. '00'">
 <!ENTITY handleDuplicates.countryCallingCode		"Standard-Landesvorwahl, z.B. '+49'">
-<!ENTITY handleDuplicates.considerFields		"Zu berücksichtigende Felder">
-<!ENTITY handleDuplicates.ignoreFields			"Zu ignorierende Felder">
+<!ENTITY handleDuplicates.consideredFields		"Zu berücksichtigende Felder">
+<!ENTITY handleDuplicates.ignoredFields			"Zu ignorierende Felder">
 <!ENTITY handleDuplicates.introtext3			"Sie können den Prozess unterbrechen, indem Sie 'Stop' drücken. Wenn Sie ein Paar nicht behandeln wollen, klicken Sie 'Überspringen'.">
 <!ENTITY handleDuplicates.introtext4			"Wenn Sie Änderungen speichern und beide Einträge behalten wollen, drücken Sie 'Beide behalten'; wenn sie einen Eintrag löschen wollen, drücken Sie 'Einen löschen'.">
 <!ENTITY handleDuplicates.options			"Optionen">
@@ -50,8 +50,6 @@
 <!ENTITY handleDuplicates.feedbackMail			"duplicate-contact-manager-for-thunderbird@googlegroups.com">
 <!ENTITY handleDuplicates.devSiteUrl			"http://code.google.com/p/duplicate-contact-manager-for-thundebird/">
 
-<!ENTITY handleDuplicates.pleasepressstart		"Bitte Klicken Sie auf Start.">
-
 <!ENTITY handleDuplicates.startbutton.label		"Start">
 <!ENTITY handleDuplicates.startbutton.accesskey		"a">
 <!ENTITY handleDuplicates.applynextbutton.label		"Einen löschen &#62;">
@@ -62,10 +60,9 @@
 <!ENTITY handleDuplicates.skipnextbutton.accesskey	"Ü">
 <!ENTITY handleDuplicates.stopbutton.label		"Stop">
 <!ENTITY handleDuplicates.quitbutton.label		"Schließen">
+<!ENTITY handleDuplicates.contact			"Eintrag">
 <!ENTITY handleDuplicates.firstcontact			"Erster Eintrag">
 <!ENTITY handleDuplicates.secondcontact			"Zweiter Eintrag">
-<!ENTITY handleDuplicates.will_be_kept			"wird gespeichert">
-<!ENTITY handleDuplicates.will_be_removed		"wird gelöscht">
 <!ENTITY handleDuplicates.empty				"leer">
 <!ENTITY handleDuplicates.status_default		"Suche nach Dubletten...">
 <!ENTITY handleDuplicates.status_nonefound		"Keine Dubletten gefunden">

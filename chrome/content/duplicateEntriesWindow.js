@@ -4,6 +4,14 @@
 // This file includes UTF-8 encoding. Please make sure your text editor can deal with this prior to saving any changes!
 
 /* Change history:
+## Version 1.0.8:
+ * make vertical size more flexible for small displays
+ * fix display layout for overlong list membership information etc.
+ * add comparison of number of non-empty fields for determining card preferred for deletion
+ * improve calculation of character weight for determining card preferred for deletion
+ * correct comparison of selection fields determining which side has less information
+ * fix use of default value for ignoreFields; ignore by default also phone number types
+ * various implementation improvements for more efficiency and better readability
 ## Version 1.0.7:
  * add option for normalizing international call prefix
  * fix horizontal layout issues, automatic width of contents
@@ -58,12 +66,16 @@
 */
 
 Set.prototype.isSuperset = function(other) {
-    for(let elem of other) {
-        if (!this.has(elem)) {
-            return false;
-        }
-    }
-    return true;
+	for(let elem of other) {
+		if (!this.has(elem)) {
+			return false;
+		}
+	}
+	return true;
+}
+
+Set.prototype.toString = function() {
+	return "{" + Array.from(this).join(', ') + "}";
 }
 
 function pushIfNew(elem, array) { /* well, this 'function' has a side effect on array */
@@ -120,10 +132,12 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 		displayedFields: null,
 		editableFields: null,
 
-		sideUsed: 'left',
+		sideKept: 'left',
 		columnUseLeftRadioButton: null,
 		columnUseRightRadioButton: null,
 
+		abURI1: null,
+		abURI2: null,
 		abDir1: null,
 		abDir2: null,
 
@@ -141,13 +155,14 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 		nonequivalentProperties : [],
 		addressBookFields: new Array( /* all potentially available fields */
 			"PhotoURI", "PhotoType", "PhotoName",
-			"NickName", "Names"/* label */, "FirstName", "PhoneticFirstName", "LastName", "PhoneticLastName",
+			"NickName", "__Names"/* matchable */, "FirstName", "PhoneticFirstName", "LastName", "PhoneticLastName",
 			"SpouseName", "FamilyName", "DisplayName", "_PhoneticName", "PreferDisplayName",
 			"_AimScreenName", "_GoogleTalk", "CardType", "Category", "AllowRemoteContent",
-			"PreferMailFormat", "MailListNames"/* virtual */,
-			"Emails"/* label */, "PrimaryEmail", /* "LowercasePrimaryEmail", */
-			"SecondEmail", /* "LowercaseSecondEmail", */"DefaultEmail",
-			"PhoneNumbers"/* label */, "CellularNumber", "CellularNumberType", "HomePhone", "HomePhoneType",
+			"PreferMailFormat", "__MailListNames"/* virtual set */,
+			"__Emails"/* matchable, virtual set */, "DefaultEmail",
+			"PrimaryEmail", /* "LowercasePrimaryEmail", */
+			"SecondEmail",  /* "LowercaseSecondEmail", */
+			"__PhoneNumbers"/* matchable, virtual set */, "CellularNumber", "CellularNumberType", "HomePhone", "HomePhoneType",
 			"WorkPhone", "WorkPhoneType", "FaxNumber", "FaxNumberType", "PagerNumber", "PagerNumberType",
 			"DefaultAddress",
 			"HomeAddress", "HomeAddress2", "HomeCity", "HomeState",	"HomeZipCode", "HomeCountry",
@@ -162,15 +177,17 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			"groupDavKey", "groupDavVersion", "groupDavVersionPrev",
 			"RecordKey", "DbRowID",
 			"unprocessed:rev", "unprocessed:x-ablabel"),
-		labelsList : new Array("Names", "Emails", "PhoneNumbers"),
-		ignoreFieldsDefault : new Array("PhotoType", "PhotoName",
+		matchablesList : new Array("__Names", "__Emails", "__PhoneNumbers"),
+		metaProperties : new Array("__NonEmptyFields", "__CharWeight"),
+		ignoredFieldsDefault : new Array("PhotoType", "PhotoName",
+						 "CellularNumberType", "HomePhoneType", "WorkPhoneType", "FaxNumberType", "PagerNumberType",
 						/* "LowercasePrimaryEmail", "LowercaseSecondEmail", */
 						"UID", "UUID", "CardUID",
 						"groupDavKey", "groupDavVersion", "groupDavVersionPrev",
 						"RecordKey", "DbRowID", 
 						"unprocessed:rev", "unprocessed:x-ablabel"),
-		ignoreList : [], // will be derived from ignoreFieldsDefault
-		consideredFields : [], // this.addressBookFields - this.ignoreList
+		ignoredFields : [], // will be derived from ignoredFieldsDefault
+		consideredFields : [], // this.addressBookFields - this.ignoredFields
 		natTrunkPrefix : "", // national phone number trunk prefix
 		natTrunkPrefixReqExp : /^0([1-9])/, // typical RegExp for national trunk prefix
 		intCallPrefix : "", // international call prefix
@@ -182,39 +199,50 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 		},
 
 		isText: function(property) {
-			return property.match(/(Name|GoogleTalk|Address[2]?|City|State|Country|Title|Department|Company|Custom[1-4]Notes)$/);
+			return property.match(/(Name|GoogleTalk|Address|City|State|Country|Title|Department|Company|WebPage|Custom|Notes)$/) != null && !this.isSelection(property);
 		},
 
 		isFirstLastDisplayName: function(property) {
-			return property.match(/^(FirstName|LastName|DisplayName)$/);
+			return property.match(/^(FirstName|LastName|DisplayName)$/) != null;
 		},
 
-		isMailAddress: function(property) {
-			return property.match(/^(PrimaryEmail|SecondEmail|MailListNames)$/);
+		isEmail: function(property) {
+			return property.match(/^(PrimaryEmail|SecondEmail)$/) != null;
 		},
 
 		isPhoneNumber: function(property) {
-			return property.match(/^(WorkPhone|HomePhone|FaxNumber|PagerNumber|CellularNumber)$/);
+			return property.match(/^(WorkPhone|HomePhone|FaxNumber|PagerNumber|CellularNumber)$/) != null;
+		},
+
+		isSet: function(property) {
+			return property.match(/^(__MailListNames|__Emails|__PhoneNumbers)$/) != null;
 		},
 
 		isSelection: function(property) {
-			return property.match(/^(PreferMailFormat|PreferDisplayName|AllowRemoteContent)$/);
+			return property.match(/^(PreferMailFormat|PreferDisplayName|AllowRemoteContent)$/) != null;
 		},
 
-		isInteger: function(property) {
-			return property.match(/^(PopularityIndex|LastModifiedDate|RecordKey|DbRowID)$/);
+		isNumerical: function(property) {
+			return property.match(/^(PopularityIndex|LastModifiedDate|RecordKey|DbRowID)$/) != null;
 		},
 
-		defaultValue: function(property) {
-			if (this.isSelection(property) || this.isInteger(property))
+		defaultValue: function(property) { /* sets are treated as strings here */
+			if (this.isSelection(property) || this.isNumerical(property))
 				return (/* property == 'PreferDisplayName' ? "1" : */ "0");
 			else
-				return "";
+				return this.isSet(property) ? "{}" : "";
+		},
+
+		charWeight: function(str, property) {
+			// gives preference to values with many non-digit/uppercase and special characters
+			const pat = this.isPhoneNumber(property) ? /[ 0-9]/g : /[ a-z]/g; /* umlauts have higher weight than their transcription */
+			const result = str.replace(pat, '').length;
+			// this.debug("isPhoneNumber("+property+") = "+this.isPhoneNumber(property)+" charWeight("+str+") = "+result);
+			return result;
 		},
 
 		/**
-		 * Will be called by duplicateEntriesWindow.xul once
-		 * the according window is loaded
+		 * Will be called by duplicateEntriesWindow.xul once the according window is loaded
 		 */
 		init: function() {
 			do {
@@ -233,10 +261,11 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 				try { this.intCallPrefix  = this.prefsBranch.getCharPref("intCallPrefix");
 				      this.intCallPrefixReqExp = new RegExp("^"+this.intCallPrefix+"([1-9])"); } catch(e) {}
 				try { this.countryCallingCode = this.prefsBranch.getCharPref("countryCallingCode"); } catch(e) {}
+				this.ignoredFields = this.ignoredFieldsDefault;
 				try { var prefStringValue = this.prefsBranch.getCharPref("ignoreFields");
-				      this.ignoreList = prefStringValue != "" ?
-				                        prefStringValue.split(/\s*,\s*/) : ignoreFieldsDefault;
-					} catch(e) {}
+				      if (prefStringValue.length > 0)
+					      this.ignoredFields = prefStringValue.split(/\s*,\s*/);
+				    } catch(e) {}
 			} while (0);
 			document.getElementById("autoremove").checked = this.autoremoveDups;
 			document.getElementById("preservefirst").checked = this.preserveFirst;
@@ -244,8 +273,11 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			document.getElementById("natTrunkPrefix").value = this.natTrunkPrefix;
 			document.getElementById("intCallPrefix").value = this.intCallPrefix;
 			document.getElementById("countryCallingCode").value = this.countryCallingCode;
-			document.getElementById("considerFields").textContent = this.consideredFields.join(", ");
-			document.getElementById("ignoreFields").value = this.ignoreList.join(", ");
+			this.consideredFields = /* value before any interactive changes by user */
+				this.addressBookFields.filter(x => !this.ignoredFields.includes(x));
+			document.getElementById("consideredFields").textContent = this.consideredFields.
+				filter(x => !this.isSet(x) && !this.matchablesList.includes(x)).join(", ");
+			document.getElementById("ignoredFields").value = this.ignoredFields.join(", ");
 
 			this.stringBundle = document.getElementById("bundle_duplicateContactsManager");
 			this.running = true;
@@ -258,24 +290,27 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			this.columnUseRightRadioButton = document.getElementById('columnUseRight');
 			this.hide('statusAddressBook1');
 			this.hide('statusAddressBook2');
+			this.hide('tablepane');
+			this.hide('endinfo');
 
 			if (!this.abManager || !this.abManager.directories || this.abManager.directories.length == 0) {
 				this.disable('startbutton');
-				this.statustext.value = this.stringBundle.getString('NoABookFound');
+				this.statustext.textContent = this.stringBundle.getString('NoABookFound');
 				this.statustext.className = "error-message";
 				return;
 			}
-			var abook = this.abManager.directories.getNext();
-			if (typeof window.opener.GetSelectedDirectory != 'undefined') {
-				let addressbookURIs = window.opener.GetSelectedDirectory()
-			                              .match(/(moz-ab(mdb|osx)directory:\/\/([^\/]+\.mab|\/)).*/);
-				if (addressbookURIs && addressbookURIs.length > 0)
-					abook = this.abManager.getDirectory(addressbookURIs[1]);
+			if (this.abURI1 == null || this.abURI2 == null) {
+				var default_abook = this.abManager.directories.getNext().URI;
+				if (typeof window.opener.GetSelectedDirectory != 'undefined') {
+					const addressbookURIs = window.opener.GetSelectedDirectory().
+				                                match(/(moz-ab(mdb|osx)directory:\/\/([^\/]+\.mab|\/)).*/);
+					if (addressbookURIs && addressbookURIs.length > 0)
+						default_abook = addressbookURIs[1];
+				}
+				this.abURI1 = this.abURI2 = default_abook;
 			}
 
 			// We will process the first/selected address book, plus optionally a second one
-			this.abDir1 = this.abDir2 = abook;
-			var abookURI = abook.URI;
 			// read all addressbooks, fill lists in preferences dialog
 			var allAddressBooks = this.abManager.directories;
 			var dirNames = new Array();
@@ -289,14 +324,22 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 				}
 			}
 			var ablists = document.getElementById("addressbooklists");
-			var ablist1 = this.createMenuList("addressbookname", dirNames, URIs, abookURI);
-			var ablist2 = this.createMenuList("addressbookname", dirNames, URIs, abookURI);
+			var ablist1 = this.createMenuList("addressbookname", dirNames, URIs, this.abURI1);
+			var ablist2 = this.createMenuList("addressbookname", dirNames, URIs, this.abURI2);
 			ablists.appendChild(ablist1);
 			ablists.appendChild(ablist2);
 
-			this.statustext.value = this.stringBundle.getString('PleasePressStart');
+			this.statustext.textContent = this.stringBundle.getString('PleasePressStart');
 			document.getElementById('startbutton').setAttribute('label', this.stringBundle.getString('Start'));
-			this.enable('startbutton');
+			this.make_visible('skipnextbutton');
+			this.make_visible('keepnextbutton');
+			this.make_visible('applynextbutton');
+			this.disable('skipnextbutton');
+			this.disable('keepnextbutton');
+			this.disable('applynextbutton');
+			this.hide('stopbutton');
+			this.show('quitbutton');
+			this.show('explanation');
 			document.getElementById('startbutton').focus();
 		},
 
@@ -313,19 +356,19 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 		startSearch: function() {
 			if (this.restart) {
 				this.restart = false;
-				this.hide('tablepane');
-				this.hide('endinfo');
-				this.hide('progressMeter');
-				this.show('explanation');
 				this.init();
 				return;
 			}
 			const ablist = document.getElementById("addressbooklists");
 			const ab1 = ablist.firstChild;
 			const ab2 = ab1.nextSibling;
-			if (ab1.selectedItem) this.abDir1 = this.abManager.getDirectory(ab1.selectedItem.value);
-			if (ab2.selectedItem) this.abDir2 = this.abManager.getDirectory(ab2.selectedItem.value);
-			if([ab1.selectedItem.value, ab2.selectedItem.value].includes("moz-abosxdirectory:///"))
+			if (ab1.selectedItem)
+				this.abURI1 = ab1.selectedItem.value;
+			if (ab2.selectedItem)
+				this.abURI2 = ab2.selectedItem.value;
+			this.abDir1 = this.abManager.getDirectory(this.abURI1);
+			this.abDir2 = this.abManager.getDirectory(this.abURI2);
+			if([this.abURI1, this.abURI2].includes("moz-abosxdirectory:///"))
 				alert("Mac OS X Address Book is read-only.\nYou can use it only for comparison.");
 			//It seems that Thunderbird 11 on Max OS 10.7 can actually be write fields, although an exception is thrown.
 			this.readAddressBooks();
@@ -342,11 +385,11 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 				alert("International call prefix '"+this.intCallPrefix+"' should contain two to four digits");
 			if (this.countryCallingCode != "" && !this.countryCallingCode.match(/^(\+|[0-9])[0-9]{1,6}$/))
 				alert("Default country calling code '"+this.countryCallingCode+"' should contain a leading '+' or digit followed by one to six digits");
-			this.ignoreList = document.getElementById("ignoreFields").value.split(/\s*,\s*/);
+			this.ignoredFields = document.getElementById("ignoredFields").value.split(/\s*,\s*/);
 			this.consideredFields = this.addressBookFields./*
-				concat(this.ignoreFieldsDefault).
-				filter(x => !this.labelsList.includes(x)). */
-				filter(x => !this.ignoreList.includes(x));
+				concat(this.ignoredFieldsDefault).
+				filter(x => !this.matchablesList.includes(x)). */
+				filter(x => !this.ignoredFields.includes(x));
 
 			this.prefsBranch.setBoolPref("autoremoveDups", this.autoremoveDups);
 			this.prefsBranch.setBoolPref("preserveFirst", this.preserveFirst);
@@ -354,15 +397,14 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			this.prefsBranch.setCharPref("natTrunkPrefix", this.natTrunkPrefix);
 			this.prefsBranch.setCharPref("intCallPrefix", this.intCallPrefix);
 			this.prefsBranch.setCharPref("countryCallingCode", this.countryCallingCode);
-			this.prefsBranch.setCharPref("ignoreFields", this.ignoreList.join(", "));
+			this.prefsBranch.setCharPref("ignoreFields", this.ignoredFields.join(", "));
 
 			// hide intro info, show table, progress, etc.
 			this.hide('explanation');
 			this.purgeAttributesTable();
-			this.show('tablepane');
 			this.hide('endinfo');
 			this.show('progressMeter');
-			this.statustext.value = this.stringBundle.getString('SearchingForDuplicates');
+			this.statustext.textContent = this.stringBundle.getString('SearchingForDuplicates');
 			document.getElementById('statusAddressBook1_label').value = this.abDir1.dirName;
 			document.getElementById('statusAddressBook2_label').value = this.abDir2.dirName;
 			this.updateDeletedProgress('statusAddressBook1_size' , this.BOOK_1, 0);
@@ -371,6 +413,7 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			this.show('statusAddressBook2');
 			this.show('stopbutton');
 			this.hide('quitbutton');
+			this.show_hack('tablepane');
 
 			// re-initialization needed in case of restart:
 			while (ablist.firstChild)
@@ -404,7 +447,7 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			this.disable('keepnextbutton');
 			this.disable('applynextbutton');
 			this.window.setAttribute('wait-cursor', 'true');
-			this.statustext.value = this.stringBundle.getString('SearchingForDuplicates');
+			this.statustext.textContent = this.stringBundle.getString('SearchingForDuplicates');
 			this.updateProgress();
 			// starting the search via setTimeout allows redrawing the progress info
 			setTimeout(function() { DuplicateEntriesWindow.searchDuplicateIntervalAction(); }, 13);
@@ -417,11 +460,11 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			// for the case that right one will be kept
 			var [deleAbDir, deleBook, deleIndex] = [this.abDir1, this.BOOK_1, this.currentSearchPosition1];
 			var [keptAbDir, keptBook, keptIndex] = [this.abDir2, this.BOOK_2, this.currentSearchPosition2];
-			if (this.sideUsed == 'left') { // left one will be kept
+			if (this.sideKept == 'left') { // left one will be kept
 				[deleAbDir, deleBook, deleIndex, keptAbDir, keptBook, keptIndex] =
 				[keptAbDir, keptBook, keptIndex, deleAbDir, deleBook, deleIndex];
 			}
-			this.updateAbCard(keptAbDir, keptBook, keptIndex, this.sideUsed);
+			this.updateAbCard(keptAbDir, keptBook, keptIndex, this.sideKept);
 			this.deleteAbCard(deleAbDir, deleBook, deleIndex, false);
 			this.searchNextDuplicate();
 		},
@@ -433,10 +476,11 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			var updateFields = this.getCardFieldValues(side);
 			var entryModified = false;
 			for(let property in updateFields) {
-				var defaultValue = this.defaultValue(property);
+				const defaultValue = this.defaultValue(property); /* cannot be a set here */
 				if (card.getProperty(property, defaultValue) != updateFields[property]) {
-			// not using this.getProperty here to give a chance to update wrongly empty field
+				// not using this.getProperty here to give a chance to update wrongly empty field
 					try {
+						// this.debug("updating "+property+" from "+card.getProperty(property, defaultValue)+" to "+updateFields[property]);
 						card.setProperty(property, updateFields[property]);
 						entryModified = true;
 					} catch (e) {
@@ -587,7 +631,7 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 					continue; // useful for manual differentiation to prevent repeated treatment
 				var namesmatch = this.namesMatch(simplified_card1, simplified_card2);
 				/* if (simplified_card1['DisplayName'] == simplified_card2['DisplayName'])
-					this.debug(simplified_card1['DisplayName']+" vs. "+simplified_card2['DisplayName']+": "+namesmatch); */
+					this.debug("namesmatch = "+namesmatch+" for "+simplified_card1['DisplayName']+" vs. "+simplified_card2['DisplayName']); */
 				var mailsmatch = this.mailsMatch(simplified_card1, simplified_card2);
 				var phonesmatch = this.phonesMatch(simplified_card1, simplified_card2);
 				var nomailsphonesmatch = this.noMailsPhonesMatch(simplified_card1) &&
@@ -598,12 +642,12 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 					// OK, we found something that looks like a duplicate or cannot match anything.
 					var card1 = this.vcards[this.BOOK_1][this.currentSearchPosition1];
 					var card2 = this.vcards[this.BOOK_2][this.currentSearchPosition2];
-					var [comparable, comparison] = this.abCardsCompare(card1, card2);
-					if (comparable && this.autoremoveDups &&
-					    !(this.abDir1 != this.abDir2 && this.preserveFirst && comparison < 0)) {
-						if (comparison < 0)
+					var [comparison, preference] = this.abCardsCompare(card1, card2);
+					if (comparison != -2 && this.autoremoveDups &&
+					    !(this.abDir1 != this.abDir2 && this.preserveFirst && preference < 0)) {
+						if (preference < 0)
 							this.deleteAbCard(this.abDir1, this.BOOK_1, this.currentSearchPosition1, true);
-						else // if comparison == 0, prefer to delete c2
+						else // if preference >= 0, prefer to delete c2
 							this.deleteAbCard(this.abDir2, this.BOOK_2, this.currentSearchPosition2, true);
 					} else {
 						//window.clearInterval(this.searchInterval);
@@ -617,9 +661,10 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 							this.enable('keepnextbutton');
 							this.enable('applynextbutton');
 							this.window.removeAttribute('wait-cursor');
-							this.statustext.value = this.stringBundle.getString(
+							this.statustext.textContent = this.stringBundle.getString(
 								nomatch? 'noMatch' : 'matchFound');
-							this.displayCardData(card1, card2, comparable, comparison, namesmatch, mailsmatch, phonesmatch);
+							this.displayCardData(card1, card2, comparison, preference,
+							                     namesmatch, mailsmatch, phonesmatch);
 							return;
 						}
 					}
@@ -633,12 +678,12 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			this.hide('tablepane');
 			this.hide('progressMeter');
 
-			this.disable('skipnextbutton');
-			this.disable('keepnextbutton');
-			this.disable('applynextbutton');
+			this.make_invisible('skipnextbutton');
+			this.make_invisible('keepnextbutton');
+			this.make_invisible('applynextbutton');
 			this.window.removeAttribute('wait-cursor');
 			this.progresstext.value = "";
-			this.statustext.value = this.stringBundle.getString('finished');
+			this.statustext.textContent = this.stringBundle.getString('finished');
 
 			// show statistics
 			var totalCardsDeleted = this.totalCardsDeleted1+this.totalCardsDeleted2;
@@ -648,23 +693,26 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			document.getElementById('resultNumRemovedAuto').value = this.totalCardsDeletedAuto;
 			document.getElementById('resultNumChanged').value = this.totalCardsChanged;
 			document.getElementById('resultNumSkipped').value = this.totalCardsSkipped;
-			document.getElementById('resultConsideredFields').textContent = this.consideredFields.join(", ");
-			document.getElementById('resultIgnoredFields').textContent = this.ignoreList.join(", ");
+			document.getElementById('resultConsideredFields').textContent = this.consideredFields.
+				filter(x => !this.isSet(x) && !this.matchablesList.includes(x)).join(", ");
+			document.getElementById('resultIgnoredFields').textContent = this.ignoredFields.join(", ");
 			document.getElementById('resultDiffProps').textContent = this.nonequivalentProperties.join(", ");
-			this.show('endinfo');
 			this.hide('stopbutton');
 			this.show('quitbutton');
+			this.show('endinfo');
 
 			document.getElementById('startbutton').setAttribute('label', this.stringBundle.getString('Restart'));
 			this.enable('startbutton');
 			this.restart = true;
 		},
 
-		getProperty: function(card, property) {
+		getProperty: function(card, property) { /* sets are treated as strings here */
 			const defaultValue = this.defaultValue(property);
 			const value = card.getProperty(property, defaultValue);
 			if (this.isSelection(property) && value == "")
 				return defaultValue; // recover from wrongly empty field
+			if (this.isSet(property)) /* used for '__MailListNames' */
+				return value.toString();
 			if (property == 'LastModifiedDate')
 				 return value == "0" ? "" : new Date(value * 1000).toLocaleString();
 			if (property == 'PhotoURI') {
@@ -673,7 +721,7 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 				var contents = this.readFile(value, false);
 				return contents ? contents : defaultValue;
 			}
-			return value+""; // force string even when isSelection or isInteger
+			return value+""; // force string even when isSelection or isNumerical
 		},
 
 		transformMiddlePrefixName: function(fn, ln) {
@@ -699,7 +747,7 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			// first step: pruning
 			var value = this.getPrunedProperty(card, property);
 
-			// second step: tranformation
+			// second step: transformation
 			if (this.isFirstLastDisplayName(property)) {
 				var p;
 				if (property == 'DisplayName') {
@@ -751,11 +799,11 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 				vcard['_AimScreenName'] = this.getAbstractedTransformedProperty(card,'_AimScreenName');
 				vcard[  'PrimaryEmail'] = this.getAbstractedTransformedProperty(card,  'PrimaryEmail');
 				vcard[   'SecondEmail'] = this.getAbstractedTransformedProperty(card,   'SecondEmail');
-				// not using HomePhone for matching because often it is shared by a group of people
+				// not using HomePhone for matching because often it is shared by several people
 				vcard['Phone1'] = this.getAbstractedTransformedProperty(card, 'CellularNumber');
 				vcard['Phone2'] = this.getAbstractedTransformedProperty(card, 'PagerNumber');
 				vcard['Phone3'] = this.getAbstractedTransformedProperty(card, 'WorkPhone');
-				// not using FaxNumber for matching because often it is shared by a group of people
+				// not using FaxNumber for matching because often it is shared by several people
 				this.vcardsSimplified[book][i] = vcard;
 			}
 			return this.vcardsSimplified[book][i];
@@ -765,16 +813,16 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 		 * Creates table with address book fields for side-by-side comparison
 		 * and editing. Editable fields will be listed in this.editableFields.
 		 */
-		displayCardData: function(card1, card2, comparable, comparison, namesmatch, mailsmatch, phonesmatch) {
-			this.debug("## "+this.getProperty(card1, 'PopularityIndex')+ " # " +this.getProperty(card1, 'LastModifiedDate'));
+		displayCardData: function(card1, card2, comparison, preference,
+			                  namesmatch, mailsmatch, phonesmatch) {
+			// this.debug("popularityIndex: "+this.getProperty(card1, 'PopularityIndex')+ " lastModifiedDate: " +this.getProperty(card1, 'LastModifiedDate'));
 			this.purgeAttributesTable();
 			this.displayedFields = new Array();
 			this.editableFields = new Array();
-			this.make_visible('tableheader');
 			const cardsEqu = document.getElementById('cardsEqu');
-			cardsEqu.value = !comparable ? '' :
-			                               comparison == 0 ? '≅' : // &cong; yields syntax error; &#8773; verbatim
-			                               comparison <  0 ? '⋦' : '⋧';
+			cardsEqu.value = comparison == -2 ? '' :
+			                 comparison == 0 ? '≅' : // &cong; yields syntax error; &#8773; verbatim
+			                 comparison <  0 ? '⋦' : '⋧';
 
 			// if two different mail primary addresses are available, show SecondEmail field such that it can be filled in
 			const mail1 = this.getAbstractedTransformedProperty(card1, 'PrimaryEmail');
@@ -813,24 +861,25 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 				labelcell.setAttribute('value', localName + ':');
 				labelcell.setAttribute('class', 'field');
 				row.appendChild(labelcell);
-				if (this.labelsList.includes(property)) {
+				if (this.matchablesList.includes(property)) {
 					const cell1 = document.createElement('label');
 					const cellEqu = document.createElement('hbox');
 					const descEqu = document.createElement('description');
 					cellEqu.className = 'equivalence';
 					cellEqu.appendChild(descEqu);
-					if ( namesmatch && property == "Names" ||
-					     mailsmatch && property == "Emails" ||
-					    phonesmatch && property == "PhoneNumbers")
-						descEqu.setAttribute('value', '≃');
+					if (namesmatch && property == "__Names" ||
+					    mailsmatch && property == "__Emails" ||
+					    phonesmatch && property == "__PhoneNumbers")
+						descEqu.setAttribute('value', "≃"); /* matchable property matches */
 					row.appendChild(cell1);
 					row.appendChild(cellEqu);
 					this.attributesTableRows.appendChild(row);
-				} else {
+				} else { /* also for '__MailListNames' */
+					/* sets are treated as strings here */
 					const defaultValue = this.defaultValue(property);
 					const  leftValue = this.getProperty(card1, property);
 					const rightValue = this.getProperty(card2, property);
-					const displayOnlyIfDifferent = /^(PhotoType|UID|UUID|CardUID)$/;
+					const displayOnlyIfDifferent = /^(PhotoType|CellularNumberType|HomePhoneType|WorkPhoneType|FaxNumberType|PagerNumberType|UID|UUID|CardUID)$/;
 					const displayAlways = /^(FirstName|LastName|DisplayName|_AimScreenName|PrimaryEmail|SecondEmail|CellularNumber|HomePhone|WorkPhone|FaxNumber|Notes|PopularityIndex)$/;
 					if ((!property.match(displayOnlyIfDifferent) || leftValue != rightValue) &&
 					    (   ( leftValue &&  leftValue != defaultValue)
@@ -842,16 +891,39 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 						this.displayCardField(card1, card2, defaultValue, leftValue, rightValue, property, row);
 				}
 			}
-			this.toggleContactLeftRight(comparison < 0 ? 'right' : 'left'); // if comparison == 0, prefer to delete c2
+			this.setContactLeftRight(preference < 0 ? 'right' : 'left'); // if preference >= 0, prefer to delete c2
+		},
+
+		SetRelation: function(card1, card2, property) {
+			const defaultValue_Set = new Set(); /* should not really be needed here */
+			const value1 = card1.getProperty(property, defaultValue_Set);
+			const value2 = card2.getProperty(property, defaultValue_Set);
+			// value1 and value2 are essentially result of getAbstractedTransformedProperty()
+			const both_empty = value1.size == 0 && value2.size == 0;
+			let equ;
+			if (value1.isSuperset(value2)) {
+				if (value2.isSuperset(value1))
+					equ = '≅';
+				else
+					equ = '⊇';
+			} else {
+				if (value2.isSuperset(value1))
+					equ = '⊆';
+				else
+					equ = '';
+			}
+			// this.debug("SetRelation("property+"): "+value1.toString()+" "+equ+" "+value2.toString());
+			return [both_empty, equ];
 		},
 
 		/**
-		 * Creates a table row for one address book field for side-by-side
-		 * comparison and editing. Editable fields will be listed in this.editableFields.
+		 * Creates table row for one address book field (not used for matchable fields, e.g., '__Names')
+		 * for side-by-side comparison and editing. Editable fields will be listed in this.editableFields.
+		 * The defaultValue, leftValue, and rightValue are expected as non-abstracted/transformed strings (also for set values).
 		 */
 		displayCardField: function(card1, card2, defaultValue, leftValue, rightValue, property, row) {
 			this.displayedFields.push(property);
-			var editable = property != 'PhotoURI' && property != 'MailListNames' && property != 'LastModifiedDate';
+			var editable = property != 'PhotoURI' && !this.isSet(property) && property != 'LastModifiedDate';
 			if (editable) {
 				// save field in list for later retrieval if edited values
 				pushIfNew(property, this.editableFields);
@@ -865,33 +937,30 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			cellEqu.appendChild(descEqu);
 
 			// highlight values that differ; show equality or equivalence
-			let equ = '≡'; // should indicate: identical
+			var identical = true;
+			let equ = '≡'; // default value indicates identical values
 			var both_empty = 0;
-			if (this.isMailAddress(property) || this.isPhoneNumber(property)) {
-				const defaultValue_Set = new Set();
-				const prop = this.isMailAddress(property) ? '__MailAddresses' : '__PhoneNumbers';
-				const value1 = card1.getProperty(prop, defaultValue_Set);
-				const value2 = card2.getProperty(prop, defaultValue_Set);
-				both_empty = value1.size == 0 && value2.size == 0;
-				// value1 and value2 are essentially result of getAbstractedTransformedProperty()
-				if (value1.isSuperset(value2)) {
-					if (value2.isSuperset(value1))
-						equ = '≅';
-					else
-						equ = '⊇';
-				} else {
-					if (value2.isSuperset(value1))
-						equ = '⊆';
-					else
-						equ = '';
-				}
+			if (this.isSet(property)) { /* used for '__MailListNames' */
+				[both_empty, equ] = this.SetRelation(card1, card2, property);
+				identical = equ == '≅';
 			} else {
+				identical = leftValue == rightValue;
 				both_empty = leftValue == defaultValue && rightValue == defaultValue;
-				if (leftValue != rightValue) {
-					const value1 = this.getAbstractedTransformedProperty(card1, property);
-					const value2 = this.getAbstractedTransformedProperty(card2, property);
-					if (value1 == value2)
+				if        (this.isEmail(property)) {
+					[both_empty, equ] = this.SetRelation(card1, card2, '__Emails');
+				} else if (this.isPhoneNumber(property)) {
+					[both_empty, equ] = this.SetRelation(card1, card2, '__PhoneNumbers');
+				} else if (!identical) {
+					const value1 = property == 'PhotoURI' ? leftValue :
+					      this.getAbstractedTransformedProperty(card1, property);
+					const value2 = property == 'PhotoURI' ? rightValue :
+					      this.getAbstractedTransformedProperty(card2, property);
+					if      (value1 == value2)
 						equ = '≅'; // equivalent; &cong; yields syntax error; &#8773; verbatim
+					else if (value1 == defaultValue)
+						equ = '⋦';
+					else if (value2 == defaultValue)
+						equ = '⋧';
 					else if (this.isText(property)) {
 						if      (value2.includes(value1))
 							equ = '<';
@@ -900,35 +969,30 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 						else
 							equ = ''; // incomparable
 					}
-					else if (this.isInteger(property)) {
+					else if (this.isNumerical(property)) {
 						const comparison = card1.getProperty(property, 0) - card2.getProperty(property, 0);
-						if (comparison < 0)
+						if      (comparison < 0)
 							equ = '<';
 						else if (comparison > 0)
 							equ = '>';
 						else
 							equ = '≡'; // this case (leftValue == rightValue) is already covered above
 					}
-					else if (value1 == defaultValue)
-						equ = '⋦';
-					else if (value2 == defaultValue)
-						equ = '⋧';
 					else
 						equ = '';
 				}
 			}
-			// only non-identical and not set-equal properties should be hightlighted by color
-			if (equ != (this.isMailAddress(property) || this.isPhoneNumber(property) ? '≅' : '≡')) {
-				cell1.setAttribute('class', this.sideUsed == 'left' ? 'used' : 'unused');
-				cell2.setAttribute('class', this.sideUsed == 'left' ? 'unused' : 'used');
+			// only non-identical and not set-equal properties should be highlighted by color
+			if (identical == 0) {
+				cell1.setAttribute('class', this.sideKept == 'left' ? 'used' : 'unused');
+				cell2.setAttribute('class', this.sideKept == 'left' ? 'unused' : 'used');
 			}
 			if (both_empty)
 				equ = '';
-			else if (property == 'SecondEmail' || (this.isPhoneNumber(property) && property != 'CellularNumber')) {
+			if (equ != '' &&
+			    (property == 'SecondEmail' || /* all but first email address/phone number */
+			     property != 'CellularNumber' && this.isPhoneNumber(property)))
 				equ = '⋮'; // sets displayed over multiple lines lead to multiple lines with same symbol
-			}
-			if (property == 'PhotoURI')
-				descEqu.setAttribute('style', 'margin-top: 1em;'); // move a bit lower
 			descEqu.setAttribute('value', equ);
 
 			// create input/display fields, depending on field type
@@ -936,29 +1000,35 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			let cell2valuebox;
 
 			if (property == 'PhotoURI') {
+				descEqu.style.marginTop = '1em'; // move a bit lower
 				cell1valuebox = this.previewImage("preliminary src  leftValue");
 				cell2valuebox = this.previewImage("preliminary src rightValue");
 			} else if (this.isSelection(property)) {
+				var labels;
 				if (property == 'PreferMailFormat') {
 					labels = [this.stringBundle.getString('unknown_label'),
 						  this.stringBundle.getString('plaintext_label'),
 						  this.stringBundle.getString('html_label')];
 				}
 				else {
-					var labels = [this.stringBundle.getString('false_label'),
-						      this.stringBundle.getString('true_label')];
+					labels = [this.stringBundle.getString('false_label'),
+						  this.stringBundle.getString('true_label')];
 				}
 				var values = [0, 1, 2];
-				cell1valuebox = this.createMenuList(null, labels, values,  leftValue, true);
-				cell2valuebox = this.createMenuList(null, labels, values, rightValue, true);
+				cell1valuebox = this.createMenuList(null, labels, values,  leftValue);
+				cell2valuebox = this.createMenuList(null, labels, values, rightValue);
 			}
 			else {
 				function make_valuebox(value) {
-					const valuebox = editable ? document.createElement('textbox') :
-					      document.createElement('label');
+					const valuebox = document.createElement(editable ? 'textbox' :
+					                   property == '__MailListNames' ? 'description' : 'label');
 					valuebox.className = 'textbox';
-					valuebox.setAttribute('value',  value);
-					if (property == 'MailListNames' || property == 'Notes') {
+					if (property == '__MailListNames') {
+						valuebox.textContent = value;
+					}
+					else
+						valuebox.setAttribute('value',  value);
+					if (property == 'Notes') {
 						valuebox.setAttribute('multiline', "true");
 					}
 					return valuebox;
@@ -1091,8 +1161,9 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			const f2 = vcard2[  'FirstName'], l2 = vcard2[      'LastName'];
 			const d1 = vcard1['DisplayName'], a1 = vcard1['_AimScreenName'];
 			const d2 = vcard2['DisplayName'], a2=  vcard2['_AimScreenName'];
+			// this.debug("namesMatch: "+f1+"#"+l1+"#"+d1+ " vs. " +f2+"#"+l2+"#"+d2);
 			return ( a1 != "" &&               subEq(a1,a2)                 ) || // _AimScreenNames exist and match
-			       ( d1 != "" &&               subEq(d1,d2)                 ) || // DisplayNames exist and match
+			       ( d1 != "" &&d1.match(/ /)==d2.match(/ /)&& subEq(d1,d2) ) || // both DisplayNames consist of one word or more than one word and match
 			       ( f1 != "" && l1 != ""  &&  subEq(f1,f2) && subEq(l1,l2) ) || // FirstNames and LastNames exist and match
 			       ( d1 == "" && d2 == "" &&
 			        (f1 != "" || l1 != "") &&  subEq(f1,f2) && subEq(l1,l2) ) || // no DisplayNames, but FirstNames and LastNames match
@@ -1123,14 +1194,18 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 		},
 
 		/**
-		 * Changes the selection of contacts to be used. If used without parameter, the
-		 * current selection is switched. If used with "left" or "right" as parameter,
-		 * the selection is changed so that the specified side will be applied.
+		 * Marks the specified side as selected to be kept.
+		 * If used without parameter, the current selection is toggled.
+		 * If used with "left" or "right" as parameter, the selection is set accordingly.
 		 */
-		toggleContactLeftRight: function(side) {
-			if (!side || (side != this.sideUsed)) {
+		setContactLeftRight: function(side) {
+			if (true/* TODO remove: !side || (side != this.sideKept)*/) {
+/* TODO remove
 				var infoLeft  = document.getElementById('columnKeptInfoLeft');
 				var infoRight = document.getElementById('columnKeptInfoRight');
+*/
+				const to_be_kept = this.stringBundle.getString('to_be_kept');
+				const to_be_removed = this.stringBundle.getString('to_be_removed');
 				var sideUnused;
 				if ((!side && (columnUseLeftRadioButton.getAttribute('selected') == 'true')) || side == 'right') {
 					side = 'right';
@@ -1139,9 +1214,13 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 					this.columnUseRightRadioButton.setAttribute('selected', 'true');
 					document.getElementById('columnHeaderLeft').setAttribute('class', 'unused');
 					document.getElementById('columnHeaderRight').setAttribute('class', 'used');
+/* TODO remove
 					var temp = infoLeft.getAttribute('value');
 					infoLeft.value = infoRight.getAttribute('value');
 					infoRight.value = temp;
+*/
+					this.columnUseLeftRadioButton.label = to_be_removed;
+					this.columnUseRightRadioButton.label = to_be_kept;
 				}
 				else if ((!side && (columnUseRightRadioButton.getAttribute('selected') == 'true')) || side == 'left') {
 					side = 'left';
@@ -1150,11 +1229,15 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 					this.columnUseRightRadioButton.setAttribute('selected', 'false');
 					document.getElementById('columnHeaderLeft').setAttribute('class', 'used');
 					document.getElementById('columnHeaderRight').setAttribute('class', 'unused');
+/* TODO remove
 					var temp = infoLeft.getAttribute('value');
 					infoLeft.value = infoRight.getAttribute('value');
 					infoRight.value = temp;
+*/
+					this.columnUseLeftRadioButton.label = to_be_kept;
+					this.columnUseRightRadioButton.label = to_be_removed;
 				}
-				this.sideUsed = side;
+				this.sideKept = side;
 				for(let index = 0; index < this.displayedFields.length; index++) {
 					var cell1 = document.getElementById('cell_' + side       + '_' + this.displayedFields[index]);
 					var cell2 = document.getElementById('cell_' + sideUnused + '_' + this.displayedFields[index]);
@@ -1172,7 +1255,6 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 		 * Removes all rows (excluding header) from the attribute comparison & edit table.
 		 */
 		purgeAttributesTable: function() {
-			this.make_invisible('tableheader');
 			while(this.attributesTableRows.firstChild.nextSibling) {
 				this.attributesTableRows.removeChild(this.attributesTableRows.firstChild.nextSibling);
 			}
@@ -1197,10 +1279,21 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			return result;
 		},
 
+		propertySet: function(card, properties) {
+			var result = new Set();
+			for(let property of properties) { /* property is assumed not itself a set */
+				const defaultValue = this.defaultValue(property);
+				const value = this.getAbstractedTransformedProperty(card, property);
+				if (value != defaultValue)
+					result.add(value);
+			}
+			return result;
+		},
+
 		/**
 		 * Returns all cards from a directory in an array.
 		 */
-		getAllAbCards: function(directory)	{
+		getAllAbCards: function(directory) {
 			// Returns arrays with all vCards and mailing lists within given address book directory
 			var abCards = new Array;
 			let mailLists = new Array;
@@ -1213,7 +1306,7 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 							if (abCard.isMailList) {
 								const addressList = this.abManager.getDirectory(abCard.mailListURI).addressLists;
 								var primaryEmails = new Array;
-								for (let i = 0; i < addressList.length; i++)
+								for(let i = 0; i < addressList.length; i++)
 									primaryEmails.push(addressList.queryElementAt(i,
 									                    Components.interfaces.nsIAbCard).primaryEmail);
 								mailLists.push([abCard.displayName, primaryEmails]);
@@ -1227,17 +1320,45 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 					// Return empty array
 				}
 			}
-			abCards.forEach(function(abCard) {
+			for(let i = 0; i < abCards.length; i++) {
+				const abCard = abCards[i];
+
+				// calculate nonemptyFields and charWeight
+				var nonemptyFields = 0;
+				var charWeight = 0;
+				for(let index = 0; index < this.consideredFields.length; index++) {
+					const property = this.consideredFields[index];
+					if (this.isNumerical(property))
+						continue; /* ignore PopularityIndex, LastModifiedDate and other integers */
+					const defaultValue = this.defaultValue(property);
+					const value = abCard.getProperty(property, defaultValue);
+					if (value != defaultValue)
+						nonemptyFields += 1;
+					if (this.isText(property) || this.isEmail(property) || this.isPhoneNumber(property)) {
+						/* const tranformed_value = this.getTransformedProperty(c1, property); */
+						charWeight += this.charWeight(value, property);
+					}
+				}
+				abCard.setProperty('__NonEmptyFields', nonemptyFields);
+				abCard.setProperty('__CharWeight'    , charWeight);
+
 				// record all mailing lists that the card belongs to
-				var mailListNames = new Array();
+				var mailListNames = new Set();
 				const email = abCard.primaryEmail; // only this email address is relevant
 				if (email)
 					mailLists.forEach(function ([displayName, primaryEmails]) {
 						if (primaryEmails.includes(email))
-							mailListNames.push(displayName);
+							mailListNames.add(displayName);
 					})
-				abCard.setProperty('MailListNames', mailListNames);
-			})
+				abCard.setProperty('__MailListNames', mailListNames);
+
+				// set further virtual properties
+				// treat email addresses as a set
+				abCard.setProperty('__Emails', this.propertySet(abCard, ['PrimaryEmail', 'SecondEmail']));
+				// treat phone numbers as a set
+				abCard.setProperty('__PhoneNumbers', this.propertySet(abCard, ['HomePhone', 'WorkPhone',
+				                              'FaxNumber', 'PagerNumber', 'CellularNumber']));
+			}
 			return abCards;
 		},
 
@@ -1246,9 +1367,8 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			for(let i = 0; i < 2; i++) {
 				var it = i == 0 ? c1.properties : c2.properties;
 				while (it.hasMoreElements()) {
-					var property = it.getNext().QueryInterface(Components.interfaces.nsIProperty).name;
-					if (property != '__MailAddresses' && property != '__PhoneNumbers')
-						pushIfNew(property, union);
+					const property = it.getNext().QueryInterface(Components.interfaces.nsIProperty).name;
+					pushIfNew(property, union);
 				}
 			}
 			return union;
@@ -1306,120 +1426,108 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 		/**
 		 * @param	Array		Address book card 1
 		 * @param	Array		Address book card 2
-		 * @return [comparable, comparison] where if comparable = 1 then
-		 *          comparison > 0 if first card is more complete or else has higher char weight
-                                              or else higher PopularityIndex or else higher LastModifiedDate than second one
-		 *          comparison < 0 if first card is less complete or else has  lower char weight
-                                              or else  lower PopularityIndex or else  lower LastModifiedDate than second one
-		 *          comparison = 0 otherwise (that is, cards are equivalent with same char weight,
-                                                      PopularityIndex, and LastModifiedDate)
+		 * @return [comparison, preference] where
+		 *          comparison = 1 if second card has less information
+		 *          comparison = 0 if cards are equivalent
+		 *          comparison =-1 if first card has less information
+		 *          comparison =-2 if cards are incomparable
+		 *          preference > 0 if first card has more information
+		 *                            or else has more non-empty fields
+		 *                            or else has higher char weight
+		 *                            or else has higher PopularityIndex
+		 *                            or else has higher LastModifiedDate (if present in both)
+		 *                            than second one
+		 *          preference < 0 if second card ... than first one
+		 *          preference = 0 otherwise (that is, cards are equivalent or incomparable
+		 *                                    with same number of non-empty fields, char weight,
+		 *                                    PopularityIndex, and LastModifiedDate)
 		 */
 		abCardsCompare: function(c1, c2) {
-			var outer_this = this;
 			var nDiffs = 0; // unused
-			var incomparable = false;
 			var c1_less_complete = true;
 			var c2_less_complete = true;
-			var c1_charweight = 0;
-			var c2_charweight = 0;
-			var props = pushIfNew('PrimaryEmail', pushIfNew('HomePhone', this.propertyUnion(c1, c2)));
+			var props = this.propertyUnion(c1, c2);
 			for(let i = 0; i < props.length; i++) {
 				var property = props[i];
-				if (this.ignoreList.includes(property))
+				if (!this.consideredFields.includes(property) || /* do not compare ignored fields */
+				    this.isNumerical(property) || /* ignore PopularityIndex, LastModifiedDate and other integers */
+				    this.metaProperties.includes(property) || /* ignore meta properties */
+				    this.isEmail(property) || this.isPhoneNumber(property)) // virtual set property is compared instead
 					continue;
-				var str1 = this.getTransformedProperty(c1, property);
-				var str2 = this.getTransformedProperty(c2, property);
-				if (property != 'PhotoURI') {
-					// give preference to values with many non-digit/uppercase and special characters
-					var pat = this.isPhoneNumber(property) ? /[0-9]/g : /[a-z]/g;
-					c1_charweight += str1.replace(pat, '').length;
-					c2_charweight += str2.replace(pat, '').length;
-					// this.debug(property+": '"+str1+"' charweight = "+c1_charweight+" vs. '"+str2+"' charweight = "+c2_charweight);
-				}
-				if (property == 'SecondEmail')
-					continue; // will be treated along with PrimaryEmail
-				if (this.isPhoneNumber(property) && property != 'HomePhone')
-					continue; // will be treated along with HomePhone
-
-				const defaultValue = this.defaultValue(property);
+				const defaultValue = this.isSet(property) ? new Set() : this.defaultValue(property);
 				let value1, value2;
-				if (property == 'MailListNames' ) {
-					value1 = new Set(c1.getProperty(property, defaultValue));
-					value2 = new Set(c2.getProperty(property, defaultValue));
+				if (this.isSet(property) || property == 'PhotoURI') {
+					value1 = c1.getProperty(property, defaultValue);
+					value2 = c2.getProperty(property, defaultValue);
 				} else {
-					value1 = this.abstract(str1, property);
-					value2 = this.abstract(str2, property);
-				}
-				function make_set(card, properties, val) {
-					var set = new Set(properties.map(function(p) { return outer_this.getAbstractedTransformedProperty(card, p); } ));
-					set.add(val);
-					return set;
-				}
-				var diffProp = property;
-				if (property == 'PrimaryEmail') { // treat email addresses as a set
-					value1 = make_set(c1, ['SecondEmail'], value1);
-					value2 = make_set(c2, ['SecondEmail'], value2);
-					diffProp = "{PrimaryEmail,SecondEmail}";
-					c1.setProperty('__MailAddresses', value1);
-					c2.setProperty('__MailAddresses', value2);
-
-				} else if (property == 'HomePhone') { // treat phone numbers as a set
-					value1 = make_set(c1, ['WorkPhone', 'FaxNumber', 'PagerNumber', 'CellularNumber'], value1);
-					value2 = make_set(c2, ['WorkPhone', 'FaxNumber', 'PagerNumber', 'CellularNumber'], value2);
-					diffProp = "{CellularNumber,HomePhone,WorkPhone,FaxNumber,PagerNumber}";
-					c1.setProperty('__PhoneNumbers', value1);
-					c2.setProperty('__PhoneNumbers', value2);
+					value1 = this.getAbstractedTransformedProperty(c1, property);
+					value2 = this.getAbstractedTransformedProperty(c2, property);
 				}
 				if (value1 != value2) { // values not equivalent
+					var diffProp = property == '__MailListNames' ? "(MailingListMembership)" :
+					               property == '__Emails' ? "{PrimaryEmail,SecondEmail}" :
+					               property == '__PhoneNumbers' ? "{CellularNumber,HomePhone,WorkPhone,FaxNumber,PagerNumber}" :
+					               property;
 					pushIfNew(diffProp, this.nonequivalentProperties);
-					nDiffs++;
+					nDiffs++; // unused
+
 					// this.debug("abCardsCompare: "+property+" = "+value1+" vs. "+value2);
+					if (!c1_less_complete && !c2_less_complete)
+						continue; // already clear that cards are incomparable
+
+					// TODO combine these comparisons with those in displayCardField
 					if (this.isText(property)) {
-						if      (!value2.includes(value1))
+						if (!value2.includes(value1)) // value1 is substring of value2
 							c1_less_complete = false;
-						else if (!value1.includes(value2))
+						if (!value1.includes(value2)) // value2 is substring of value1
 							c2_less_complete = false;
-						else
-							c1_less_complete = c2_less_complete = false; // incomparable
-					} else if (property == 'MailListNames' || property == 'PrimaryEmail' || property == 'HomePhone') {
-						value1.delete(defaultValue); // defaultValue means value does not exist
-						value2.delete(defaultValue); // defaultValue means value does not exist
-						// this.debug(value1+" vs. "+value2+": "+value1.isSuperset(value2)+" "+value2.isSuperset(value1));
+					} else if (this.isSet(property)) { /* used for __MailListNames */
+						// this.debug("abCardsCompare: "+property+": "+value1.toString()+" vs. "+value2.toString()+": "+value1.isSuperset(value2)+" "+value2.isSuperset(value1));
 						if (!value2.isSuperset(value1))
 							c1_less_complete = false;
 						if (!value1.isSuperset(value2))
 							c2_less_complete = false;
-					} else if (value2 == defaultValue)
-						c1_less_complete = false;
-					else if (value1 == defaultValue)
-						c2_less_complete = false;
-					else if (!this.isInteger(property))
-						c1_less_complete = c2_less_complete = false; // incomparable
+					} else {
+						if (value1 != defaultValue)
+							c1_less_complete = false;
+						if (value2 != defaultValue)
+							c2_less_complete = false;
+					}
 				}
 			}
-			const debug_msg = "abCardsCompare: less_complete = "+c1_less_complete+" vs. "+c2_less_complete+
-			                                ", charweight = "   +c1_charweight   +" vs. "+c2_charweight;
-			// this.debug(debug_msg);
-			var comparable = true;
 			/*
-			 * even for the case that 'comparable' will be set to 'false'
-			 * determine some preference for deletion for one card of matching pairs,
-			 * using those properties satisfying this.isInteger()
-			 */
-			var comparison = c1_charweight - c2_charweight;
-			if (comparison == 0)
-				comparison = c1.getProperty('PopularityIndex' , 0) -
-				             c2.getProperty('PopularityIndex' , 0);
-			if (comparison == 0)
-				comparison = c1.getProperty('LastModifiedDate', 0) -
-				             c2.getProperty('LastModifiedDate', 0);
-			if (c1_less_complete && c2_less_complete) // cards equivalent (equal modulo abstraction)
-				; // use 'comparison' as computed above
-			else if (c2_less_complete) comparison =  1;
-			else if (c1_less_complete) comparison = -1;
-			else comparable = false; // use 'comparison' as computed above
-			// this.debug("abCardsCompare: "+[comparable, comparison]+" for "+this.getProperty(card1, 'DisplayName')+" vs. "+this.getProperty(card2, 'DisplayName'));
-			return [comparable, comparison];
+			const debug_msg = "abCardsCompare: "+
+			      "less_complete = " +c1_less_complete                     +" vs. "+c2_less_complete+
+                            ", nonemptyFields = "+c1.getProperty('__NonEmptyFields', 0)+" vs. "+c2.getProperty('__NonEmptyFields', 0)+
+			    ", charWeight = "    +c1.getProperty('__CharWeight', 0)    +" vs. "+c2.getProperty('__CharWeight', 0);
+			this.debug(debug_msg);
+			*/
+			if (c1_less_complete != c2_less_complete) {
+				comparison = preference = c1_less_complete ? -1 : 1;
+			} else {
+				comparison = c1_less_complete ? 0/* equivalent */ : -2/* incomparable */;
+				/*
+				 * in case of equivalence and also if incomparable
+				 * determine some preference for deletion for one card of matching pairs,
+				 * using those non-ignored properties satisfying this.isNumerical()
+				 */
+				var preference = c1.getProperty('__NonEmptyFields', 0) -
+				                 c2.getProperty('__NonEmptyFields', 0);
+				if (preference == 0)
+					preference = c1.getProperty('__CharWeight', 0) -
+					             c2.getProperty('__CharWeight', 0);
+				if (preference == 0)
+					preference = c1.getProperty('PopularityIndex' , 0) -
+					             c2.getProperty('PopularityIndex' , 0);
+				if (preference == 0) {
+					const date1 = c1.getProperty('LastModifiedDate', 0);
+					const date2 = c2.getProperty('LastModifiedDate', 0);
+					if (date1 != 0 && date2 != 0)
+						preference = date1 - date2;
+				}
+			}
+			// this.debug("abCardsCompare: comparison = "+comparison+" preference = "+preference+" for "+this.getProperty(c1, 'DisplayName')+" vs. "+this.getProperty(c2, 'DisplayName'));
+			return [comparison, preference];
 		},
 
 		enable: function(id) {
@@ -1430,17 +1538,20 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 		},
 
 		show: function(id) {
-			document.getElementById(id).setAttribute('style', 'display: block');
+			document.getElementById(id).style.display=""; /* remove display property, restoring default */
+		},
+		show_hack: function(id) {
+			document.getElementById(id).style.display='-moz-inline-stack'; /* enables scroll bar and stretches horizonally */
 		},
 		hide: function(id) {
-			document.getElementById(id).setAttribute('style', 'display: none');
+			document.getElementById(id).style.display='none';
 		},
 
 		make_visible: function(id) {
-			document.getElementById(id).setAttribute('style', 'visibility: visible');
+			document.getElementById(id).style.visibility='visible';
 		},
 		make_invisible: function(id) {
-			document.getElementById(id).setAttribute('style', 'visibility: hidden');
+			document.getElementById(id).style.visibility='hidden';
 		},
 
 		pruneText: function(text, property) { // this does not remove any real information and keeps letter case
@@ -1459,10 +1570,10 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			return text;
 		},
 
-		getPrunedProperty: function(card, property) {
+		getPrunedProperty: function(card, property) { /* sets are treated as strings here */
 			// filter out ignored fields
 			const defaultValue = this.defaultValue(property);
-			if (this.ignoreList.includes(property))
+			if (this.ignoredFields.includes(property))
 				return defaultValue; // do not use these for comparison
 			var value = this.pruneText(this.getProperty(card, property), property);
 
@@ -1471,7 +1582,7 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 				if (value == this.getPrunedProperty(card, 'PrimaryEmail') ||
 				    value == this.getPrunedProperty(card,  'SecondEmail'))
 					return defaultValue;
-			if (property.match(/Email$/))
+			if (this.isEmail(property))
 				value = value.replace(/@googlemail.com$/i, "@gmail.com");
 			// if (value.match(/^UID=[A-Fa-f0-9\-]{36}$/)) { return defaultValue; }
 			return value;
@@ -1565,7 +1676,7 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			  .replace(/\s+$/, "");
 		},
 
-		createMenuList: function(cls, labels, values, selected, showsel) {
+		createMenuList: function(cls, labels, values, selected) {
 			var menulist = document.createElement('menulist');
 			if (cls != null)
 				menulist.setAttribute('class', cls);
@@ -1581,7 +1692,7 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 				menuitem.setAttribute('value', values[index]);
 				if (values[index] == selected) {
 					menuitem.setAttribute('selected' ,'true');
-					menupopup.selectedItem = (showsel ? menuitem : null);
+					menupopup.selectedItem = menuitem;
 				}
 				menupopup.appendChild(menuitem);
 			}

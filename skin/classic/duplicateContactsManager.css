@@ -38,18 +38,25 @@
 }
 #handleDuplicates-window description.fields_wide {
 	/* width: 450px; is ignored anyway */
+	margin-top: 5px;
+	margin-left: 1em;
+	font-family: monospace;
+	font-size: smaller;
+	/* user-select: text; not (yet) supported */
+	-moz-user-select: text;
 }
 
 #handleDuplicates-window {
-/*	height: 780px; *//* somehow gets ignored anyway */
-	min-height: 780px;
+/*	min-height: 320px; */
+	height: 600px; /* initially */
 /*	max-height: 900px; */
-	min-width: 700px;
-	width: 810px;
+/*	min-width: 480px; */
+	width: 800px; /* initially */
 }
 #handleDuplicates-window #explanation, #handleDuplicates-window #AttributesTable, #handleDuplicates-window #endinfo {
-/*	min-height: 400px;*//* somehow gets ignored anyway */
-	height: 800px; /* max? */
+/*	display: contents; *//* must not be used for #AttributesTable */
+/*	box-sizing: border-box; not needed */
+/*	background-color: azure; *//* useful for debugging */
 	overflow-y: auto; /* scrollbar when needed */
 }
 
@@ -59,9 +66,6 @@
 	padding: 10px;
 	border: 1px inset;
 }
-#handleDuplicates-window #duplicatesButtonsBox {
-	padding-bottom: 10px;
-}
 
 #handleDuplicates-window radio#columnUseLeft, #handleDuplicates-window radio#columnUseRight {
 	padding: 4px 0px 0px 0px;
@@ -70,27 +74,37 @@
 }
 
 #handleDuplicates-window label#columnKeptInfoLeft, #handleDuplicates-window label#columnKeptInfoRight {
-	padding: 0px 0px 6px 10px;
+/*	padding: 0px 0px 6px 10px; *//* superscript */
 }
 
 #handleDuplicates-window #statusBar {
+	display: flex;  /* critical for wrapping withinn sub-elements */
 	margin-left: 10px;
 	margin-bottom: 10px;
 }
 
 #handleDuplicates-window #statusText_label {
-	width: 9em; /* wrapping text does not work, not even for <description> */
+/*	width: 9em; */
 	font-weight: bold;
 	color: #aa0000;
 }
 
 #handleDuplicates-window #progressMeter {
+	padding-top: 15px; /* workaround: this for some weird reason reduces the strange empty space above */
 	min-width: 7em;
-	max-height: 1.2em;
+}
+#handleDuplicates-window .progress-bar {
+    margin-top: -15px; /* workaround: makes the progress bar visible again */
+}
+
+#handleDuplicates-window #tablepane {
+	display: contents; /* would be best, is supported by more recent Thunderbird versions. Used here as fallback for deprecated '-moz-inline-stack', which is used as a hack replacing display: block, which would not stretch content horizontally */
+/*	background-color: blue; *//* useful for debugging */
 }
 #handleDuplicates-window #AttributesTable {
 	margin: 10px 20px 5px 15px;
-	width: 2000px; /* max; used to spread the cells */
+/*	width: 1900px; *//* max width, could be used to spread the cells; value suitable for full HD display */
+/*	direction: rtl; *//* hack to put the vertical scroll bar to the left */
 }
 #handleDuplicates-window #tableheader {
 	font-weight: bold;
@@ -101,6 +115,7 @@
 }
 
 #handleDuplicates-window #AttributesTableRows {
+/*	direction: ltr; *//* hack to put the vertical scroll bar to the left: restore direction */
 }
 
 #handleDuqplicates-window #AttributesTableRows row hbox {
@@ -128,8 +143,9 @@
 }
 
 #handleDuplicates-window #duplicatesButtonsBox {
-	margin: 10px;
+	margin: 5px;
 	text-align: center;
+	padding-bottom: 5px;
 }
 
 #handleDuplicates-window .used {
@@ -146,9 +162,6 @@
 }
 #handleDuplicates-window #explanation description {
 	padding: 4px;
-	display: block;
-	width: auto;
-/*	height: auto; */
 	text-align: left;
 }
 #handleDuplicates-window #explanation .low {
@@ -174,7 +187,7 @@
 }
 
 #handleDuplicates-window #endinfo {
-	text-align: center; /* aligns the sub-box; align, box-align, and box-pack do not help */
+/*	text-align: left; *//* aligns the sub-box; align, box-align, and box-pack do not help */
 }
 
 #handleDuplicates-window hbox.addressbooklists .addressbookname {
@@ -191,9 +204,26 @@
 
 #handleDuplicates-window #bottom{
 	margin-top: -15px;
+/*	box-sizing: border-box; not needed */
 }
 
-#handleDuplicates-window #mainbox{
-/*	min-width: 850px;
-	overflow: auto; */
+/*#handleDuplicates-window #mainbox{
+	box-sizing: border-box;
+}*/
+
+#handleDuplicates-window{
+/*	box-sizing: border-box; not needed */
+/*
+	display: block;
+	height: 100%;
+	min-width: 850px;
+	overflow: auto;
+	height: 100%;
+*/
+/*
+	box-sizing: border-box;
+	display: -moz-box;
+	float: none;
+	position: static;
+*/
 }

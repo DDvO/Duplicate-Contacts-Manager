@@ -28,8 +28,8 @@
 <!ENTITY handleDuplicates.natTrunkPrefix		"Préfixe de numéro de téléphone national, par ex. '0'">
 <!ENTITY handleDuplicates.intCallPrefix			"Préfixe de numéro de téléphone international, par ex. '00'">
 <!ENTITY handleDuplicates.countryCallingCode		"Code international par défaut, par ex. '+33'">
-<!ENTITY handleDuplicates.considerFields		"Champs à considérer">
-<!ENTITY handleDuplicates.ignoreFields			"Champs à ignorer">
+<!ENTITY handleDuplicates.consideredFields		"Champs à considérer">
+<!ENTITY handleDuplicates.ignoredFields			"Champs à ignorer">
 <!ENTITY handleDuplicates.introtext3			"Vous pouvez tout arrêter à n'importe quel moment en pressant sur 'Annuler'. Si vous ne voulez pas traiter un doublon, utilisez le bouton 'Passer'.">
 <!ENTITY handleDuplicates.introtext4			"Si vous souhaitez enregistrer les modifications et conserver les deux entrées, cliquez sur 'Conserver les deux'; pour supprimer une entrée, cliquez sur 'Supprimer un'.">
 <!ENTITY handleDuplicates.options			"Options">
@@ -52,8 +52,6 @@
 <!ENTITY handleDuplicates.feedbackMail			"duplicate-contact-manager-for-thunderbird@googlegroups.com">
 <!ENTITY handleDuplicates.devSiteUrl			"http://code.google.com/p/duplicate-contact-manager-for-thundebird/">
 
-<!ENTITY handleDuplicates.pleasepressstart		"Appuyer sur Démarrer SVP.">
-
 <!ENTITY handleDuplicates.startbutton.label		"Démarrer">
 <!ENTITY handleDuplicates.startbutton.accesskey		"D">
 <!ENTITY handleDuplicates.applynextbutton.label		"Supprimer un &#62;">
@@ -64,10 +62,9 @@
 <!ENTITY handleDuplicates.skipnextbutton.accesskey	"P">
 <!ENTITY handleDuplicates.stopbutton.label		"Annuler">
 <!ENTITY handleDuplicates.quitbutton.label		"Quitter">
-<!ENTITY handleDuplicates.firstcontact			"Premier Contact">
-<!ENTITY handleDuplicates.secondcontact			"Second Contact">
-<!ENTITY handleDuplicates.will_be_kept			"à conserver">
-<!ENTITY handleDuplicates.will_be_removed		"à enlever">
+<!ENTITY handleDuplicates.contact			"Contact">
+<!ENTITY handleDuplicates.firstcontact			"Premier contact">
+<!ENTITY handleDuplicates.secondcontact			"Second contact">
 <!ENTITY handleDuplicates.empty				"vide">
 <!ENTITY handleDuplicates.status_default		"Recherche des doublons en cours...">
 <!ENTITY handleDuplicates.status_nonefound		"Aucun doublon n'a été trouvé">

@@ -26,8 +26,8 @@
 <!ENTITY handleDuplicates.natTrunkPrefix		"National phone number trunk prefix, e.g., '1' or '0'">
 <!ENTITY handleDuplicates.intCallPrefix			"International call (IDD) prefix, e.g., '011' or '00'">
 <!ENTITY handleDuplicates.countryCallingCode		"Default country calling code, e.g., '+1' or '+44'">
-<!ENTITY handleDuplicates.considerFields		"Fields to consider">
-<!ENTITY handleDuplicates.ignoreFields			"Fields to ignore">
+<!ENTITY handleDuplicates.consideredFields		"Fields to consider">
+<!ENTITY handleDuplicates.ignoredFields			"Fields to ignore">
 <!ENTITY handleDuplicates.introtext3			"If you do not want to treat a potential duplicate, use 'Skip'. You can abort the process by pressing 'Stop'.">
 <!ENTITY handleDuplicates.introtext4			"If you want to save changes and keep both entries, press 'Keep both'; for deleting one entry and keeping the other, press 'Remove one'.">
 <!ENTITY handleDuplicates.options			"Options">
@@ -50,8 +50,6 @@
 <!ENTITY handleDuplicates.feedbackMail			"duplicate-contact-manager-for-thunderbird@googlegroups.com">
 <!ENTITY handleDuplicates.devSiteUrl			"https://github.com/DDvO/Duplicate-Contacts-Manager">
 
-<!ENTITY handleDuplicates.pleasepressstart		"Please press Start.">
-
 <!ENTITY handleDuplicates.startbutton.label		"Start">
 <!ENTITY handleDuplicates.startbutton.accesskey		"a">
 <!ENTITY handleDuplicates.applynextbutton.label		"Remove one &#62;">
@@ -62,10 +60,9 @@
 <!ENTITY handleDuplicates.skipnextbutton.accesskey	"i">
 <!ENTITY handleDuplicates.stopbutton.label		"Stop">
 <!ENTITY handleDuplicates.quitbutton.label		"Quit">
-<!ENTITY handleDuplicates.firstcontact			"First Entry">
-<!ENTITY handleDuplicates.secondcontact			"Second Entry">
-<!ENTITY handleDuplicates.will_be_kept			"to be saved">
-<!ENTITY handleDuplicates.will_be_removed		"to be removed">
+<!ENTITY handleDuplicates.contact			"Entry">
+<!ENTITY handleDuplicates.firstcontact			"First entry">
+<!ENTITY handleDuplicates.secondcontact			"Second entry">
 <!ENTITY handleDuplicates.empty				"empty">
 <!ENTITY handleDuplicates.status_default		"Searching for duplicates...">
 <!ENTITY handleDuplicates.status_nonefound		"No duplicates found">

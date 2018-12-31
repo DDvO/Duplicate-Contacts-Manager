@@ -28,8 +28,8 @@
 <!ENTITY handleDuplicates.natTrunkPrefix		"Prefijo de número de teléfono nacional, p. '0'">
 <!ENTITY handleDuplicates.intCallPrefix			"Prefijo de número de teléfono internacional, p. '00'">
 <!ENTITY handleDuplicates.countryCallingCode		"Prefijo internacional predeterminado, p. '+34'">
-<!ENTITY handleDuplicates.considerFields		"Campos a considerar">
-<!ENTITY handleDuplicates.ignoreFields			"Campos para ignorar">
+<!ENTITY handleDuplicates.consideredFields		"Campos a considerar">
+<!ENTITY handleDuplicates.ignoredFields			"Campos para ignorar">
 <!ENTITY handleDuplicates.introtext3			"Se puede abandonar el proceso en cualquier momento presionando la tecla 'Cancelar'. Si no se quieren hacer cambios a un duplicado, se usa la tecla 'Saltar'.">
 <!ENTITY handleDuplicates.introtext4			"Si desea guardar los cambios y mantener ambas entradas, haga clic en 'Conservar ambos'; para eliminar una entrada, haga clic en 'Eliminar uno'.">
 <!ENTITY handleDuplicates.options			"Opciones">
@@ -52,8 +52,6 @@
 <!ENTITY handleDuplicates.feedbackMail			"duplicate-contact-manager-for-thunderbird@googlegroups.com">
 <!ENTITY handleDuplicates.devSiteUrl			"http://code.google.com/p/duplicate-contact-manager-for-thundebird/">
 
-<!ENTITY handleDuplicates.pleasepressstart		"Por favor presione Inicio.">
-
 <!ENTITY handleDuplicates.startbutton.label		"Inicio">
 <!ENTITY handleDuplicates.startbutton.accesskey		"I">
 <!ENTITY handleDuplicates.applynextbutton.label		"Eliminar uno &#62;">
@@ -64,10 +62,9 @@
 <!ENTITY handleDuplicates.skipnextbutton.accesskey	"S">
 <!ENTITY handleDuplicates.stopbutton.label		"Cancelar">
 <!ENTITY handleDuplicates.quitbutton.label		"Salir">
+<!ENTITY handleDuplicates.contact			"Contacto">
 <!ENTITY handleDuplicates.firstcontact			"Primer contacto">
-<!ENTITY handleDuplicates.secondcontact			"Segundo Contacto">
-<!ENTITY handleDuplicates.will_be_kept			"Será guardado">
-<!ENTITY handleDuplicates.will_be_removed		"Será borrado">
+<!ENTITY handleDuplicates.secondcontact			"Segundo contacto">
 <!ENTITY handleDuplicates.empty				"Vacío">
 <!ENTITY handleDuplicates.status_default		"Buscando contactos duplicados...">
 <!ENTITY handleDuplicates.status_nonefound		"No se encontraron contactos duplicados">
