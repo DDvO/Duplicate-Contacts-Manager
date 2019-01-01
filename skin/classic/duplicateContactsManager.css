@@ -67,14 +67,10 @@
 	border: 1px inset;
 }
 
-#handleDuplicates-window radio#columnUseLeft, #handleDuplicates-window radio#columnUseRight {
+#handleDuplicates-window radio#keepLeft, #handleDuplicates-window radio#keepRight {
 	padding: 4px 0px 0px 0px;
 	font-weight: bold;
 /*	background-color: #cccc00 !important; does not work - why? */
-}
-
-#handleDuplicates-window label#columnKeptInfoLeft, #handleDuplicates-window label#columnKeptInfoRight {
-/*	padding: 0px 0px 6px 10px; *//* superscript */
 }
 
 #handleDuplicates-window #statusBar {
@@ -148,10 +144,10 @@
 	padding-bottom: 5px;
 }
 
-#handleDuplicates-window .used {
+#handleDuplicates-window .keep {
 	background-color: #D3FFD3;
 }
-#handleDuplicates-window .unused {
+#handleDuplicates-window .remove {
 	background-color: #FFBFBF;
 }
 #handleDuplicates-window #explanation {
@@ -168,7 +164,7 @@
 /*	height: 10px !important;  does not work - why? */
 }
 
-#handleDuplicates-window .explheader {
+#handleDuplicates-window .descTitle {
 	font-size: 14px;
 	font-weight: bold;
 	font-size: 1.2em;

@@ -80,7 +80,7 @@
 		</hbox>
 		<hbox id="explanation" flex="1" style="display: none"> <!-- flex is critical here for vertical scroll -->
 			<vbox flex="1" style="text-align: center">
-				<description class="explheader">&handleDuplicates.introheader;</description>
+				<description class="descTitle">&handleDuplicates.introheader;</description>
 				<description>&handleDuplicates.introtext;</description>
 				<description>&handleDuplicates.chooseSecondary;</description>
 				<hbox id="addressbooklists"></hbox>
@@ -88,7 +88,7 @@
 				<description>&handleDuplicates.differentiator;</description>
 				<description>&handleDuplicates.introtext3;</description>
 				<description>&handleDuplicates.introtext4;</description>
-				<description class="explheader">&handleDuplicates.options;</description>
+				<description class="descTitle">&handleDuplicates.options;</description>
 				<checkbox id="autoremove" label="&handleDuplicates.removeWithoutAsking;" />
 				<checkbox id="preservefirst" label="&handleDuplicates.preserveFirst;" />
 				<checkbox id="deferInteractive" label="&handleDuplicates.deferInteractive;" />
@@ -116,22 +116,14 @@
 					<columns><column flex="0" /><column flex="3" /><column class="equivalence" flex="0" /><column flex="3" /></columns>
 					<rows id="AttributesTableRows">
 						<row id="tableheader">
-					                <radiogroup_disabled orient="horizontal" style="display: contents"><!-- would break layout unless display: contents is supported. Disabling it as minor drawback: on click, logs TypeError: this.control is null  radio.xml:521:13  onxblmousedown -->
+					                <radiogroup_disabled orient="horizontal" style="display: contents"><!-- would break layout unless display: contents is supported. isabling it as minor drawback: on click, logs TypeError: this.control is null  radio.xml:521:13  onxblmousedown -->
 							<label id="fieldLabels" class="field" value=" " />
-							<hbox id="columnHeaderLeft" class="used" oncommand="DuplicateEntriesWindow.toggleContactLeftRight('left')">
-							<!--
-								<radio id="columnUseLeft" label="&handleDuplicates.firstcontact;" selected="true" />
-								<label id="columnKeptInfoLeft" value="&handleDuplicates.will_be_kept;" />
-							-->
-								<radio id="columnUseLeft" label="will_be_kept" />
+							<hbox id="headerLeft" class="keep" oncommand="DuplicateEntriesWindow.setContactLeftRight('left')">
+								<radio id="keepLeft" label="will_be_kept" selected="true"/>
 							</hbox>
 							<description id="cardsEqu" class="equivalence" value="" />
-							<hbox id="columnHeaderRight" class="unused" oncommand="DuplicateEntriesWindow.toggleContactLeftRight('right')">
-							<!--
-								<radio id="columnUseRight" label="&handleDuplicates.secondcontact;" selected="false" />
-								<label id="columnKeptInfoRight" value="&handleDuplicates.will_be_removed;" />
-							-->
-								<radio id="columnUseRight" label="will_be_removed" />
+							<hbox id="headerRight" class="remove" oncommand="DuplicateEntriesWindow.setContactLeftRight('right')">
+								<radio id="keepRight" label="will_be_removed" />
 							</hbox>
 					                </radiogroup_disabled>
 						</row>
@@ -140,7 +132,7 @@
 		</hbox>
 		<hbox id="endinfo" flex="1" style="display: none"> <!-- flex is helpful here for vertical scroll -->
 			<vbox flex="1">
-				<description class="explheader">&handleDuplicates.endheader;</description>
+				<description class="descTitle">&handleDuplicates.endheader;</description>
 				<vbox class="tbox">
 					<hbox><description class="text-line" value="&handleDuplicates.endtext.numBefore;:" />
 					      <description class="text-line  value" id="resultNumBefore" value="0" /></hbox>

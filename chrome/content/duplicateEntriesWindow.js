@@ -4,6 +4,8 @@
 // This file includes UTF-8 encoding. Please make sure your text editor can deal with this prior to saving any changes!
 
 /* Change history:
+## Version 1.0.9:
+ * fix bug introduced in version 1.0.8 regarding manual selection which side to keep
 ## Version 1.0.8:
  * make vertical size more flexible for small displays
  * fix display layout for overlong list membership information etc.
@@ -84,11 +86,11 @@ function pushIfNew(elem, array) { /* well, this 'function' has a side effect on 
 	return array;
 }
 /*
-Array.prototype.pushIfNew = function(elem) {
+T.prototype.pushIfNew = function(elem) {
 	if (!this.includes(elem))
 		this.push(elem);
 	return this;
-would be an elegant extension of a built-in JS type. Yet in TB this not allowed for security and compatibility reasons.
+where T = Array would be an elegant extension of the built-in JS type Array. Yet in TB this not allowed for security and compatibility reasons.
 It also would have the weird effect of adding an extra enumerable value to each array, as described here:
 https://stackoverflow.com/questions/948358/adding-custom-functions-into-array-prototype
 The following does not really work better:
@@ -133,8 +135,8 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 		editableFields: null,
 
 		sideKept: 'left',
-		columnUseLeftRadioButton: null,
-		columnUseRightRadioButton: null,
+		keepLeftRadioButton: null,
+		keepRightRadioButton: null,
 
 		abURI1: null,
 		abURI2: null,
@@ -286,8 +288,8 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			this.progressmeter = document.getElementById('progressMeter');
 			this.window = document.getElementById('handleDuplicates-window');
 			this.attributesTableRows = document.getElementById('AttributesTableRows');
-			this.columnUseLeftRadioButton = document.getElementById('columnUseLeft');
-			this.columnUseRightRadioButton = document.getElementById('columnUseRight');
+			this.keepLeftRadioButton = document.getElementById('keepLeft');
+			this.keepRightRadioButton = document.getElementById('keepRight');
 			this.hide('statusAddressBook1');
 			this.hide('statusAddressBook2');
 			this.hide('tablepane');
@@ -983,9 +985,9 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 				}
 			}
 			// only non-identical and not set-equal properties should be highlighted by color
-			if (identical == 0) {
-				cell1.setAttribute('class', this.sideKept == 'left' ? 'used' : 'unused');
-				cell2.setAttribute('class', this.sideKept == 'left' ? 'unused' : 'used');
+			if (!identical) {
+				cell1.setAttribute('class', this.sideKept == 'left' ? 'keep' : 'remove');
+				cell2.setAttribute('class', this.sideKept == 'left' ? 'remove' : 'keep');
 			}
 			if (both_empty)
 				equ = '';
@@ -1020,8 +1022,9 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			}
 			else {
 				function make_valuebox(value) {
-					const valuebox = document.createElement(editable ? 'textbox' :
-					                   property == '__MailListNames' ? 'description' : 'label');
+					const valuebox = editable ? document.createElement('textbox') :
+					                 property == '__MailListNames' ? document.createElement('description')
+					                                               : document.createElement('label');
 					valuebox.className = 'textbox';
 					if (property == '__MailListNames') {
 						valuebox.textContent = value;
@@ -1194,59 +1197,32 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 		},
 
 		/**
-		 * Marks the specified side as selected to be kept.
-		 * If used without parameter, the current selection is toggled.
-		 * If used with "left" or "right" as parameter, the selection is set accordingly.
+		 * Marks the side specified by the parameter "left" or "right" as to be kept.
+		 * If no parameter is given (or the side parameter is null) the selection is toggled.
 		 */
 		setContactLeftRight: function(side) {
-			if (true/* TODO remove: !side || (side != this.sideKept)*/) {
-/* TODO remove
-				var infoLeft  = document.getElementById('columnKeptInfoLeft');
-				var infoRight = document.getElementById('columnKeptInfoRight');
-*/
-				const to_be_kept = this.stringBundle.getString('to_be_kept');
-				const to_be_removed = this.stringBundle.getString('to_be_removed');
-				var sideUnused;
-				if ((!side && (columnUseLeftRadioButton.getAttribute('selected') == 'true')) || side == 'right') {
-					side = 'right';
-					sideUnused = 'left';
-					this.columnUseLeftRadioButton.setAttribute('selected', 'false');
-					this.columnUseRightRadioButton.setAttribute('selected', 'true');
-					document.getElementById('columnHeaderLeft').setAttribute('class', 'unused');
-					document.getElementById('columnHeaderRight').setAttribute('class', 'used');
-/* TODO remove
-					var temp = infoLeft.getAttribute('value');
-					infoLeft.value = infoRight.getAttribute('value');
-					infoRight.value = temp;
-*/
-					this.columnUseLeftRadioButton.label = to_be_removed;
-					this.columnUseRightRadioButton.label = to_be_kept;
-				}
-				else if ((!side && (columnUseRightRadioButton.getAttribute('selected') == 'true')) || side == 'left') {
-					side = 'left';
-					sideUnused = 'right';
-					this.columnUseLeftRadioButton.setAttribute('selected', 'true');
-					this.columnUseRightRadioButton.setAttribute('selected', 'false');
-					document.getElementById('columnHeaderLeft').setAttribute('class', 'used');
-					document.getElementById('columnHeaderRight').setAttribute('class', 'unused');
-/* TODO remove
-					var temp = infoLeft.getAttribute('value');
-					infoLeft.value = infoRight.getAttribute('value');
-					infoRight.value = temp;
-*/
-					this.columnUseLeftRadioButton.label = to_be_kept;
-					this.columnUseRightRadioButton.label = to_be_removed;
-				}
+			if (!side)
+				side = keepLeftRadioButton.getAttribute('selected') == 'true' ? 'right' : 'left';
+			const other = side == 'right' ? 'left' : 'right';
+			/* always set the label because initially the localization is not set in the .xul file */
+			const to_be_kept    = this.stringBundle.getString('to_be_kept');
+			const to_be_removed = this.stringBundle.getString('to_be_removed');
+			this.keepLeftRadioButton .label = side == 'right' ? to_be_removed : to_be_kept;
+			this.keepRightRadioButton.label = side == 'right' ? to_be_kept : to_be_removed;
+
+			if (side != this.sideKept) {
 				this.sideKept = side;
+				this.keepLeftRadioButton .setAttribute('selected', side == 'right' ? 'false' : 'true');
+				this.keepRightRadioButton.setAttribute('selected', side == 'right' ? 'true' : 'false');
+				document.getElementById('headerLeft' ).className = side == 'right' ? 'remove' : 'keep';
+				document.getElementById('headerRight').className = side == 'right' ? 'keep': 'remove';
 				for(let index = 0; index < this.displayedFields.length; index++) {
-					var cell1 = document.getElementById('cell_' + side       + '_' + this.displayedFields[index]);
-					var cell2 = document.getElementById('cell_' + sideUnused + '_' + this.displayedFields[index]);
-					if (cell1.getAttribute('class') == 'unused') {
-						  cell1.setAttribute('class', 'used');
-					}
-					if (cell2.getAttribute('class') == 'used') {
-						  cell2.setAttribute('class', 'unused');
-					}
+					var cell1 = document.getElementById('cell_' + side  + '_' + this.displayedFields[index]);
+					var cell2 = document.getElementById('cell_' + other + '_' + this.displayedFields[index]);
+					if (cell1.className == 'remove')
+						  cell1.className = 'keep';
+					if (cell2.className == 'keep')
+						  cell2.className = 'remove';
 				}
 			}
 		},
