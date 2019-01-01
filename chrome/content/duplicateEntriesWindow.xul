@@ -58,14 +58,14 @@
 				oncommand="window.close()" /> <!--disabled="false"-->
 		</hbox>
 		<hbox id="statusBar">
-			<div id="statusText" flex="2">
-				<description id="statusText_label">&handleDuplicates.status_default;</description> <!-- to enable wrapping text, textContent is used rather than 'value' attribute -->
+			<div id="statusText_container" flex="2">
+				<description id="statusText">&handleDuplicates.status_default;</description> <!-- to enable wrapping text, use textContent rather than 'value' attribute -->
 			</div>
 			<spacer flex="1"/>
-			<span id="statusAddressBook1" flex="3" style="display: none">
+			<div id="statusAddressBook1" flex="3" style="display: none">
 				<label id="statusAddressBook1_label" value="AddressBook1" class="addressbookname" />
 				<label id="statusAddressBook1_size" value="" />
-			</span>
+			</div>
 			<spacer flex="1"/>
 			<div id="progress" flex="2">
 				<progressmeter id="progressMeter" mode="determined" value="0%" style="display: none" />
@@ -86,8 +86,10 @@
 				<hbox id="addressbooklists"></hbox>
 				<description>&handleDuplicates.introtext2;</description>
 				<description>&handleDuplicates.differentiator;</description>
+                                <!--
 				<description>&handleDuplicates.introtext3;</description>
 				<description>&handleDuplicates.introtext4;</description>
+                                -->
 				<description class="descTitle">&handleDuplicates.options;</description>
 				<checkbox id="autoremove" label="&handleDuplicates.removeWithoutAsking;" />
 				<checkbox id="preservefirst" label="&handleDuplicates.preserveFirst;" />
@@ -106,7 +108,7 @@
 					<description>&handleDuplicates.countryCallingCode;</description>
 				</hbox>
 				<description>&handleDuplicates.consideredFields;: </description>
-				<description class="text-line value fields_wide" id="consideredFields"></description>
+				<description class="text-line value fields" id="consideredFields"></description>
 				<description>&handleDuplicates.ignoredFields;: </description>
 				<textbox multiline="true" id="ignoredFields" cols="90" />
 			</vbox>
@@ -119,11 +121,11 @@
 					                <radiogroup_disabled orient="horizontal" style="display: contents"><!-- would break layout unless display: contents is supported. isabling it as minor drawback: on click, logs TypeError: this.control is null  radio.xml:521:13  onxblmousedown -->
 							<label id="fieldLabels" class="field" value=" " />
 							<hbox id="headerLeft" class="keep" oncommand="DuplicateEntriesWindow.setContactLeftRight('left')">
-								<radio id="keepLeft" label="will_be_kept" selected="true"/>
+								<radio id="keepLeft" label="to_be_kept" selected="true"/>
 							</hbox>
 							<description id="cardsEqu" class="equivalence" value="" />
 							<hbox id="headerRight" class="remove" oncommand="DuplicateEntriesWindow.setContactLeftRight('right')">
-								<radio id="keepRight" label="will_be_removed" />
+								<radio id="keepRight" label="to_be_removed" />
 							</hbox>
 					                </radiogroup_disabled>
 						</row>
@@ -147,11 +149,11 @@
 					<hbox><description class="text-line" value="&handleDuplicates.endtext.numSkipped;:" />
 					      <description class="text-line  value" id="resultNumSkipped" value="0" /></hbox>
 					<hbox><description>&handleDuplicates.endtext.diffProps;: </description></hbox>
-					      <description class="text-line value fields_wide" id="resultDiffProps" />
+					      <description class="text-line value fields" id="resultDiffProps" />
 					<hbox><description>&handleDuplicates.consideredFields;: </description></hbox>
-					      <description class="text-line value fields_wide" id="resultConsideredFields" />
+					      <description class="text-line value fields" id="resultConsideredFields" />
 					<hbox><description>&handleDuplicates.endtext.ignoredFields;: </description></hbox>
-					      <description class="text-line value fields_wide" id="resultIgnoredFields" />
+					      <description class="text-line value fields" id="resultIgnoredFields" />
 				</vbox>
 				<vbox class="tbox">
 					<description>&handleDuplicates.endtext.helpDevelopment;</description>

@@ -20,10 +20,6 @@
 	text-decoration: underline;
 }
 
-#handleDuplicates-window .error-message {
-	color: red;
-}
-
 #handleDuplicates-window description.text-line {
 	padding-top: 2px;
 	padding-bottom: 2px;
@@ -36,9 +32,9 @@
 	margin-left: 0px;
 	padding-left: 0px;
 }
-#handleDuplicates-window description.fields_wide {
-	/* width: 450px; is ignored anyway */
+#handleDuplicates-window description.fields {
 	margin-top: 5px;
+	margin-bottom: 5px;
 	margin-left: 1em;
 	font-family: monospace;
 	font-size: smaller;
@@ -79,18 +75,27 @@
 	margin-bottom: 10px;
 }
 
-#handleDuplicates-window #statusText_label {
-/*	width: 9em; */
+#handleDuplicates-window #statusText {
 	font-weight: bold;
 	color: #aa0000;
 }
+#handleDuplicates-window .with-progress {
+	width: 9em; /* some fixed value to avoid flickering on searchNextDuplicate */
+}
+#handleDuplicates-window .error-message {
+	color: red;
+}
+
 
 #handleDuplicates-window #progressMeter {
 	padding-top: 15px; /* workaround: this for some weird reason reduces the strange empty space above */
-	min-width: 7em;
+/*	min-width: 10em; */
 }
 #handleDuplicates-window .progress-bar {
-    margin-top: -15px; /* workaround: makes the progress bar visible again */
+	margin-top: -15px; /* workaround: makes the progress bar visible again */
+}
+#handleDuplicates-window #progressText {
+	vertical-align: top;
 }
 
 #handleDuplicates-window #tablepane {
