@@ -11,9 +11,6 @@
 	onload="DuplicateEntriesWindow.init()"
 	onunload="DuplicateEntriesWindow.OnUnloadWindow()">
 	<script type="application/x-javascript" src="chrome://duplicatecontactsmanager/content/duplicateEntriesWindow.js"/>
-	<stringbundleset id="duplicateContactsManagerStringbundleset">
-		<stringbundle id="bundle_duplicateContactsManager" src="chrome://duplicatecontactsmanager/locale/duplicateContactsManager.properties" />
-	</stringbundleset>
 
 	<!--<span id="mainbox">-->
 		<!--image src="chrome://duplicatecontactsmanager/content/kate.png" height="40" alt="DCM logo" /-->
@@ -165,8 +162,14 @@
 				</vbox>
 			</vbox>
 		</hbox>
-		<statusbar id="bottom">
-			<spacer flex="1"/>
-		</statusbar>
+		<hbox class="statusbar">
+			<label id="bottom"
+				   context="..."
+				   popup="..."
+				   value="label" />
+		</hbox>
+<!--		<statusbar id="bottom">-->
+<!--			<spacer flex="1"/>-->
+<!--		</statusbar>-->
 	<!--</span>-->
 </window>

@@ -1,0 +1,47 @@
+/* Preferences window */
+#gContactSyncPrefs {
+  min-width:  20em;
+  min-height: 30em;
+}
+
+#link-label {
+  color: blue;
+}
+
+tabs {
+    background-color: white;
+}
+
+/* Originally written by Leszek(teo)Życzkowski */
+tab {
+  -moz-appearance:     none;
+  background-color:    transparent;
+  background-position: center bottom;
+  background-repeat:   repeat-x;
+  min-width:           80px;
+  -moz-box-orient: vertical;
+}
+
+tab:hover {
+  background-color: rgb(94, 138, 188);
+  background-image: url("chrome://gcontactsync/skin/hover.png");
+  color:            white;
+}
+
+tab[selected="true"] {
+  background-color: rgb(174, 198, 226);
+  background-image: none;
+  background-image: url("chrome://gcontactsync/skin/selected.png");
+  color:            black;
+}
+
+/* Preference tabs */
+#main_tab {
+  list-style-image: url("chrome://gcontactsync/skin/main.png");
+}
+#interface_tab {
+  list-style-image: url("chrome://gcontactsync/skin/interface.png");
+}
+#advanced_tab {
+  list-style-image: url("chrome://gcontactsync/skin/advanced.png");
+}

@@ -1,0 +1,24 @@
+{
+  "manifest_version": 2,
+  "name": "duplicateContactsManager",
+  "description": "duplicate-contacts-manager",
+  "version": "2.0.0",
+  "author": "bla",
+  "homepage_url": "https://addons.mozilla.org/thunderbird/addon/2505",
+  "legacy" : {
+    "type": "xul",
+    "options" : {
+      "page" : "chrome://duplicatecontactsmanager/content/options.xul",
+      "open_in_tab" : false
+    }
+  },
+  "applications": {
+    "gecko": {
+      "id": "duplicateContactsManager@ddvo.net",
+      "strict_min_version": "68.0"
+    }
+  },
+  "icons": {
+    "48": "content/kate.png"
+  }
+}
