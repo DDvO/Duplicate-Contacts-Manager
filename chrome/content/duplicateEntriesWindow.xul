@@ -118,7 +118,7 @@
 					<columns><column flex="0" /><column flex="3" /><column class="equivalence" flex="0" /><column flex="3" /></columns>
 					<rows id="AttributesTableRows">
 						<row id="tableheader">
-					                <radiogroup_disabled orient="horizontal" style="display: contents"><!-- would break layout unless display: contents is supported. isabling it as minor drawback: on click, logs TypeError: this.control is null  radio.xml:521:13  onxblmousedown -->
+					                <!--radiogroup orient="horizontal" style="display: contents"--><!-- would break layout unless display: contents is supported. Disabling it has a minor drawback: on click, logs TypeError: this.control is null  radio.xml:521:13  onxblmousedown -->
 							<label id="fieldLabels" class="field" value=" " />
 							<hbox id="headerLeft" class="keep" oncommand="DuplicateEntriesWindow.setContactLeftRight('left')">
 								<radio id="keepLeft" label="to_be_kept" selected="true"/>
@@ -127,7 +127,7 @@
 							<hbox id="headerRight" class="remove" oncommand="DuplicateEntriesWindow.setContactLeftRight('right')">
 								<radio id="keepRight" label="to_be_removed" />
 							</hbox>
-					                </radiogroup_disabled>
+					                <!--/radiogroup_disabled-->
 						</row>
 					</rows>
 				</grid>
