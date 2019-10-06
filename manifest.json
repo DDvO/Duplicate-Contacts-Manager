@@ -19,6 +19,6 @@
     }
   },
   "icons": {
-    "48": "content/kate.png"
+    "64": "chrome/content/kate.png"
   }
 }
