@@ -14,13 +14,11 @@ treatment.
 -->
 
 This Thunderbird extension facilitates handling of redundant entries in address books.
-After installation, it can be invoked via the '<code>Tools->Duplicate Contacts Manager...</code>' menu entry.
-One can also customize the '<code>Toolbar</code>' of the '<code>Address Book</code>' window with a '<code>Find Duplicates</code>' button.
+After installation, it can be invoked via the '<code>Tools->Duplicate Contacts Manager...</code>' menu entry. One can also customize the '<code>Toolbar</code>' of the '<code>Address Book</code>' window with a '<code>Find Duplicates</code>' button.
 
 The Duplicate Contacts Manager searches address books for pairs of matching contact entries, also known as <i>cards</i>.
 It can automatically delete all cards that have equivalent or less information than some matching one.
-Any remaining pairs of matching cards <!-- plus any cards that have nothing to match -->
-are presented as candidate duplicates for manual treatment.
+Any remaining pairs of matching cards <!-- plus any cards that have nothing to match --> are presented as candidate duplicates for manual treatment.
 Each two cards are shown side-by-side with a comparison of all fields containing data, including any photo.
 Some important fields are always shown such that they can be filled in when they have been empty so far.
 
@@ -34,7 +32,6 @@ All other relations are determined after abstraction of values (see the definiti
 <li> The '⋦' and '⋧' symbols indicate that a field or a whole card contains less/more information than the other.
 <li> The '<' and '>' symbols indicate comparison on numerical values or the substring/superstring relation on names and other texts.
 </ul>
-
 During manual treatment of a pair of matching cards the user can skip them, can modify one or both of them, and can decide to delete one of them. When a card is deleted and it has a primary email address that is contained in one or more mailing lists and the other card does not have the same primary email address, the address is also deleted from the respective mailing lists.
 
 In order to exclude pairs of similar cards from being repeatedly presented for manual treatment
@@ -42,10 +39,8 @@ they may be given different <code>AIMScreenName</code>s, such that they are filt
 
 There are two <i>search modes</i> for finding matching cards:
 <ul>
-  <li>within a single address book with n cards, comparing each card with all other cards,
-  resulting in n*(n-1)/2 pairs of cards to compare.
-  <li>with two different address books with n and m cards, comparing each card in the first one
-  with each card of the second one, resulting in n*m pair to compare.
+  <li>within a single address book with n cards, comparing each card with all other cards, resulting in n*(n-1)/2 pairs of cards to compare.
+  <li>with two different address books with n and m cards, comparing each card in the first one with each card of the second one, resulting in n*m pairs to compare.
 </ul>
 
 The matching relation is designed to be rather weak, such that it tends to yield all pairs of potential duplicates.
@@ -58,13 +53,9 @@ Two cards are considered <i>matching</i> if any of the following conditions hold
 </ul>
 Yet cards with non-equivalent <code>AIMScreenName</code> are never considered matching.
 
-<i>Matching</i> of names, email addresses, and phone numbers is based upon
-equivalence and sub-equivalence of fields modulo abstraction, described below.
-As a result, for example, names differing only in letter case are considered to match.
-For the matching process, names are completed and their order is normalized &mdash; for example, if two name parts are detected in the <code>DisplayName</code>
-(e.g., "John Doe") or in an email address (e.g., "John.Doe@company.com"), they are taken as first and last name.
-Both multiple email addresses within a card and multiple phone numbers within a card
-are treated as sets, i.e., their order is ignored as well as their types.
+<i>Matching</i> of names, email addresses, and phone numbers is based upon equivalence and sub-equivalence of fields modulo abstraction, described below. As a result, for example, names differing only in letter case are considered to match.
+For the matching process, names are completed and their order is normalized &mdash; for example, if two name parts are detected in the <code>DisplayName</code> (e.g., "John Doe") or in an email address (e.g., "John.Doe@company.com"), they are taken as first and last name.
+Both multiple email addresses within a card and multiple phone numbers within a card are treated as sets, i.e., their order is ignored as well as their types.
 <ul>
   <li>Two cards are considered to have <i>matching names</i> if
   <ul>
@@ -82,10 +73,7 @@ Before card fields are compared their values are <i>abstracted</i> using the fol
 <ol>
   <li> <i>Pruning</i>, which removes stray contents irrelevant for comparison:
   <ol>
-    <li>ignore values of certain field types &mdash; the set of ignored fields is configurable
-    <!-- in the preferences variable <code>extensions.DuplicateContactsManager.ignoreFields</code> -->
-    with the default being <code>UID, UUID, CardUID, groupDavKey, groupDavVersion, groupDavVersionPrev, RecordKey, DbRowID,
-    PhotoType, PhotoName, LowercasePrimaryEmail, LowercaseSecondEmail, unprocessed:rev, unprocessed:x-ablabel</code>,
+    <li>ignore values of certain field types &mdash; the set of ignored fields is configurable <!-- in the preferences variable <code>extensions.DuplicateContactsManager.ignoreFields</code> --> with the default being <code>UID, UUID, CardUID, groupDavKey, groupDavVersion, groupDavVersionPrev, RecordKey, DbRowID, PhotoType, PhotoName, LowercasePrimaryEmail, LowercaseSecondEmail, unprocessed:rev, unprocessed:x-ablabel</code>,
     <li>remove leading/trailing/multiple whitespace and strip non-digit characters from phone numbers,
     <li>strip any stray email address duplicates from names, which get inserted by some email clients as default names, and
     <li>replace '<code>@googlemail.com</code>' by '<code>@gmail.com</code>' in email addresses.
@@ -112,8 +100,7 @@ Before card fields are compared their values are <i>abstracted</i> using the fol
 </ol>
 Corresponding fields in two cards are considered <i>equivalent</i> if their abstracted values are equal.
 
-Parts of names are considered <i>sub-equivalent</i> if their abstracted values are equal
-or the abstracted value of one of them is a non-empty whole-word substring of the abstracted value of the other.
+Parts of names are considered <i>sub-equivalent</i> if their abstracted values are equal or the abstracted value of one of them is a non-empty whole-word substring of the abstracted value of the other.
 
 Note that the value adaptations mentioned above are computed only for the comparison, i.e., they do not change the actual card fields.
 
@@ -128,9 +115,7 @@ A card is considered to have <i>equivalent or less information</i> than another 
   <li>it is treated as a set and the set of abstracted values is a subset of the corresponding set of the other card, or else
   <li>after abstraction it has the default value, i.e., it is empty for text fields or its value is <code>0</code> for numerical fields or <code>false</code> for Boolean fields.
 </ul>
-For the above field-wise comparison, the email addresses of a card are treated as a set,
-the phone numbers of a card are also treated as a set, and
-the set of names of mailing lists a card belongs to is treated as an additional field.
+For the above field-wise comparison, the email addresses of a card are treated as a set, the phone numbers of a card are also treated as a set, and the set of names of mailing lists a card belongs to is treated as an additional field.
 
 Of two matching cards one is <i>preferred for deletion</i> such that
 <ul>
@@ -141,8 +126,6 @@ Of two matching cards one is <i>preferred for deletion</i> such that
   <li>it is older (i.e., its <code>LastModifiedDate</code> is smaller), or else it has the same age and
   <li>it is found in the second address book if the address books searched are different, or else
   <li>it is found later in the same address book.
-</ul>
-
 </ul>
 
 Here is an example.
@@ -178,7 +161,8 @@ The card on the right will be preferred for deletion because it contains less in
 
 Technical information: The options/configuration/preferences used by this Thunderbird extension are saved in configuration keys starting with '<code>extensions.DuplicateContactsManager</code>' - for instance, the list of ignored fields is stored in the variable '<code>ignoreFields</code>'.
 
-<!-- hhmts start -->Last modified: Wed Jan  2 09:11:33 CET 2019 <!-- hhmts end -->
+
+<!-- hhmts start -->Last modified: Sun Oct  6 18:32:09 CEST 2019 <!-- hhmts end -->
 </BODY>
 </HTML>
 
