@@ -10,46 +10,38 @@
 <LINK REL="shortcut icon" HREF="../../pic/favicon.ico">
     <LINK TYPE="text/css" REL="stylesheet" HREF="../../home.css">
     <script src="../basic.js"></script>
-    <script src="../lang.js"></script>
-    <noscript>
-      <style>:lang(no), :lang(de) { display: none; }</style>
-    </noscript>
 </HEAD>
 
 <BODY>
 
-<h1><a href="duplicatecontactsmanager.xpi">Duplicate Contacts Manager for Thunderbird</a></h1>
+<h1><a href="https://addons.thunderbird.net/en-US/thunderbird/addon/duplicate-contacts-manager/">Duplicate Contacts Manager for Thunderbird</a></h1>
 
-<!-- Summary (max. 250 chars)
-This Thunderbird add-on searches address book(s) for pairs of matching contact entries.
-It can automatically delete entries that have equivalent or less information than the other one.
-Any remaining matches are presented for manual treatment.
-
-Summary (a bit more verbose):
-This Thunderbird add-on searches the given address book(s) for pairs of matching contact entries.
+<h3>Summary</h3>
+<a href="https://addons.thunderbird.net/en-US/thunderbird/addon/duplicate-contacts-manager/">This Thunderbird add-on</a> searches address book(s) for pairs of matching contact entries.
 It can automatically delete entries that have equivalent or less information than the other one.
 The matching and information comparison uses advanced and partly configurable algorithms for normalizing values etc.
-Any remaining matches are presented for manual treatment, where the results of comparing their properties are shown.
-The use can choose to edit one more both of the matching entries, delete one of them, or skip the match.
--->
+Any remaining matches are presented for manual
+treatment, where the results of comparing their properties are shown.
+The user can choose to edit one more both of the matching entries, delete one of them, or skip the match.
 
-<p>
+<h3>Usage</h3>
 This Thunderbird extension facilitates handling of redundant entries in address books.<br>
 After installation it can be invoked via the <code>Tools->Duplicate Contacts Manager...</code> menu entry.
 One can also customize the <code>Toolbar</code> of the <code>Address Book</code> window with a <code>Find Duplicates</code> button.
 
 <p>
-<img src="DuplicateContactsManager-1.png" alt="[Screenshot of start window with the options available]"><br>
-
-<p>
-The Duplicate Contacts Manager searches address books for paris of matching contact entries, also known as <i>cards</i>.
-It can automatically delete all cards that  have equivalent or less information than some matching one.
+The Duplicate Contacts Manager searches address books for pairs of matching contact entries, also known as <i>cards</i>.
+It can automatically delete all cards that have equivalent or less information than some matching one.
 Any remaining pairs of matching cards <!-- plus any cards that have nothing to match -->
 are presented as candidate duplicates for manual treatment.
 Each two cards are shown side-by-side with a comparison of all fields containing data, including any photo.
 Some important fields are always shown such that they can be filled in when they have been empty so far.
 
-When pairs of candidate duplicates are presented, the reason why they are considered matching is given in the column between them.
+<p>
+<img src="DuplicateContactsManager-2.png" alt="[Screenshot of comparison window showing two matching cards]">
+
+<p>
+When pairs of candidate duplicates are presented, various comparison information is given in the column between them.
 <ul>
 <li> The '≡' symbol is shown between non-empty fields with identical values, while non-identical values are highlighted by color.<br>
 All other relations are determined after abstraction of values (see the definitions below).
@@ -57,23 +49,38 @@ All other relations are determined after abstraction of values (see the definiti
 <li> The '≅' symbol indicates equivalent cards, equivalent fields, or equal sets (after abstraction).
 <li> The '⊆' and '⊇' symbols indicate the subset/superset relation on mailing list membership, email addresses, and phone numbers.
 <li> The '⋦' and '⋧' symbols indicate that a field or a whole card contains less/more information than the other.
-<li> The '<' and '>' symbols indicate comparison on numerical values or the substring/superstring relation on names and other texts.
+<li> The '&lt;' and '&gt;' symbols indicate comparison on numerical values or the substring/superstring relation on names and other texts.
 </ul>
 
 During manual treatment of a pair of matching cards the user can skip them, can modify one or both of them, and can decide to delete one of them.
 When a card is deleted and it has a primary email address that is contained in one or more mailing lists and the other card does not have the same primary email address, the address is also deleted from the respective mailing lists.
+
+In order to exclude pairs of similar cards from being repeatedly presented for manual treatment
+they may be given different <code>AIMScreenName</code>s, such that they are filtered out from the search results.
+
+<p>
+At the beginning one or two address books can selected and a couple of options can be set.
+<p>
+<img src="DuplicateContactsManager-1.png" alt="[Screenshot of start window with the options available]"><br>
+
+<p>
+At the end a summary is presented.
+<p>
+<img src="DuplicateContactsManager-3.png" alt="[Screenshot of final window showing a statistics on the last run]">
+
 
 <h3>Matching contact entries</h3>
 
 There are two <i>search modes</i> for finding matching cards:
 <ul>
   <li>within a single address book with n cards, comparing each card with all other cards,
-  resulting in n*(n-1)/2 card comparisons.
+  resulting in n*(n-1)/2 pairs of cards to compare.
   <li>with two different address books with n and m cards, comparing each card in the first one
-  with each card of the second one, resulting in n*m card comparisons.
+  with each card of the second one, resulting in n*m pairs to compare.
 </ul>
 
 <p>
+The matching relation is designed to be rather weak, such that it tends to yield all pairs of potential duplicates.
 Two cards are considered <i>matching</i> if any of the following conditions hold, where the details are explained below.
 <ul>
   <li>The cards contain matching names, or
@@ -82,10 +89,6 @@ Two cards are considered <i>matching</i> if any of the following conditions hold
   <li>both cards do not contain any name, email address, or phone number that might match.
 </ul>
 Yet cards with non-equivalent <code>AIMScreenName</code> are never considered matching,
-which is convenient for preventing cards from being repeatedly presented for manual treatment.
-
-<p>
-The matching relation is designed to be rather weak, such that it tends to yield more pairs of candidate duplicates.
 
 <p>
 <i>Matching</i> of names, email addresses, and phone numbers is based upon
@@ -182,9 +185,6 @@ Of two matching cards one is <i>preferred for deletion</i> such that
 
 <p>
 Here is an example.
-<p>
-<img src="DuplicateContactsManager-2.png" alt="[Screenshot of comparison window showing two matching cards]">
-<p>
 The card on the right will be preferred for deletion because it contains less information.<br>
 <table>
   <tr>
@@ -208,19 +208,16 @@ The card on the right will be preferred for deletion because it contains less in
 <tr>
 <td><code>WorkPhone</code>:          <td>"089/1234-5678"                    <td>"+49 89 12345678"       <td> trunk prefix and international call (IDD) prefix normalized and non-digits ignored
 <tr>
-<td><code>PopularityIndex</code>:    <td>5                                 <td>3                        <td> field ignored for infomation comparison
+<td><code>PopularityIndex</code>:    <td>5                                 <td>3                        <td> field ignored for information comparison
 <tr>
 <td><code>LastModifiedDate</code>:   <td>2018-02-25 07:51:28               <td>2018-02-25 08:30:37      <td> field ignored for information comparison
 <tr>
 <td><code>UUID</code>:               <td>""                                <td>"903a61be-64d5-4844-802a"<td> field ignored
 </table>
 
-<p>
-<img src="DuplicateContactsManager-3.png" alt="[Screenshot of final window showing a statistics on the last run]">
-
 <h3>Configuration variables</h3>
 
-The options/configuration/preferences used by this Thunderbird extension are are saved in configuration keys starting with <code>extensions.DuplicateContactsManager.</code> &mdash;
+The options/configuration/preferences used by this Thunderbird extension are saved in configuration keys starting with <code>extensions.DuplicateContactsManager.</code> &mdash;
 for instance, the list of ignored fields is stored in the variable <code>ignoreFields</code>.
 
 
@@ -285,16 +282,16 @@ The change log is:
 
 
 <p>
-<a href="../contact.html">Questions and comments</a> are welcome.
+<a href="../../contact.html">Questions and comments</a> are welcome.
 <p>
 
 <P><ADDRESS>
-<A HREF="index.html"><span lang="en">back</span><span lang="de">Zurück</span></A><br>
-<IMG SRC="../pic/faceline.gif" WIDTH="650" HEIGHT="9" ALT="-----------------------------------------------------------------------------------------------"><BR>
+<A HREF="../index.html"><span lang="en">back</span></A><br>
+<IMG SRC="../../pic/faceline.gif" WIDTH="650" HEIGHT="9" ALT="-----------------------------------------------------------------------------------------------"><BR>
 <a href="http://validator.w3.org/check?uri=referer"><IMG src="../pic/html5.png" alt="[Valid HTML5]" height="12" width="33"></a>
 URL: <span class="URL">http://ddvo.net/DuplicateContactsManager/index.html</span>,&nbsp;
 <!-- Created: Sat Apr  7 17:33:21 CEST 2012 -->
-<!-- hhmts start -->Last modified: Tue Jan  1 18:37:32 CET 2019 <!-- hhmts end -->
+<!-- hhmts start -->Last modified: Sun Jan  6 20:52:41 CET 2019 <!-- hhmts end -->
 </ADDRESS>
 
 </BODY>
@@ -304,13 +301,25 @@ URL: <span class="URL">http://ddvo.net/DuplicateContactsManager/index.html</span
  -->
 <!--  LocalWords:  SecondEmail CellularNumber WorkPhone HomePhone src
  -->
-<!--  LocalWords:  FaxNumber PopularityIndex LastModifiedDate href
+<!--  LocalWords:  FaxNumber PopularityIndex LastModifiedDate href br
  -->
 <!--  LocalWords:  stylesheet javascript css noscript charset utf IMG
  -->
-<!--  LocalWords:  DOCTYPE lang AIMScreenName PagerNumber NickName
+<!--  LocalWords:  DOCTYPE lang AIMScreenName PagerNumber NickName ul
  -->
-<!--  LocalWords:  SecondaryEmail AllowRemoteContent UUID CardDAV
+<!--  LocalWords:  SecondaryEmail AllowRemoteContent UUID CardDAV xpi
  -->
-<!--  LocalWords:  Zurück hhmts LocalWords
+<!--  LocalWords:  hhmts LocalWords Péte whitespace img li ol
+ -->
+<!--  LocalWords:  PreferDisplayName duplicatecontactsmanager CardUID
+ -->
+<!--  LocalWords:  DuplicateContactsManager groupDavKey RecordKey de
+ -->
+<!--  LocalWords:  groupDavVersion groupDavVersionPrev DbRowID pete
+ -->
+<!--  LocalWords:  PhotoType PhotoName LowercasePrimaryEmail ablabel
+ -->
+<!--  LocalWords:  LowercaseSecondEmail AimScreenName ignoreFields
+ -->
+<!--  LocalWords:  PreferMailFormat mdash rarr emacs CET SRC HREF
  -->

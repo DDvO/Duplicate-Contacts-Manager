@@ -18,7 +18,7 @@
 <!ENTITY handleDuplicates.introtext			"In den ausgewählten Adressbüchern wird nach zusammenpassenden, möglicherweise redudanten Einträgen gesucht.">
 <!ENTITY handleDuplicates.chooseSecondary		"Wenn Sie zwei verschiedene Adressbücher auswählen, werden Dubletten (nur) zwischen den beiden Adressbüchern behandelt, ansonsten innerhalb des selben Adressbuchs.">
 <!ENTITY handleDuplicates.introtext2			"Jedes Mal, wenn ein Paar von Kandidaten präsentiert wird, können Sie entscheiden, sie zu überspringen, sie zu bearbeiten und beide zu behalten, oder einen möglicherweise zu bearbeiten und den anderen zu löschen.">
-<!ENTITY handleDuplicates.differentiator		"Wenn Sie verhindern möchten, dass Einträge jedes Mal als mögliche Dubletten angezeigt werden, können Sie ihnen unterschiedliche AIM-Namen geben.">
+<!ENTITY handleDuplicates.differentiator		"Wenn Sie ausschließen möchten, dass Einträge jedes Mal als mögliche Dubletten angezeigt werden, können Sie ihnen unterschiedliche AIM-Namen geben.">
 <!ENTITY handleDuplicates.removeWithoutAsking		"Lösche ohne Nachfrage alle Dubletten mit weniger Informationen oder bei identischen Einträgen den zweiten.">
 <!ENTITY handleDuplicates.preserveFirst			"Wenn zwei verschiedene Adressbücher ausgewählt sind, keine Einträge automatisch aus dem ersten löschen.">
 <!ENTITY handleDuplicates.deferInteractive		"Sammle erst alle wahrscheinlichen Dubletten, die manuelle Behandlung erfordern, und präesentiere sie interaktiv.">

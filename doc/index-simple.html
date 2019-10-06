@@ -1,10 +1,17 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
-<html> <head>
-<title>Duplicate Contacts Manager for Thunderbird by David von Oheimb</title>
-</head>
+<HTML lang="en">
+  <HEAD>
+    <TITLE>Duplicate Contacts Manager for Thunderbird by David von Oheimb</TITLE>
+</HEAD>
 
-<body>
-<h1>Duplicate Contacts Manager for Thunderbird</h1>
+<BODY>
+
+<!-- Summary (max. 250 chars)
+This Thunderbird add-on searches address book(s) for pairs of matching contact entries.
+It can automatically delete entries that have equivalent or less information than the other one.
+Any remaining matches are presented for manual
+treatment.
+-->
 
 This Thunderbird extension facilitates handling of redundant entries in address books.
 After installation, it can be invoked via the '<code>Tools->Duplicate Contacts Manager...</code>' menu entry.
@@ -17,7 +24,7 @@ are presented as candidate duplicates for manual treatment.
 Each two cards are shown side-by-side with a comparison of all fields containing data, including any photo.
 Some important fields are always shown such that they can be filled in when they have been empty so far.
 
-When pairs of candidate duplicates are presented, the reason why they are considered matching is given in the column between them.
+When pairs of candidate duplicates are presented, various comparison information is given in the column between them.
 <ul>
 <li> The '≡' symbol is shown between non-empty fields with identical values, while non-identical values are highlighted by color.
 All other relations are determined after abstraction of values (see the definitions below).
@@ -30,14 +37,18 @@ All other relations are determined after abstraction of values (see the definiti
 
 During manual treatment of a pair of matching cards the user can skip them, can modify one or both of them, and can decide to delete one of them. When a card is deleted and it has a primary email address that is contained in one or more mailing lists and the other card does not have the same primary email address, the address is also deleted from the respective mailing lists.
 
+In order to exclude pairs of similar cards from being repeatedly presented for manual treatment
+they may be given different <code>AIMScreenName</code>s, such that they are filtered out from the search results.
+
 There are two <i>search modes</i> for finding matching cards:
 <ul>
   <li>within a single address book with n cards, comparing each card with all other cards,
-  resulting in n*(n-1)/2 card comparisons.
+  resulting in n*(n-1)/2 pairs of cards to compare.
   <li>with two different address books with n and m cards, comparing each card in the first one
-  with each card of the second one, resulting in n*m card comparisons.
+  with each card of the second one, resulting in n*m pair to compare.
 </ul>
 
+The matching relation is designed to be rather weak, such that it tends to yield all pairs of potential duplicates.
 Two cards are considered <i>matching</i> if any of the following conditions hold, where the details are explained below.
 <ul>
   <li>The cards contain matching names, or
@@ -45,10 +56,7 @@ Two cards are considered <i>matching</i> if any of the following conditions hold
   <li>they contain matching phone numbers, or
   <li>both cards do not contain any name, email address, or phone number that might match.
 </ul>
-Yet cards with non-equivalent <code>AIMScreenName</code> are never considered matching,
-which is convenient for preventing cards from being repeatedly presented for manual treatment.
-
-The matching relation is designed to be rather weak, such that it tends to yield more pairs of candidate duplicates.
+Yet cards with non-equivalent <code>AIMScreenName</code> are never considered matching.
 
 <i>Matching</i> of names, email addresses, and phone numbers is based upon
 equivalence and sub-equivalence of fields modulo abstraction, described below.
@@ -168,9 +176,35 @@ The card on the right will be preferred for deletion because it contains less in
 	 <code>UUID</code>:.........................	""	.......................	"903a61be-64d5-4844-802a"	...	field ignored
 </ul>
 
-Technical information: The options/configuration/preferences used by this Thunderbird extension are are saved in configuration keys starting with '<code>extensions.DuplicateContactsManager</code>' - for instance, the list of ignored fields is stored in the variable '<code>ignoreFields</code>'.
+Technical information: The options/configuration/preferences used by this Thunderbird extension are saved in configuration keys starting with '<code>extensions.DuplicateContactsManager</code>' - for instance, the list of ignored fields is stored in the variable '<code>ignoreFields</code>'.
 
-<hr>
-<address></address>
-<!-- hhmts start -->Last modified: Mon Dec 31 18:13:14 CET 2018 <!-- hhmts end -->
-</body> </html>
+<!-- hhmts start -->Last modified: Wed Jan  2 09:11:33 CET 2019 <!-- hhmts end -->
+</BODY>
+</HTML>
+
+<!--  LocalWords:  DisplayName FirstName LastName PrimaryEmail von td
+ -->
+<!--  LocalWords:  SecondEmail CellularNumber WorkPhone HomePhone src
+ -->
+<!--  LocalWords:  FaxNumber PopularityIndex LastModifiedDate href br
+ -->
+<!--  LocalWords:  stylesheet javascript css noscript charset utf IMG
+ -->
+<!--  LocalWords:  DOCTYPE lang AIMScreenName PagerNumber NickName ul
+ -->
+<!--  LocalWords:  SecondaryEmail AllowRemoteContent UUID CardDAV xpi
+ -->
+<!--  LocalWords:  Zurück hhmts LocalWords Péte whitespace img li ol
+ -->
+<!--  LocalWords:  PreferDisplayName duplicatecontactsmanager CardUID
+ -->
+<!--  LocalWords:  DuplicateContactsManager groupDavKey RecordKey
+ -->
+<!--  LocalWords:  groupDavVersion groupDavVersionPrev DbRowID pete
+ -->
+<!--  LocalWords:  PhotoType PhotoName LowercasePrimaryEmail ablabel
+ -->
+<!--  LocalWords:  LowercaseSecondEmail AimScreenName ignoreFields
+ -->
+<!--  LocalWords:  PreferMailFormat mdash rarr html
+ -->
