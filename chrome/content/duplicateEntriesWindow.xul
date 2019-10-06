@@ -165,7 +165,7 @@
 				</vbox>
 			</vbox>
 		</hbox>
-		<statusbar id="bottom"> <!-- not actually used any more, at least for Thunderbird 68+ -->
+		<statusbar id="bottom" class="chromeClass-status"> <!-- just helps before Thunderbird 68 to display a button allowing to resize more conveniently the window -->
 			<spacer flex="1"/>
 		</statusbar>
 	<!--</span>-->

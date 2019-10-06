@@ -208,7 +208,7 @@
 }
 
 #handleDuplicates-window #bottom{
-	margin-top: -15px;
+	margin-top: -22px; /* statusbar { min-height: 22px; } in messenger.css before Thunderbird 68 */
 /*	box-sizing: border-box; not needed */
 }
 
