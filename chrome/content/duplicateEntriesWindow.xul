@@ -11,6 +11,9 @@
 	onload="DuplicateEntriesWindow.init()"
 	onunload="DuplicateEntriesWindow.OnUnloadWindow()">
 	<script type="application/x-javascript" src="chrome://duplicatecontactsmanager/content/duplicateEntriesWindow.js"/>
+	<stringbundleset id="duplicateContactsManagerStringbundleset">
+		<stringbundle id="bundle_duplicateContactsManager" src="chrome://duplicatecontactsmanager/locale/duplicateContactsManager.properties" />
+	</stringbundleset>
 
 	<!--<span id="mainbox">-->
 		<!--image src="chrome://duplicatecontactsmanager/content/kate.png" height="40" alt="DCM logo" /-->
@@ -162,14 +165,8 @@
 				</vbox>
 			</vbox>
 		</hbox>
-		<hbox class="statusbar">
-			<label id="bottom"
-				   context="..."
-				   popup="..."
-				   value="label" />
-		</hbox>
-<!--		<statusbar id="bottom">-->
-<!--			<spacer flex="1"/>-->
-<!--		</statusbar>-->
+		<statusbar id="bottom"> <!-- not actually used any more, at least for Thunderbird 68+ -->
+			<spacer flex="1"/>
+		</statusbar>
 	<!--</span>-->
 </window>

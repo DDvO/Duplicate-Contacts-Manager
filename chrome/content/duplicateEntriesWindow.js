@@ -4,6 +4,8 @@
 // This file includes UTF-8 encoding. Please make sure your text editor can deal with this prior to saving any changes!
 
 /* Change history:
+## Version 1.1.1 (seen as 2.1.1 by Thunderbird 68+):
+ * compatiblility with Thunderbird 68+; slightly improve documentation
 ## Version 1.1:
  * improve progress calculation and display; clean up photo image handling
 ## Version 1.0.9:
@@ -69,9 +71,6 @@
    https://developer.mozilla.org/en-US/docs/Mozilla/Thunderbird/Address_Book_Examples
 */
 
-/** Import Services.jsm. */
-var {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm");
-
 Set.prototype.isSuperset = function(other) {
 	for(let elem of other) {
 		if (!this.has(elem)) {
@@ -115,6 +114,7 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 		abManager : Components.classes["@mozilla.org/abmanager;1"].getService(Components.interfaces.nsIAbManager),
 
 		stringBundle: null,
+		stringBundle_old: null,
 		prefsBranch: null,
 
 		statustext: '',
@@ -288,8 +288,12 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 				filter(x => !this.isSet(x) && !this.matchablesList.includes(x)).join(", ");
 			document.getElementById('ignoredFields').value = this.ignoredFields.join(", ");
 
-
-			this.stringBundle = Services.strings.createBundle("chrome://duplicatecontactsmanager/locale/duplicateContactsManager.properties");
+			try { /* for Thunderbird 68+. */
+				var {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm");
+				this.stringBundle = Services.strings.createBundle("chrome://duplicatecontactsmanager/locale/duplicateContactsManager.properties");
+			} catch(e) {
+				this.stringBundle = document.getElementById('bundle_duplicateContactsManager');
+			}
 			this.running = true;
 			this.statustext = document.getElementById('statusText');
 			this.progresstext = document.getElementById('progressText');
@@ -308,7 +312,7 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			if (!this.abManager || !this.abManager.directories || this.abManager.directories.length == 0) {
 				this.disable('startbutton');
 				this.statustext.className = 'error-message'; /* not 'with-progress' */
-				this.statustext.textContent = this.stringBundle.GetStringFromName("NoABookFound");
+				this.statustext.textContent = this.getString("NoABookFound");
 				return;
 			}
 			if (this.abURI1 == null || this.abURI2 == null) {
@@ -342,8 +346,8 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			ablists.appendChild(ablist2);
 
 			this.statustext.className = ''; /* not 'with-progress' */
-			this.statustext.textContent = this.stringBundle.GetStringFromName('PleasePressStart');
-			document.getElementById('startbutton').setAttribute('label', this.stringBundle.GetStringFromName('Start'));
+			this.statustext.textContent = this.getString('PleasePressStart');
+			document.getElementById('startbutton').setAttribute('label', this.getString('Start'));
 			this.make_visible('skipnextbutton');
 			this.make_visible('keepnextbutton');
 			this.make_visible('applynextbutton');
@@ -354,6 +358,10 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			this.show('quitbutton');
 			this.show('explanation');
 			document.getElementById('startbutton').focus();
+		},
+
+		getString: function(name) {
+			return this.stringBundle_old ? this.stringBundle_old.getString(name) : this.stringBundle.GetStringFromName(name);
 		},
 
 		/**
@@ -418,7 +426,7 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			this.hide('endinfo');
 			this.show('progressMeter');
 			this.statustext.className = 'with-progress';
-			this.statustext.textContent = this.stringBundle.GetStringFromName('SearchingForDuplicates');
+			this.statustext.textContent = this.getString('SearchingForDuplicates');
 			document.getElementById('statusAddressBook1_label').value = this.abDir1.dirName;
 			document.getElementById('statusAddressBook2_label').value = this.abDir2.dirName;
 			this.updateDeletedInfo('statusAddressBook1_size' , this.BOOK_1, 0);
@@ -464,7 +472,7 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 				this.disable('applynextbutton');
 				this.window.setAttribute('wait-cursor', 'true');
 				this.statustext.className = 'with-progress';
-				this.statustext.textContent = this.stringBundle.GetStringFromName('SearchingForDuplicates');
+				this.statustext.textContent = this.getString('SearchingForDuplicates');
 			}
 			this.updateProgress();
 			// starting the search via setTimeout allows redrawing the progress info
@@ -555,7 +563,7 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 		},
 
 		updateDeletedInfo: function (label, book, nDeleted) {
-			const cards = this.stringBundle.GetStringFromName('cards');
+			const cards = this.getString('cards');
 			document.getElementById(label).value = '('+cards+': '+ (this.vcards[book].length -
 			                         (this.abDir1 == this.abDir2 ? this.totalCardsDeleted1 +
 			                                                       this.totalCardsDeleted2 : nDeleted)) +')';
@@ -578,8 +586,8 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 				max = this.duplicates.length;
 			}
 			this.progressmeter.setAttribute('value', ((max == 0 ? 1 : pos/max) * 100) + '%');
-			this.progresstext.value = this.stringBundle.GetStringFromName(current)+" "+pos+
-				" "+this.stringBundle.GetStringFromName('of')+" "+max;
+			this.progresstext.value = this.getString(current)+" "+pos+
+				" "+this.getString('of')+" "+max;
 			this.updateDeletedInfo('statusAddressBook1_size' , this.BOOK_1, this.totalCardsDeleted1);
 			this.updateDeletedInfo('statusAddressBook2_size' , this.BOOK_2, this.totalCardsDeleted2);
 		},
@@ -692,7 +700,7 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 							this.enable('applynextbutton');
 							this.window.removeAttribute('wait-cursor');
 							this.statustext.className = 'with-progress';
-							this.statustext.textContent = this.stringBundle.GetStringFromName(
+							this.statustext.textContent = this.getString(
 							                        nomatch ? 'noMatch' : 'matchFound');
 							this.displayCardData(card1, card2, comparison, preference,
 							                     namesmatch, mailsmatch, phonesmatch);
@@ -713,7 +721,7 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			this.make_invisible('applynextbutton');
 			this.window.removeAttribute('wait-cursor');
 			this.statustext.className = 'with-progress';
-			this.statustext.textContent = this.stringBundle.GetStringFromName('finished');
+			this.statustext.textContent = this.getString('finished');
 
 			// show statistics
 			var totalCardsDeleted = this.totalCardsDeleted1+this.totalCardsDeleted2;
@@ -731,7 +739,7 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			this.show('quitbutton');
 			this.show('endinfo');
 
-			document.getElementById('startbutton').setAttribute('label', this.stringBundle.GetStringFromName('Restart'));
+			document.getElementById('startbutton').setAttribute('label', this.getString('Restart'));
 			this.enable('startbutton');
 			this.restart = true;
 		},
@@ -881,7 +889,7 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 				var labelcell = document.createElement('label');
 				var localName = property;
 				try {
-					localName = this.stringBundle.GetStringFromName(property + '_label');
+					localName = this.getString(property + '_label');
 				}
 				catch (e) {
 					/*
@@ -1035,13 +1043,13 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			} else if (this.isSelection(property)) {
 				var labels;
 				if (property == 'PreferMailFormat') {
-					labels = [this.stringBundle.GetStringFromName('unknown_label'),
-						  this.stringBundle.GetStringFromName('plaintext_label'),
-						  this.stringBundle.GetStringFromName('html_label')];
+					labels = [this.getString('unknown_label'),
+						  this.getString('plaintext_label'),
+						  this.getString('html_label')];
 				}
 				else {
-					labels = [this.stringBundle.GetStringFromName('false_label'),
-						  this.stringBundle.GetStringFromName('true_label')];
+					labels = [this.getString('false_label'),
+						  this.getString('true_label')];
 				}
 				var values = [0, 1, 2];
 				cell1valuebox = this.createSelectionList(null, labels, values,  leftValue);
@@ -1236,8 +1244,8 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			if (side != this.sideKept) {
 				this.sideKept = side;
 				const other = side == 'right' ? 'left' : 'right';
-				const to_be_kept    = this.stringBundle.GetStringFromName('to_be_kept');
-				const to_be_removed = this.stringBundle.GetStringFromName('to_be_removed');
+				const to_be_kept    = this.getString('to_be_kept');
+				const to_be_removed = this.getString('to_be_removed');
 				this.keepLeftRadioButton .label = side == 'right' ? to_be_removed : to_be_kept;
 				this.keepRightRadioButton.label = side == 'right' ? to_be_kept : to_be_removed;
 				this.keepLeftRadioButton .setAttribute('selected', side == 'right' ? 'false' : 'true');

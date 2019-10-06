@@ -6,12 +6,13 @@
 	<Description about="urn:mozilla:install-manifest">
 		<em:name>Duplicate Contacts Manager</em:name>
 		<em:id>duplicateContactsManager@ddvo.net</em:id>
-		<em:version>1.1</em:version>
+		<em:version>1.1.1</em:version>
 		<em:description>Facilitates handling of redundant entries in address books.</em:description>
 		<em:creator>Marian Steinbach and David von Oheimb</em:creator>
 		<em:contributor>François Godin (Copelnug)</em:contributor>
 		<em:contributor>Alfred Peng</em:contributor>
 		<em:contributor>Valeryan_24@laposte.net</em:contributor>
+		<em:contributor>Falk Röder</em:contributor>
 		<em:homepageURL>https://addons.mozilla.org/thunderbird/addon/2505</em:homepageURL>
 		<em:iconURL>chrome://duplicatecontactsmanager/content/kate.png</em:iconURL>
 		<em:aboutURL>chrome://duplicatecontactsmanager/content/aboutDialog.xul</em:aboutURL>
@@ -22,7 +23,7 @@
 		<Description>
 			<em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id>
 			<em:minVersion>3.0</em:minVersion>
-			<em:maxVersion>60.*</em:maxVersion>
+			<em:maxVersion>67.*</em:maxVersion>
 		</Description>
 		</em:targetApplication>
                 <em:localized>

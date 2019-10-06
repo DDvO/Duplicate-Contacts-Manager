@@ -1,9 +1,9 @@
 {
   "manifest_version": 2,
   "name": "duplicateContactsManager",
-  "description": "duplicate-contacts-manager",
-  "version": "2.0.0",
-  "author": "bla",
+  "description": "Duplicate Contacts Manager for Thunderbird",
+  "version": "2.1.1",
+  "author": "Marian Steinbach, David von Oheimb, et al.",
   "homepage_url": "https://addons.mozilla.org/thunderbird/addon/2505",
   "legacy" : {
     "type": "xul",
