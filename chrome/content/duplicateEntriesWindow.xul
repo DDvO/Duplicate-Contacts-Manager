@@ -110,7 +110,7 @@
 				<description>&handleDuplicates.consideredFields;: </description>
 				<description class="text-line value fields" id="consideredFields"></description>
 				<description>&handleDuplicates.ignoredFields;: </description>
-				<textbox multiline="true" id="ignoredFields" cols="90" />
+				<textbox multiline="true" id="ignoredFields" cols="90" /> <!-- multiline ignored by Thunderbird 68+; could use <textarea> instead -->
 			</vbox>
 		</hbox>
 		<hbox id="tablepane" flex="1" style="display: none"> <!-- flex is critical here for vertical scroll -->

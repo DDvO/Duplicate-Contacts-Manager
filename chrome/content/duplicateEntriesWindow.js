@@ -1067,7 +1067,7 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 					else
 						valuebox.setAttribute('value',  value);
 					if (property == 'Notes') {
-						valuebox.setAttribute('multiline', 'true');
+						valuebox.setAttribute('multiline', 'true'); // multiline ignored by Thunderbird 68+; could use <textarea> instead
 					}
 					return valuebox;
 				}
