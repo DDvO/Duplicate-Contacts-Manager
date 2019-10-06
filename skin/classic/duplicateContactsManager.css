@@ -15,6 +15,10 @@
 [iconsize="small"] .custombutton:hover
   {-moz-image-region: rect(24px 40px 40px 24px);}
 
+#handleDuplicates-window button.disabled {
+  color: gray;
+}
+
 #handleDuplicates-window .text-link {
 	color: blue;
 	text-decoration: underline;
@@ -57,7 +61,7 @@
 }
 
 #handleDuplicates-window .tbox {
-	background-color: #FFFFFF;
+/*	background-color: #FFFFFF; */
 	margin: 10px 20px 5px 15px;
 	padding: 10px;
 	border: 1px inset;
@@ -150,10 +154,10 @@
 }
 
 #handleDuplicates-window .keep {
-	background-color: #D3FFD3;
+	background-color: #33BF33;
 }
 #handleDuplicates-window .remove {
-	background-color: #FFBFBF;
+	background-color: #FF6F6F;
 }
 #handleDuplicates-window #explanation {
 	font-size: 12px;

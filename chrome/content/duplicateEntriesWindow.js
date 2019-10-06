@@ -1509,10 +1509,14 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 		},
 
 		enable: function(id) {
-			document.getElementById(id).setAttribute('disabled', 'false');
+			const elem = document.getElementById(id);
+			elem.setAttribute('disabled', 'false');
+			elem.className = '';
 		},
 		disable: function(id) {
-			document.getElementById(id).setAttribute('disabled', 'true');
+			const elem = document.getElementById(id);
+			elem.setAttribute('disabled', 'true');
+			elem.className = 'disabled';
 		},
 
 		show: function(id) {
