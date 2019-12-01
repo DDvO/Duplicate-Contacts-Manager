@@ -1,4 +1,4 @@
-# [Duplicate Contact Manager for Thunderbird](duplicatecontactsmanager-1.0.xpi)
+# [Duplicate Contact Manager add-on for Thunderbird](https://addons.thunderbird.net/en-US/thunderbird/addon/duplicate-contacts-manager/)
 
 This Thunderbird extension facilitates handling of redundant entries in address books.
 After installation it can be invoked via the `Tools->Duplicate Contacts Manager...` menu entry.
