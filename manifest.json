@@ -1,24 +1,35 @@
 {
   "manifest_version": 2,
-  "name": "duplicateContactsManager",
-  "description": "Duplicate Contacts Manager for Thunderbird",
+  "name": "Duplicate Contacts Manager",
+  "description": "Facilitates handling of redundant entries in address books.",
   "version": "2.1.1",
   "author": "Marian Steinbach, David von Oheimb, et al.",
-  "homepage_url": "https://addons.mozilla.org/thunderbird/addon/2505",
-  "legacy" : {
-    "type": "xul",
-    "options" : {
-      "page" : "chrome://duplicatecontactsmanager/content/options.xul",
-      "open_in_tab" : false
-    }
-  },
+  "homepage_url": "https://github.com/DDvO/Duplicate-Contacts-Manager",
+
   "applications": {
     "gecko": {
       "id": "duplicateContactsManager@ddvo.net",
-      "strict_min_version": "68.0"
+      "strict_min_version": "128.0"
     }
   },
+
+  "permissions": [
+    "addressBooks",
+    "storage",
+    "menus"
+  ],
+
+  "background": {
+    "scripts": ["background.js"]
+  },
+
   "icons": {
-    "64": "chrome/content/kate.png"
+    "48": "icons/icon-48.png",
+    "96": "icons/icon-96.png"
+  },
+
+  "browser_action": {
+    "default_title": "Duplicate Contacts Manager",
+    "default_popup": "popup/popup.html"
   }
 }

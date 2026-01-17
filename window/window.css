@@ -1,0 +1,266 @@
+/* PORT: CSS adapted from original duplicateContactsManager.css
+ * ORIGINAL: skin/classic/duplicateContactsManager.css
+ * Changes: Adapted for HTML elements instead of XUL elements
+ */
+
+#handleDuplicates-window {
+  /* PORT: HTML body styling instead of XUL window */
+  /* ORIGINAL: #handleDuplicates-window { height: 600px; width: 800px; } */
+  min-height: 45em;
+  width: 52em;
+  margin: 0;
+  padding: 0;
+  font-family: -moz-fixed, monospace;
+}
+
+#handleDuplicates-window button.disabled {
+  color: gray;
+  cursor: not-allowed;
+}
+
+#handleDuplicates-window .text-link {
+  color: blue;
+  text-decoration: underline;
+}
+
+#handleDuplicates-window .text-line {
+  padding-top: 2px;
+  padding-bottom: 2px;
+  margin-top: 0px;
+  margin-bottom: 0px;
+  line-height: 1em;
+}
+
+#handleDuplicates-window .value {
+  margin-left: 0px;
+  padding-left: 0px;
+}
+
+#handleDuplicates-window .fields {
+  margin-top: 5px;
+  margin-bottom: 5px;
+  margin-left: 1em;
+  font-family: monospace;
+  font-size: smaller;
+  user-select: text;
+}
+
+#handleDuplicates-window #explanation,
+#handleDuplicates-window #AttributesTable,
+#handleDuplicates-window #endinfo {
+  overflow-y: auto;
+}
+
+#handleDuplicates-window #tablepane {
+  overflow-x: visible;
+  overflow-y: auto;
+}
+
+#handleDuplicates-window .tbox {
+  margin: 10px 20px 5px 15px;
+  padding: 10px;
+  border: 1px inset;
+}
+
+#handleDuplicates-window #statusBar {
+  display: flex;
+  margin-left: 10px;
+  margin-bottom: 10px;
+}
+
+#handleDuplicates-window #statusText {
+  font-weight: bold;
+  color: #aa0000;
+}
+
+#handleDuplicates-window .with-progress {
+  width: 9em;
+}
+
+#handleDuplicates-window .error-message {
+  color: red;
+}
+
+#handleDuplicates-window #progressMeter {
+  padding-top: 15px;
+  width: 100%;
+}
+
+#handleDuplicates-window #progressText {
+  vertical-align: top;
+}
+
+#handleDuplicates-window #AttributesTable {
+  margin: 10px 20px 5px 15px;
+  width: calc(100% - 35px); /* Subtract left (15px) + right (20px) margins */
+  border-collapse: collapse;
+  box-sizing: border-box;
+  table-layout: fixed; /* Fixed table layout prevents columns from expanding beyond their width */
+}
+
+#handleDuplicates-window #tableheader {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+/* PORT: Match header column widths to data column widths for fixed table layout */
+#handleDuplicates-window #tableheader th:first-child {
+  width: 20%;
+  min-width: 150px;
+  max-width: 200px;
+}
+
+#handleDuplicates-window #tableheader th.equivalence {
+  width: 40px;
+  min-width: 40px;
+  max-width: 40px;
+}
+
+#handleDuplicates-window #tableheader th:not(.field):not(.equivalence) {
+  width: calc((100% - 20% - 40px) / 2);
+}
+
+#handleDuplicates-window #AttributesTableRows td {
+  padding: 0px;
+  vertical-align: top;
+  border: 1px solid #ddd;
+}
+
+#handleDuplicates-window #AttributesTableRows td:last-child {
+  border-right: 1px solid #ddd;
+}
+
+#handleDuplicates-window #AttributesTableRows .field {
+  padding: 3px;
+}
+
+/* PORT: Ensure table cells have proper width constraints */
+#handleDuplicates-window #AttributesTableRows td:first-child {
+  width: 20%; /* Fixed width for label column */
+  min-width: 150px;
+  max-width: 200px;
+}
+
+#handleDuplicates-window #AttributesTableRows td.equivalence {
+  width: 40px;
+  min-width: 40px;
+  max-width: 40px;
+  text-align: center;
+}
+
+#handleDuplicates-window #AttributesTableRows td:not(.field):not(.equivalence) {
+  width: calc((100% - 20% - 40px) / 2); /* Split remaining space equally between left and right columns */
+  padding: 3px;
+  overflow: hidden; /* Prevent content from overflowing cell */
+  word-wrap: break-word; /* Break long words if needed */
+}
+
+#handleDuplicates-window .equivalence,
+#handleDuplicates-window #cardsEqu {
+  font-size: 20px;
+  text-align: center;
+  padding: 5px;
+  font-family: "Segoe UI Symbol", "Apple Symbols", "Symbola", "DejaVu Sans", sans-serif;
+}
+
+#handleDuplicates-window #duplicatesButtonsBox {
+  margin: 5px;
+  text-align: center;
+  padding-bottom: 5px;
+}
+
+#handleDuplicates-window .keep {
+  background-color: #33BF33;
+}
+
+#handleDuplicates-window .remove {
+  background-color: #FF6F6F;
+}
+
+#handleDuplicates-window #explanation {
+  font-size: 12px;
+  margin: 20px;
+  text-align: center;
+}
+
+#handleDuplicates-window #explanation > div > div {
+  padding: 4px;
+  text-align: left;
+}
+
+#handleDuplicates-window .descTitle {
+  font-size: 14px;
+  font-weight: bold;
+  font-size: 1.2em;
+  text-align: center;
+}
+
+#handleDuplicates-window input.slim {
+  padding: 0px;
+}
+
+#handleDuplicates-window .addressbookname {
+  text-align: left;
+  font-weight: bold;
+}
+
+#handleDuplicates-window input[type="checkbox"] {
+  text-align: left;
+}
+
+#handleDuplicates-window .wait-cursor {
+  cursor: wait;
+}
+
+/* PORT: Additional styles for HTML elements */
+#handleDuplicates-window table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid #ddd;
+}
+
+#handleDuplicates-window table th,
+#handleDuplicates-window table td {
+  padding: 8px 4px;
+  border-left: 1px solid #ddd;
+  border-top: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+}
+
+#handleDuplicates-window table th:last-child,
+#handleDuplicates-window table td:last-child {
+  border-right: 1px solid #ddd;
+}
+
+#handleDuplicates-window input[type="text"],
+#handleDuplicates-window textarea,
+#handleDuplicates-window select {
+  width: 100%;
+  max-width: 100%;
+  padding: 4px;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}
+
+#handleDuplicates-window textarea {
+  resize: vertical; /* Only allow vertical resizing, not horizontal */
+  min-width: 0; /* Allow textarea to shrink below its content width */
+  overflow-x: auto; /* Show horizontal scrollbar if content is wider */
+}
+
+#handleDuplicates-window button {
+  padding: 5px 15px;
+  margin: 2px;
+  border: 1px solid #999;
+  background: #f0f0f0;
+  cursor: pointer;
+}
+
+#handleDuplicates-window button:hover:not(:disabled) {
+  background: #e0e0e0;
+}
+
+#handleDuplicates-window button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

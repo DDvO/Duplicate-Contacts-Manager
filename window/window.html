@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Find and Manage Duplicates</title>
+  <link rel="stylesheet" href="window.css">
+  <!-- PORT: HTML document instead of XUL window
+       ORIGINAL: duplicateEntriesWindow.xul with XUL namespace -->
+</head>
+<body id="handleDuplicates-window">
+  <!-- PORT: Main container div instead of XUL window -->
+  <div id="duplicatesButtonsBox" style="display: flex; align-items: center; justify-content: center; padding: 5px;">
+    <!-- PORT: HTML button instead of XUL button -->
+    <!-- ORIGINAL: <button id="startbutton" class="dialog" label="..." oncommand="..." /> -->
+    <button id="startbutton" class="dialog">Start</button>
+    <button id="skipnextbutton" class="dialog" style="visibility: visible" disabled="true">Skip &gt;</button>
+    <button id="keepnextbutton" class="dialog" style="visibility: visible" disabled="true">Keep both &gt;</button>
+    <button id="applynextbutton" class="dialog" style="visibility: visible" disabled="true">Remove one &gt;</button>
+    <div style="flex: 1;"></div> <!-- PORT: spacer -->
+    <button id="stopbutton" class="dialog" style="display: none">Stop</button>
+    <button id="quitbutton" class="dialog" style="display: none">Quit</button>
+  </div>
+
+  <!-- PORT: Status bar as flex div instead of XUL hbox -->
+  <!-- ORIGINAL: <hbox id="statusBar"> -->
+  <div id="statusBar" style="display: flex; margin-left: 10px; margin-bottom: 10px;">
+    <div id="statusText_container" style="flex: 2;">
+      <!-- PORT: HTML div/span instead of XUL description -->
+      <!-- ORIGINAL: <description id="statusText"> -->
+      <div id="statusText">Searching for duplicates...</div>
+    </div>
+    <div style="flex: 1;"></div> <!-- spacer -->
+    <div id="statusAddressBook1" style="flex: 3; display: none;">
+      <!-- PORT: HTML span instead of XUL label -->
+      <!-- ORIGINAL: <label id="statusAddressBook1_label" value="..." /> -->
+      <span id="statusAddressBook1_label" class="addressbookname">AddressBook1</span>
+      <span id="statusAddressBook1_size"></span>
+    </div>
+    <div style="flex: 1;"></div> <!-- spacer -->
+    <div id="progress" style="flex: 2;">
+      <!-- PORT: HTML progress instead of XUL progressmeter -->
+      <!-- ORIGINAL: <progressmeter id="progressMeter" mode="determined" value="0%" /> -->
+      <progress id="progressMeter" style="display: none" value="0" max="100"></progress>
+      <span id="progressText"></span>
+    </div>
+    <div style="flex: 1;"></div> <!-- spacer -->
+    <div id="statusAddressBook2" style="flex: 3; display: none;">
+      <span id="statusAddressBook2_label" class="addressbookname">AddressBook2</span>
+      <span id="statusAddressBook2_size"></span>
+    </div>
+    <div style="flex: 1;"></div> <!-- spacer -->
+  </div>
+
+  <!-- PORT: Explanation section as div instead of XUL hbox/vbox -->
+  <!-- ORIGINAL: <hbox id="explanation" flex="1"> -->
+  <div id="explanation" style="display: none; flex: 1; overflow-y: auto;">
+    <div style="text-align: center;">
+      <div class="descTitle">What's happening here?</div>
+      <div>The selected address book(s) will be searched for matching potentially duplicate entries.</div>
+      <div>If you choose two different address books, duplicates will be handled (only) across the two selected address books, otherwise within the same address book.</div>
+      <div id="addressbooklists" style="display: flex; flex-direction: column; align-items: center; margin: 10px 0;"></div>
+      <div>Each time a pair of candidates is presented, you can decide to skip them, to edit and keep them both, or to possibly edit one and remove the other.</div>
+      <div>If you wish to exclude entries from being shown as potential duplicates each time, you may give them different AIM names.</div>
+      <div class="descTitle">Options</div>
+      <!-- PORT: HTML checkbox instead of XUL checkbox -->
+      <!-- ORIGINAL: <checkbox id="autoremove" label="..." /> -->
+      <label><input type="checkbox" id="autoremove"> Remove without asking all duplicates containing less information when the rest is the same between the two.</label><br>
+      <label><input type="checkbox" id="preservefirst"> When using two different address books, do not automatically remove entries from the first one.</label><br>
+      <label><input type="checkbox" id="deferInteractive" checked> First collect all potential duplicates requiring manual treatment and then present them interactively.</label><br>
+      <div style="display: flex; align-items: center; margin: 5px 0;">
+        <!-- PORT: HTML input instead of XUL textbox -->
+        <!-- ORIGINAL: <textbox class="slim" id="natTrunkPrefix" /> -->
+        <input type="text" class="slim" id="natTrunkPrefix" style="width: 2.5em" />
+        <span> National phone number trunk prefix, e.g., '1' or '0'</span>
+      </div>
+      <div style="display: flex; align-items: center; margin: 5px 0;">
+        <input type="text" class="slim" id="intCallPrefix" style="width: 3.7em" />
+        <span> International call (IDD) prefix, e.g., '011' or '00'</span>
+      </div>
+      <div style="display: flex; align-items: center; margin: 5px 0;">
+        <input type="text" class="slim" id="countryCallingCode" style="width: 5.5em" />
+        <span> Default country calling code, e.g., '+1' or '+44'</span>
+      </div>
+      <div>Fields to consider: </div>
+      <div class="text-line value fields" id="consideredFields"></div>
+      <div>Fields to ignore: </div>
+      <!-- PORT: HTML textarea instead of XUL textbox multiline -->
+      <!-- ORIGINAL: <textbox multiline="true" id="ignoredFields" cols="90" /> -->
+      <textarea id="ignoredFields" cols="90" rows="3"></textarea>
+    </div>
+  </div>
+
+  <!-- PORT: Table pane as div instead of XUL hbox -->
+  <!-- ORIGINAL: <hbox id="tablepane" flex="1"> -->
+  <div id="tablepane" style="display: none; flex: 1; overflow-y: auto; overflow-x: visible;">
+    <!-- PORT: HTML table instead of XUL grid -->
+    <!-- ORIGINAL: <grid id="AttributesTable"> -->
+    <table id="AttributesTable" style="margin: 10px 20px 5px 15px;">
+      <thead>
+        <tr id="tableheader" style="font-weight: bold; margin-bottom: 5px;">
+          <!-- PORT: HTML table header cells instead of XUL row with label/hbox/description -->
+          <!-- ORIGINAL: <label id="fieldLabels" class="field" value=" " /> -->
+          <th class="field" style="width: 0;"></th>
+          <th id="headerLeft" class="keep" style="flex: 3; cursor: pointer;">
+            <!-- PORT: HTML radio button instead of XUL radio -->
+            <!-- ORIGINAL: <radio id="keepLeft" label="to_be_kept" selected="true"/> -->
+            <input type="radio" id="keepLeft" name="keepSide" checked><label for="keepLeft">to be kept</label>
+          </th>
+          <th class="equivalence" style="width: 0;" id="cardsEqu"></th>
+          <th id="headerRight" class="remove" style="flex: 3; cursor: pointer;">
+            <input type="radio" id="keepRight" name="keepSide"><label for="keepRight">to be removed</label>
+          </th>
+        </tr>
+      </thead>
+      <tbody id="AttributesTableRows">
+        <!-- Rows will be added dynamically -->
+      </tbody>
+    </table>
+  </div>
+
+  <!-- PORT: End info section as div instead of XUL hbox/vbox -->
+  <!-- ORIGINAL: <hbox id="endinfo" flex="1"> -->
+  <div id="endinfo" style="display: none; flex: 1; overflow-y: auto;">
+    <div>
+      <div class="descTitle">Results</div>
+      <div class="tbox">
+        <div style="display: flex;"><span class="text-line">Number of entries before: </span><span class="text-line value" id="resultNumBefore">0</span></div>
+        <div style="display: flex;"><span class="text-line">Number of entries after: </span><span class="text-line value" id="resultNumAfter">0</span></div>
+        <div style="display: flex;"><span class="text-line">Entries removed manually: </span><span class="text-line value" id="resultNumRemovedMan">0</span></div>
+        <div style="display: flex;"><span class="text-line">Entries removed automatically: </span><span class="text-line value" id="resultNumRemovedAuto">0</span></div>
+        <div style="display: flex;"><span class="text-line">Entries changed: </span><span class="text-line value" id="resultNumChanged">0</span></div>
+        <div style="display: flex;"><span class="text-line">Entry pairs skipped: </span><span class="text-line value" id="resultNumSkipped">0</span></div>
+        <div>Field types found with non-equivalent values: </div>
+        <div class="text-line value fields" id="resultDiffProps"></div>
+        <div>Fields to consider: </div>
+        <div class="text-line value fields" id="resultConsideredFields"></div>
+        <div>Field types ignored: </div>
+        <div class="text-line value fields" id="resultIgnoredFields"></div>
+      </div>
+      <div class="tbox">
+        <div>You can help improve this Thunderbird Add-On by filing issues or commenting them, contributing translations, or even writing code. The development site is:</div>
+        <div><a class="text-link" href="https://github.com/DDvO/Duplicate-Contacts-Manager" target="_blank">https://github.com/DDvO/Duplicate-Contacts-Manager</a></div>
+      </div>
+    </div>
+  </div>
+
+  <script src="window.js" charset="UTF-8"></script>
+</body>
+</html>

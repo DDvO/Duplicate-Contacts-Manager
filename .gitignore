@@ -1,3 +1,6 @@
 mk
 *~
 .idea
+*.xpi
+*.tmp
+*.append
