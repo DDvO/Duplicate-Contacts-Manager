@@ -615,6 +615,7 @@ var DuplicateEntriesWindow = {
   updateAbCard: async function(abDir, book, index, side) {
     var card = this.vcards[book][index];
 
+
     // see what's been modified
     var updateFields = this.getCardFieldValues(side);
     var entryModified = false;
@@ -625,11 +626,33 @@ var DuplicateEntriesWindow = {
       // PORT: Get property value from contact object directly
       // ORIGINAL: card.getProperty(property, defaultValue)
       const currentValue = this.getProperty(card, property);
-      if (currentValue != updateFields[property]) {
+      const newValue = updateFields[property];
+      
+      // PORT: Check the actual property value in card.properties
+      // Thunderbird stores name fields (FirstName, LastName, etc.) as arrays where
+      // each element represents a separate "name component set"
+      let actualPropertyValue = null;
+      let isArrayProperty = false;
+      if (card.properties && card.properties.hasOwnProperty(property)) {
+        actualPropertyValue = card.properties[property];
+        isArrayProperty = Array.isArray(actualPropertyValue);
+      }
+      
+      // PORT: Always update if values differ, ensuring we replace existing properties
+      // ORIGINAL: card.setProperty() would replace the property value
+      if (currentValue != newValue) {
         try {
           // PORT: Build properties object for browser.contacts.update()
           // ORIGINAL: card.setProperty(property, updateFields[property])
-          updateProperties[property] = updateFields[property];
+          // PORT: Temporarily set as string to see what Thunderbird expects
+          // We'll fix this based on the logging output
+          if (newValue === "" || newValue === null || newValue === undefined) {
+            // PORT: For empty values, set to empty string
+            updateProperties[property] = "";
+          } else {
+            // PORT: For non-empty values, set as string
+            updateProperties[property] = String(newValue);
+          }
           entryModified = true;
         } catch (e) {
           // PORT: Use getProperty for DisplayName access
@@ -644,6 +667,23 @@ var DuplicateEntriesWindow = {
         // PORT: Update contact using WebExtension API
         // ORIGINAL: abDir.modifyCard(card)
         await browser.contacts.update(card.id, updateProperties);
+        
+        // PORT: Reload the updated contact to get fresh data and prevent duplicate properties
+        // ORIGINAL: Card object was updated in-place via setProperty
+        // PORT: Reload just this contact to ensure we have the correct state after update
+        const addressBookId = book === this.BOOK_1 ? this.abURI1 : this.abURI2;
+        const contacts = await browser.contacts.list(addressBookId);
+        const updatedContact = contacts.find(c => c.id === card.id);
+        
+        if (updatedContact) {
+          // PORT: Process the updated contact to add virtual properties (same as in readAddressBooks)
+          const processedContacts = await this.processContacts([updatedContact], addressBookId);
+          if (processedContacts.length > 0) {
+            // Replace the card in our local array with the freshly loaded one
+            this.vcards[book][index] = processedContacts[0];
+          }
+        }
+        
         this.totalCardsChanged++;
       } catch (e) {
         // PORT: Use getProperty for DisplayName access
