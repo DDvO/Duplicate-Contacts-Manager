@@ -1,0 +1,446 @@
+{
+  "Contacts": {
+    "message": "Kontakte"
+  },
+  "cards": {
+    "message": "Karten"
+  },
+  "to_be_kept": {
+    "message": "zu behalten"
+  },
+  "to_be_removed": {
+    "message": "zu löschen"
+  },
+  "pair": {
+    "message": "Paar"
+  },
+  "parity": {
+    "message": "Fund"
+  },
+  "of": {
+    "message": "von"
+  },
+  "noMatch": {
+    "message": "Keine Namen, E-Mail-Adressen und Telefonnummern zum Abgleich"
+  },
+  "matchFound": {
+    "message": "Übereinstimmung"
+  },
+  "match": {
+    "message": "passen"
+  },
+  "__Names_label": {
+    "message": "Namen"
+  },
+  "__Emails_label": {
+    "message": "E-Mail-Adressen"
+  },
+  "__PhoneNumbers_label": {
+    "message": "Telefonnummern"
+  },
+  "SearchingForDuplicates": {
+    "message": "Suche nach Dubletten..."
+  },
+  "PleasePressStart": {
+    "message": "Bitte Start klicken."
+  },
+  "NoABookFound": {
+    "message": "Kein Adressbuch gefunden!"
+  },
+  "Start": {
+    "message": "Start"
+  },
+  "Restart": {
+    "message": "Neustart"
+  },
+  "finished": {
+    "message": "Beendet"
+  },
+  "CardUID_label": {
+    "message": "Kontakt-UID"
+  },
+  "PhotoURI_label": {
+    "message": "Foto"
+  },
+  "FirstName_label": {
+    "message": "Vorname"
+  },
+  "LastName_label": {
+    "message": "Nachname"
+  },
+  "PhoneticFirstName_label": {
+    "message": "Phonetischer Vorname"
+  },
+  "PhoneticLastName_label": {
+    "message": "Phonetischer Nachname"
+  },
+  "_PhoneticName_label": {
+    "message": "Phonetischer Name"
+  },
+  "DisplayName_label": {
+    "message": "Anzeigename"
+  },
+  "NickName_label": {
+    "message": "Spitzname"
+  },
+  "_GoogleTalk_label": {
+    "message": "Google Talk"
+  },
+  "__MailListNames_label": {
+    "message": "E-Mail-Listen"
+  },
+  "PrimaryEmail_label": {
+    "message": "E-Mail"
+  },
+  "SecondEmail_label": {
+    "message": "Zusätzliche E-Mail"
+  },
+  "DefaultEmail_label": {
+    "message": "Bevorzugte E-Mail"
+  },
+  "CardType_label": {
+    "message": "Kontakt-Typ"
+  },
+  "PreferMailFormat_label": {
+    "message": "Nachrichten-Format"
+  },
+  "PreferDisplayName_label": {
+    "message": "Anzeigename bevorzugt"
+  },
+  "WorkPhone_label": {
+    "message": "Telefon dienstlich"
+  },
+  "HomePhone_label": {
+    "message": "Telefon privat"
+  },
+  "FaxNumber_label": {
+    "message": "Fax"
+  },
+  "PagerNumber_label": {
+    "message": "Pager"
+  },
+  "CellularNumber_label": {
+    "message": "Telefon mobil"
+  },
+  "WorkPhoneType_label": {
+    "message": "Art des Dienst-Nummer"
+  },
+  "HomePhoneType_label": {
+    "message": "Art des Privat-Nummer"
+  },
+  "FaxNumberType_label": {
+    "message": "Art der Fax-Nummer"
+  },
+  "PagerNumberType_label": {
+    "message": "Art der Pager-Nummer"
+  },
+  "CellularNumberType_label": {
+    "message": "Art der Mobil-Nummer"
+  },
+  "HomeAddress_label": {
+    "message": "Privat Adresse"
+  },
+  "HomeAddress2_label": {
+    "message": "Privat Adresse 2"
+  },
+  "HomeCity_label": {
+    "message": "Privat Stadt"
+  },
+  "HomeState_label": {
+    "message": "Privat Bundesland"
+  },
+  "HomeZipCode_label": {
+    "message": "Privat PLZ"
+  },
+  "HomeCountry_label": {
+    "message": "Privat Land"
+  },
+  "WorkAddress_label": {
+    "message": "Dienst Adresse"
+  },
+  "WorkAddress2_label": {
+    "message": "Dienst Adresse 2"
+  },
+  "WorkCity_label": {
+    "message": "Dienst Stadt"
+  },
+  "WorkState_label": {
+    "message": "Dienst Bundesland"
+  },
+  "WorkZipCode_label": {
+    "message": "Dienst PLZ"
+  },
+  "WorkCountry_label": {
+    "message": "Dienst Land"
+  },
+  "JobTitle_label": {
+    "message": "Job Titel"
+  },
+  "Department_label": {
+    "message": "Abteilung"
+  },
+  "Company_label": {
+    "message": "Organisation"
+  },
+  "_AimScreenName_label": {
+    "message": "AIM-Name"
+  },
+  "AnniversaryYear_label": {
+    "message": "Jahrestag Jahr"
+  },
+  "AnniversaryMonth_label": {
+    "message": "Jahrestag Monat"
+  },
+  "AnniversaryDay_label": {
+    "message": "Jahrestag Tag"
+  },
+  "SpouseName_label": {
+    "message": "Partner"
+  },
+  "FamilyName_label": {
+    "message": "Geburtsname"
+  },
+  "DefaultAddress_label": {
+    "message": "Bevorzugte Adresse"
+  },
+  "Category_label": {
+    "message": "Kategorie"
+  },
+  "WebPage1_label": {
+    "message": "Web URL 1"
+  },
+  "WebPage2_label": {
+    "message": "Web URL 2"
+  },
+  "BirthYear_label": {
+    "message": "Geburtsjahr"
+  },
+  "BirthMonth_label": {
+    "message": "Geburtsmonat"
+  },
+  "BirthDay_label": {
+    "message": "Geburtstag"
+  },
+  "Custom1_label": {
+    "message": "Benutzerdef. 1"
+  },
+  "Custom2_label": {
+    "message": "Benutzerdef. 2"
+  },
+  "Custom3_label": {
+    "message": "Benutzerdef. 3"
+  },
+  "Custom4_label": {
+    "message": "Benutzerdef. 4"
+  },
+  "Notes_label": {
+    "message": "Notizen"
+  },
+  "PopularityIndex_label": {
+    "message": "Popularitätsindex"
+  },
+  "AllowRemoteContent_label": {
+    "message": "Externe Inhalte laden"
+  },
+  "LastModifiedDate_label": {
+    "message": "Zuletzt geändert"
+  },
+  "CorrectAddressBookSelectedPrompt": {
+    "message": "Sie haben offenbar eine Verteilerliste ausgewählt. Auf der Suche nach Duplikaten wird das gesamte Adressbuch behandelt, in dem sich diese Liste befindet."
+  },
+  "true_label": {
+    "message": "ja"
+  },
+  "false_label": {
+    "message": "nein"
+  },
+  "unknown_label": {
+    "message": "unbekannt"
+  },
+  "plaintext_label": {
+    "message": "Reintext"
+  },
+  "html_label": {
+    "message": "HTML"
+  },
+  "toolsmenu.items.handleduplicates.label": {
+    "message": "Duplicate Contacts Manager..."
+  },
+  "toolsmenu.items.handleduplicates.accesskey": {
+    "message": "D"
+  },
+  "abookmenu.label": {
+    "message": "Dubletten"
+  },
+  "abookmenu.accesskey": {
+    "message": "L"
+  },
+  "abookmenu.items.handleduplicates.label": {
+    "message": "Dubletten suchen und behandeln..."
+  },
+  "abookmenu.items.handleduplicates.accesskey": {
+    "message": "D"
+  },
+  "abooktoolbar.label": {
+    "message": "Dubletten suchen"
+  },
+  "abooktoolbar.tooltip": {
+    "message": "Dubletten in Ihren Thunderbird-Adressbüchern suchen und entfernen"
+  },
+  "handleDuplicates.windowtitle": {
+    "message": "Dubletten suchen und behandeln"
+  },
+  "handleDuplicates.introheader": {
+    "message": "Was passiert hier?"
+  },
+  "handleDuplicates.introtext": {
+    "message": "In den ausgewählten Adressbüchern wird nach zusammenpassenden, möglicherweise redudanten Einträgen gesucht."
+  },
+  "handleDuplicates.chooseSecondary": {
+    "message": "Wenn Sie zwei verschiedene Adressbücher auswählen, werden Dubletten (nur) zwischen den beiden Adressbüchern behandelt, ansonsten innerhalb des selben Adressbuchs."
+  },
+  "handleDuplicates.introtext2": {
+    "message": "Jedes Mal, wenn ein Paar von Kandidaten präsentiert wird, können Sie entscheiden, sie zu überspringen, sie zu bearbeiten und beide zu behalten, oder einen möglicherweise zu bearbeiten und den anderen zu löschen."
+  },
+  "handleDuplicates.differentiator": {
+    "message": "Wenn Sie ausschließen möchten, dass Einträge jedes Mal als mögliche Dubletten angezeigt werden, können Sie ihnen unterschiedliche AIM-Namen geben."
+  },
+  "handleDuplicates.removeWithoutAsking": {
+    "message": "Lösche ohne Nachfrage alle Dubletten mit weniger Informationen oder bei identischen Einträgen den zweiten."
+  },
+  "handleDuplicates.preserveFirst": {
+    "message": "Wenn zwei verschiedene Adressbücher ausgewählt sind, keine Einträge automatisch aus dem ersten löschen."
+  },
+  "handleDuplicates.deferInteractive": {
+    "message": "Sammle erst alle wahrscheinlichen Dubletten, die manuelle Behandlung erfordern, und präesentiere sie interaktiv."
+  },
+  "handleDuplicates.durationWarning": {
+    "message": "Abhängig von der Anzahl der Einträge in Ihrem Adressbuch und der Leistung Ihres Rechners kann dieser Vorgang mehrere Minuten in Anspruch nehmen."
+  },
+  "handleDuplicates.natTrunkPrefix": {
+    "message": "Anfangsziffer der Ortsvorwahl, z.B. '0'"
+  },
+  "handleDuplicates.intCallPrefix": {
+    "message": "Internationale Anfangsziffer, z.B. '00'"
+  },
+  "handleDuplicates.countryCallingCode": {
+    "message": "Standard-Landesvorwahl, z.B. '+49'"
+  },
+  "handleDuplicates.consideredFields": {
+    "message": "Zu berücksichtigende Felder"
+  },
+  "handleDuplicates.ignoredFields": {
+    "message": "Zu ignorierende Felder"
+  },
+  "handleDuplicates.introtext3": {
+    "message": "Sie können den Prozess unterbrechen, indem Sie 'Stop' drücken. Wenn Sie ein Paar nicht behandeln wollen, klicken Sie 'Überspringen'."
+  },
+  "handleDuplicates.introtext4": {
+    "message": "Wenn Sie Änderungen speichern und beide Einträge behalten wollen, drücken Sie 'Beide behalten'; wenn sie einen Eintrag löschen wollen, drücken Sie 'Einen löschen'."
+  },
+  "handleDuplicates.options": {
+    "message": "Optionen"
+  },
+  "handleDuplicates.endheader": {
+    "message": "Resultate"
+  },
+  "handleDuplicates.endtext": {
+    "message": "Sie haben sich von Ihren Dubletten getrennt und können Sich nun wieder angenehmeren Dingen widmen :-)"
+  },
+  "handleDuplicates.endtext.numBefore": {
+    "message": "Anzahl der Einträge vorher"
+  },
+  "handleDuplicates.endtext.numAfter": {
+    "message": "Anzahl der Einträge nachher"
+  },
+  "handleDuplicates.endtext.numRemoved": {
+    "message": "Entfernte Einträge"
+  },
+  "handleDuplicates.endtext.numRemovedAuto": {
+    "message": "Automatisch entfernte Einträge"
+  },
+  "handleDuplicates.endtext.numPresented": {
+    "message": "Als mögliche Dubletten angezeigt"
+  },
+  "handleDuplicates.endtext.numRemovedMan": {
+    "message": "Manuell entfernte Einträge"
+  },
+  "handleDuplicates.endtext.numSkipped": {
+    "message": "Übersprungene mögliche Dubletten"
+  },
+  "handleDuplicates.endtext.ignoredFields": {
+    "message": "Ignorierte Feldtypen"
+  },
+  "handleDuplicates.endtext.diffProps": {
+    "message": "Feldtypen, für die nicht-äquivalente Werte gefunden wurden"
+  },
+  "handleDuplicates.endtext.numChanged": {
+    "message": "Geänderte Einträge"
+  },
+  "handleDuplicates.endtext.helpDevelopment": {
+    "message": "Sie können helfen, dieses Thunderbird Add-On zu verbessern, indem Sie Probleme melden oder kommentieren, Übersetzungen oder sogar Code beisteuern. Die Entwickler-Seite ist:"
+  },
+  "handleDuplicates.endtext.provideFeedback": {
+    "message": "oder mailen Sie Ihr Feedback direkt an unsere öffentliche Mailingliste:"
+  },
+  "handleDuplicates.feedbackMail": {
+    "message": "duplicate-contact-manager-for-thunderbird@googlegroups.com"
+  },
+  "handleDuplicates.devSiteUrl": {
+    "message": "http://code.google.com/p/duplicate-contact-manager-for-thundebird/"
+  },
+  "handleDuplicates.startbutton.label": {
+    "message": "Start"
+  },
+  "handleDuplicates.startbutton.accesskey": {
+    "message": "a"
+  },
+  "handleDuplicates.applynextbutton.label": {
+    "message": "Einen löschen >"
+  },
+  "handleDuplicates.applynextbutton.accesskey": {
+    "message": "E"
+  },
+  "handleDuplicates.keepnextbutton.label": {
+    "message": "Beide behalten >"
+  },
+  "handleDuplicates.keepnextbutton.accesskey": {
+    "message": "B"
+  },
+  "handleDuplicates.skipnextbutton.label": {
+    "message": "Überspringen >"
+  },
+  "handleDuplicates.skipnextbutton.accesskey": {
+    "message": "Ü"
+  },
+  "handleDuplicates.stopbutton.label": {
+    "message": "Stop"
+  },
+  "handleDuplicates.quitbutton.label": {
+    "message": "Schließen"
+  },
+  "handleDuplicates.contact": {
+    "message": "Eintrag"
+  },
+  "handleDuplicates.firstcontact": {
+    "message": "Erster Eintrag"
+  },
+  "handleDuplicates.secondcontact": {
+    "message": "Zweiter Eintrag"
+  },
+  "handleDuplicates.empty": {
+    "message": "leer"
+  },
+  "handleDuplicates.status_default": {
+    "message": "Suche nach Dubletten..."
+  },
+  "handleDuplicates.status_nonefound": {
+    "message": "Keine Dubletten gefunden"
+  },
+  "handleDuplicates.status_nfound": {
+    "message": "%s mögliche Dubletten gefunden"
+  },
+  "handleDuplicates.status_of": {
+    "message": "%s von %s"
+  }
+}

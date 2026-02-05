@@ -46,10 +46,14 @@ var DuplicateEntriesWindowState = (function() {
 			keepLeftRadioButton: null,
 			keepRightRadioButton: null,
 
-			abURI1: null,
-			abURI2: null,
-			abDir1: null,
-			abDir2: null,
+			abURI1: null, // Legacy, kept for compatibility
+			abURI2: null, // Legacy, kept for compatibility
+			abDir1: null, // Legacy, kept for compatibility
+			abDir2: null, // Legacy, kept for compatibility
+			abId1: null, // TB128: Address book ID
+			abId2: null, // TB128: Address book ID
+			abDir1Name: '', // TB128: Address book display name
+			abDir2Name: '', // TB128: Address book display name
 
 			card1: null,
 			card2: null,

@@ -2,125 +2,232 @@
 // file: duplicateEntriesWindowContacts.js
 //
 // Read/write logic for Thunderbird address book contacts (cards and directories).
+// Migrated to TB128 WebExtension API (browser.addressBooks)
 // Used by duplicateEntriesWindow.js. Load this script before duplicateEntriesWindow.js.
-
-/*
-   References:
-   https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XPCOM/Reference/nsIAbCard_(Tb3)
-   https://developer.mozilla.org/en-US/docs/Mozilla/Thunderbird/Address_Book_Examples
-*/
 
 var DuplicateEntriesWindowContacts = (function() {
 	"use strict";
 
-	var abManager = null;
-
-	function getAbManager() {
-		if (!abManager) {
-			abManager = Components.classes["@mozilla.org/abmanager;1"]
-				.getService(Components.interfaces.nsIAbManager);
-		}
-		return abManager;
-	}
+	// Use messenger namespace (Thunderbird preferred) or fallback to browser
+	const addressBooksAPI = (typeof messenger !== 'undefined' && messenger.addressBooks) ? messenger.addressBooks : browser.addressBooks;
 
 	/**
-	 * Returns the address book directory for the given URI.
-	 * @param {string} uri - Address book URI (e.g. moz-abmdbdirectory://...)
-	 * @returns {nsIAbDirectory}
+	 * Gets all address books.
+	 * TB128: Returns array of address book objects with id and name properties.
+	 * @returns {Promise<Array>} Array of {id, name, ...} objects
 	 */
-	function getDirectory(uri) {
-		return getAbManager().getDirectory(uri);
+	async function getAddressBooks() {
+		if (!addressBooksAPI) {
+			console.error("addressBooks API is not available. Make sure 'addressBooks' permission is in manifest.json");
+			return [];
+		}
+		try {
+			const addressBooks = await addressBooksAPI.list();
+			return addressBooks;
+		} catch (error) {
+			console.error("Error getting address books:", error);
+			return [];
+		}
 	}
 
 	/**
-	 * Returns all contact cards from a directory. For each card, context.enrichCardForComparison(card, mailLists)
+	 * Gets a single address book by ID.
+	 * @param {string} addressBookId - Address book ID
+	 * @returns {Promise<Object>} Address book object or null
+	 */
+	async function getAddressBook(addressBookId) {
+		if (!addressBooksAPI || !addressBookId) {
+			return null;
+		}
+		try {
+			const addressBooks = await addressBooksAPI.list();
+			return addressBooks.find(ab => ab.id === addressBookId) || null;
+		} catch (error) {
+			console.error("Error getting address book:", error);
+			return null;
+		}
+	}
+
+	/**
+	 * Returns all contact cards from an address book. For each card, context.enrichCardForComparison(card, mailLists)
 	 * is called so the caller can attach virtual properties (e.g. __NonEmptyFields, __MailListNames).
-	 * @param {nsIAbDirectory} directory - Address book directory
-	 * @param {object} context - Must have enrichCardForComparison(card, mailLists)
-	 * @returns {{ cards: Array, totalBefore: number }} - cards array and total count (for single-book mode)
+	 * TB128: Now async, uses addressBooks API and vCard format.
+	 * @param {string} addressBookId - Address book ID
+	 * @param {object} context - Must have enrichCardForComparison(card, mailLists), parseVCard, generateVCard
+	 * @returns {Promise<{ cards: Array, totalBefore: number }>} - cards array and total count
 	 */
-	function getAllAbCards(directory, context) {
-		var abCards = [];
-		var mailLists = [];
-		var childCards = directory.QueryInterface(Components.interfaces.nsIAbDirectory).childCards;
+	async function getAllAbCards(addressBookId, context) {
+		if (!addressBooksAPI || !addressBookId) {
+			console.error("getAllAbCards: addressBooks API or addressBookId not available");
+			return { cards: [], totalBefore: 0 };
+		}
 
-		if (childCards) {
-			try {
-				while (childCards.hasMoreElements()) {
-					var abCard = childCards.getNext();
-					if (abCard != null && abCard instanceof Components.interfaces.nsIAbCard) {
-						if (abCard.isMailList) {
-							var mailListDir = getAbManager().getDirectory(abCard.mailListURI);
-							var addressList = mailListDir.addressLists;
+		try {
+			console.log("Getting contacts from address book:", addressBookId);
+			
+			// Get all contacts from the address book
+			const contacts = await addressBooksAPI.contacts.list(addressBookId);
+			console.log("Found", contacts.length, "contacts");
+			
+			var abCards = [];
+			var mailLists = [];
+			var processedCount = 0;
+
+			// Process contacts and mailing lists
+			for (var i = 0; i < contacts.length; i++) {
+				try {
+					var contact = contacts[i];
+					
+					// Check if it's a mailing list
+					if (contact.type === 'mailingList') {
+						// Get mailing list details
+						try {
+							const listDetails = await addressBooksAPI.mailingLists.get(contact.id);
 							var primaryEmails = [];
-							for (var i = 0; i < addressList.length; i++) {
-								primaryEmails.push(addressList.queryElementAt(i, Components.interfaces.nsIAbCard).primaryEmail);
+							if (listDetails.contacts) {
+								for (var j = 0; j < listDetails.contacts.length; j++) {
+									var listContact = listDetails.contacts[j];
+									if (listContact.properties && listContact.properties.PrimaryEmail) {
+										primaryEmails.push(listContact.properties.PrimaryEmail);
+									}
+								}
 							}
-							mailLists.push([abCard.displayName, primaryEmails]);
-						} else {
-							abCards.push(abCard);
+							mailLists.push([contact.properties ? contact.properties.DisplayName : contact.id, primaryEmails]);
+						} catch (e) {
+							console.warn("Error getting mailing list details:", e);
 						}
+					} else {
+						// Regular contact - parse vCard to get properties
+						var cardProps = {};
+						if (contact.properties) {
+							// If properties are already parsed, use them
+							cardProps = contact.properties;
+						} else if (contact.vCard && context && context.parseVCard) {
+							// Parse vCard string
+							cardProps = context.parseVCard(contact.vCard);
+						} else {
+							// Fallback: use contact properties directly
+							cardProps = contact.properties || {};
+						}
+						
+						// Add internal tracking properties
+						cardProps._id = contact.id;
+						cardProps._addressBookId = addressBookId;
+						if (contact.vCard) {
+							cardProps._vCard = contact.vCard;
+						}
+						
+						abCards.push(cardProps);
+						processedCount++;
 					}
+				} catch (e) {
+					console.warn("Error processing contact at index", i, ":", e);
 				}
-			} catch (ex) {
-				// Return empty array on error
 			}
-		}
 
-		for (var j = 0; j < abCards.length; j++) {
-			context.enrichCardForComparison(abCards[j], mailLists);
-		}
+			console.log("Processed", processedCount, "cards successfully");
 
-		return { cards: abCards, totalBefore: abCards.length };
+			// Enrich cards with virtual properties
+			for (var j = 0; j < abCards.length; j++) {
+				if (context && context.enrichCardForComparison) {
+					context.enrichCardForComparison(abCards[j], mailLists);
+				}
+			}
+
+			console.log("Loaded", abCards.length, "contacts from address book", addressBookId);
+			return { cards: abCards, totalBefore: abCards.length };
+		} catch (error) {
+			console.error("Error in getAllAbCards:", error);
+			return { cards: [], totalBefore: 0 };
+		}
 	}
 
 	/**
 	 * Reads a single property from a card.
-	 * @param {nsIAbCard} card
-	 * @param {string} property
-	 * @param {string|number} defaultValue
-	 * @returns {string|number}
+	 * TB128: Cards are plain objects, access properties directly.
+	 * @param {Object} card - Card object (plain JS object)
+	 * @param {string} property - Property name
+	 * @param {string|number} defaultValue - Default value
+	 * @returns {string|number} - Property value or default
 	 */
 	function getCardProperty(card, property, defaultValue) {
-		return card.getProperty(property, defaultValue);
+		if (!card || typeof card !== 'object') {
+			return defaultValue;
+		}
+		return card.hasOwnProperty(property) ? card[property] : defaultValue;
 	}
 
 	/**
 	 * Writes a single property to a card (in memory only). Call saveCard to persist.
-	 * @param {nsIAbCard} card
-	 * @param {string} property
-	 * @param {string|number} value
+	 * TB128: Cards are plain objects, set properties directly.
+	 * @param {Object} card - Card object (plain JS object)
+	 * @param {string} property - Property name
+	 * @param {string|number} value - Value to set
 	 */
 	function setCardProperty(card, property, value) {
-		card.setProperty(property, value);
+		if (!card || typeof card !== 'object') {
+			return;
+		}
+		card[property] = value;
 	}
 
 	/**
 	 * Persists card changes to the address book.
-	 * @param {nsIAbDirectory} abDir - Directory the card belongs to
-	 * @param {nsIAbCard} card - Card with modified properties
+	 * TB128: Now async, uses addressBooks API and vCard format.
+	 * @param {string} addressBookId - Address book ID
+	 * @param {Object} card - Card object with modified properties
+	 * @returns {Promise<void>}
 	 * @throws on failure
 	 */
-	function saveCard(abDir, card) {
-		abDir.modifyCard(card);
+	async function saveCard(addressBookId, card) {
+		if (!addressBooksAPI || !addressBookId || !card) {
+			throw new Error("saveCard: Invalid parameters");
+		}
+
+		try {
+			// Generate vCard from card properties
+			// Note: context is not available here, so we use VCardUtils directly
+			var vCardString;
+			if (typeof VCardUtils !== 'undefined' && VCardUtils.generateVCard) {
+				vCardString = VCardUtils.generateVCard(card);
+			} else {
+				throw new Error("No vCard generator available");
+			}
+
+			// Update the contact
+			await addressBooksAPI.contacts.update(addressBookId, card._id, {
+				vCard: vCardString
+			});
+		} catch (error) {
+			console.error("Error saving card:", error);
+			throw error;
+		}
 	}
 
 	/**
 	 * Deletes a card from the address book.
-	 * @param {nsIAbDirectory} abDir - Directory the card belongs to
-	 * @param {nsIAbCard} card - Card to delete
+	 * TB128: Now async, uses addressBooks API.
+	 * @param {string} addressBookId - Address book ID
+	 * @param {Object} card - Card object to delete (must have _id property)
+	 * @returns {Promise<void>}
 	 * @throws on failure
 	 */
-	function deleteCard(abDir, card) {
-		var deleteCards = Components.classes["@mozilla.org/array;1"]
-			.createInstance(Components.interfaces.nsIMutableArray);
-		deleteCards.appendElement(card, false);
-		abDir.deleteCards(deleteCards);
+	async function deleteCard(addressBookId, card) {
+		if (!addressBooksAPI || !addressBookId || !card || !card._id) {
+			throw new Error("deleteCard: Invalid parameters - card must have _id property");
+		}
+
+		try {
+			await addressBooksAPI.contacts.delete(addressBookId, card._id);
+		} catch (error) {
+			console.error("Error deleting card:", error);
+			throw error;
+		}
 	}
 
 	return {
-		getAbManager: getAbManager,
-		getDirectory: getDirectory,
+		getAddressBooks: getAddressBooks,
+		getAddressBook: getAddressBook,
 		getAllAbCards: getAllAbCards,
 		getCardProperty: getCardProperty,
 		setCardProperty: setCardProperty,

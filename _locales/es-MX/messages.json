@@ -1,0 +1,446 @@
+{
+  "Contacts": {
+    "message": "Contactos"
+  },
+  "cards": {
+    "message": "Contactos"
+  },
+  "to_be_kept": {
+    "message": "será mantenido"
+  },
+  "to_be_removed": {
+    "message": "será borrado"
+  },
+  "pair": {
+    "message": "par"
+  },
+  "parity": {
+    "message": "acuerdo"
+  },
+  "of": {
+    "message": "de"
+  },
+  "noMatch": {
+    "message": "Sin nombres, correos-e y teléfonos para comparar"
+  },
+  "matchFound": {
+    "message": "Coincidencia"
+  },
+  "match": {
+    "message": "coinciden"
+  },
+  "__Names_label": {
+    "message": "Nombres"
+  },
+  "__Emails_label": {
+    "message": "Correos-e"
+  },
+  "__PhoneNumbers_label": {
+    "message": "Números de teléfono"
+  },
+  "SearchingForDuplicates": {
+    "message": "Buscando contactos duplicados..."
+  },
+  "PleasePressStart": {
+    "message": "Por favor presione Inicio"
+  },
+  "NoABookFound": {
+    "message": "No se encontró una libreta de direcciones!"
+  },
+  "Start": {
+    "message": "Inicio"
+  },
+  "Restart": {
+    "message": "Rearranque"
+  },
+  "finished": {
+    "message": "Finalizado"
+  },
+  "CardUID_label": {
+    "message": "Cdentificación de contacto"
+  },
+  "PhotoURI_label": {
+    "message": "Foto"
+  },
+  "FirstName_label": {
+    "message": "Nombre"
+  },
+  "LastName_label": {
+    "message": "Apellido"
+  },
+  "PhoneticFirstName_label": {
+    "message": "Pronunciación del nombre"
+  },
+  "PhoneticLastName_label": {
+    "message": "Pronunciación del apellido"
+  },
+  "_PhoneticName_label": {
+    "message": "Pronunciación"
+  },
+  "DisplayName_label": {
+    "message": "Mostrado"
+  },
+  "NickName_label": {
+    "message": "Apodo"
+  },
+  "_GoogleTalk_label": {
+    "message": "Google Talk"
+  },
+  "__MailListNames_label": {
+    "message": "Listas de correo-e"
+  },
+  "PrimaryEmail_label": {
+    "message": "Correo-e"
+  },
+  "SecondEmail_label": {
+    "message": "Segundo Correo-e"
+  },
+  "DefaultEmail_label": {
+    "message": "Correo-e predeterminado"
+  },
+  "CardType_label": {
+    "message": "Tipo de contacto"
+  },
+  "PreferMailFormat_label": {
+    "message": "Formato para correo-e"
+  },
+  "PreferDisplayName_label": {
+    "message": "Mostrado preferido"
+  },
+  "WorkPhone_label": {
+    "message": "Teléfono (Trabajo)"
+  },
+  "HomePhone_label": {
+    "message": "Teléfono (Casa)"
+  },
+  "FaxNumber_label": {
+    "message": "Fax"
+  },
+  "PagerNumber_label": {
+    "message": "Buscapersonas"
+  },
+  "CellularNumber_label": {
+    "message": "Teléfono celular"
+  },
+  "WorkPhoneType_label": {
+    "message": "Work Phone Type"
+  },
+  "HomePhoneType_label": {
+    "message": "Home Phone Type"
+  },
+  "FaxNumberType_label": {
+    "message": "Fax Number Type"
+  },
+  "PagerNumberType_label": {
+    "message": "Pager Number Type"
+  },
+  "CellularNumberType_label": {
+    "message": "Cellular Number Type"
+  },
+  "HomeAddress_label": {
+    "message": "Dirección (Casa)"
+  },
+  "HomeAddress2_label": {
+    "message": "Colonia, Municipio (Casa)"
+  },
+  "HomeCity_label": {
+    "message": "Ciudad (Casa)"
+  },
+  "HomeState_label": {
+    "message": "Estado (Casa)"
+  },
+  "HomeZipCode_label": {
+    "message": "Código postal (Casa)"
+  },
+  "HomeCountry_label": {
+    "message": "País (Casa)"
+  },
+  "WorkAddress_label": {
+    "message": "Dirección (Trabajo)"
+  },
+  "WorkAddress2_label": {
+    "message": "Colonia, Municipio (Trabajo)"
+  },
+  "WorkCity_label": {
+    "message": "Ciudad (Trabajo)"
+  },
+  "WorkState_label": {
+    "message": "Estado (Trabajo)"
+  },
+  "WorkZipCode_label": {
+    "message": "Código Postal (Trabajo)"
+  },
+  "WorkCountry_label": {
+    "message": "País (Trabajo)"
+  },
+  "JobTitle_label": {
+    "message": "Puesto"
+  },
+  "Department_label": {
+    "message": "Departmento"
+  },
+  "Company_label": {
+    "message": "Organización"
+  },
+  "_AimScreenName_label": {
+    "message": "Nombre AIM"
+  },
+  "AnniversaryYear_label": {
+    "message": "Aniversario (Año)"
+  },
+  "AnniversaryMonth_label": {
+    "message": "Aniversario (Mes)"
+  },
+  "AnniversaryDay_label": {
+    "message": "Aniversario (Día)"
+  },
+  "SpouseName_label": {
+    "message": "Conyuge"
+  },
+  "FamilyName_label": {
+    "message": "Nombre de la familia"
+  },
+  "DefaultAddress_label": {
+    "message": "Default Address"
+  },
+  "Category_label": {
+    "message": "Categoría"
+  },
+  "WebPage1_label": {
+    "message": "Página Web 1"
+  },
+  "WebPage2_label": {
+    "message": "Página Web 2"
+  },
+  "BirthYear_label": {
+    "message": "Nacimiento (Año)"
+  },
+  "BirthMonth_label": {
+    "message": "Nacimiento (Mes)"
+  },
+  "BirthDay_label": {
+    "message": "Nacimiento (Día)"
+  },
+  "Custom1_label": {
+    "message": "Perzonalizado 1"
+  },
+  "Custom2_label": {
+    "message": "Perzonalizado 2"
+  },
+  "Custom3_label": {
+    "message": "Personalizado 3"
+  },
+  "Custom4_label": {
+    "message": "Personalizado 4"
+  },
+  "Notes_label": {
+    "message": "Notas"
+  },
+  "PopularityIndex_label": {
+    "message": "Indice de popularidad"
+  },
+  "AllowRemoteContent_label": {
+    "message": "Permitir contenido externo"
+  },
+  "LastModifiedDate_label": {
+    "message": "Última modificación"
+  },
+  "CorrectAddressBookSelectedPrompt": {
+    "message": "Lista de correo. Se va a procesar todos los contactos dentro de la lista."
+  },
+  "true_label": {
+    "message": "si"
+  },
+  "false_label": {
+    "message": "no"
+  },
+  "unknown_label": {
+    "message": "desconocido"
+  },
+  "plaintext_label": {
+    "message": "texto"
+  },
+  "html_label": {
+    "message": "HTML"
+  },
+  "toolsmenu.items.handleduplicates.label": {
+    "message": "Duplicate Contacts Manager..."
+  },
+  "toolsmenu.items.handleduplicates.accesskey": {
+    "message": "D"
+  },
+  "abookmenu.label": {
+    "message": "Duplicados"
+  },
+  "abookmenu.accesskey": {
+    "message": "C"
+  },
+  "abookmenu.items.handleduplicates.label": {
+    "message": "Encuentra y administra duplicados..."
+  },
+  "abookmenu.items.handleduplicates.accesskey": {
+    "message": "N"
+  },
+  "abooktoolbar.label": {
+    "message": "Encuentra duplicados"
+  },
+  "abooktoolbar.tooltip": {
+    "message": "Encuentra contactos duplicados en las libretas de direcciones"
+  },
+  "handleDuplicates.windowtitle": {
+    "message": "Encuentra y administra contactos duplicados"
+  },
+  "handleDuplicates.introheader": {
+    "message": "¿Como se maneja?"
+  },
+  "handleDuplicates.introtext": {
+    "message": "La libreta de direcciones seleccionada será revisada para encontrar contactos coincidencias potencialmente duplicadas."
+  },
+  "handleDuplicates.chooseSecondary": {
+    "message": "Si elige dos libretas de direcciones diferentes, los duplicados se manejarán (solo) en las dos libretas de direcciones seleccionadas, de lo contrario, dentro de la misma libreta de direcciones."
+  },
+  "handleDuplicates.introtext2": {
+    "message": "Cada vez que se presenta un par de candidatos, puede decidir omitirlos, editarlos y conservarlos, o editar uno y eliminar el otro."
+  },
+  "handleDuplicates.differentiator": {
+    "message": "Si desea evitar que las entradas se muestren como posibles duplicados cada vez, puede darles diferentes nombres AIM."
+  },
+  "handleDuplicates.removeWithoutAsking": {
+    "message": "Eliminar un contacto idénticos sin pedir permiso."
+  },
+  "handleDuplicates.preserveFirst": {
+    "message": "Cuando utilice dos libretas de direcciones diferentes, no elimine automáticamente las entradas de la primera."
+  },
+  "handleDuplicates.deferInteractive": {
+    "message": "Primero recopile todos los duplicados potenciales que requieran tratamiento manual y luego preséntelos de manera interactiva.."
+  },
+  "handleDuplicates.durationWarning": {
+    "message": "Dependiendo del número de contactos y la velocidad del CPU de la computadora, será el tiempo que se tarde,  y puede tomar varios minutos."
+  },
+  "handleDuplicates.natTrunkPrefix": {
+    "message": "Prefijo de número de teléfono nacional, p. '01'"
+  },
+  "handleDuplicates.intCallPrefix": {
+    "message": "Prefijo de número de teléfono internacional, p. '00'"
+  },
+  "handleDuplicates.countryCallingCode": {
+    "message": "Prefijo internacional predeterminado, p. '+52'"
+  },
+  "handleDuplicates.consideredFields": {
+    "message": "Campos a considerar"
+  },
+  "handleDuplicates.ignoredFields": {
+    "message": "Campos para ignorar"
+  },
+  "handleDuplicates.introtext3": {
+    "message": "Se puede abandonar el proceso en cualquier momento presionando la tecla 'Cancelar'. Si no se quieren hacer cambios a un duplicado, se usa la tecla 'Saltar'."
+  },
+  "handleDuplicates.introtext4": {
+    "message": "Si desea guardar los cambios y mantener ambas entradas, haga clic en 'Conservar ambos'; para eliminar una entrada, haga clic en 'Eliminar uno'."
+  },
+  "handleDuplicates.options": {
+    "message": "Opciones"
+  },
+  "handleDuplicates.endheader": {
+    "message": "Resultados"
+  },
+  "handleDuplicates.endtext": {
+    "message": "Acabas de deshacerse de estos duplicados y ahora puedes continuar con algo que es aún más divertido :-)"
+  },
+  "handleDuplicates.endtext.numBefore": {
+    "message": "Número de contactos antes"
+  },
+  "handleDuplicates.endtext.numAfter": {
+    "message": "Número de contactos después"
+  },
+  "handleDuplicates.endtext.numRemoved": {
+    "message": "Contactos eliminados"
+  },
+  "handleDuplicates.endtext.numRemovedAuto": {
+    "message": "Contactos eliminados automáticamente"
+  },
+  "handleDuplicates.endtext.numPresented": {
+    "message": "Pares de contactos presentados"
+  },
+  "handleDuplicates.endtext.numRemovedMan": {
+    "message": "Contactos eliminados manualmente"
+  },
+  "handleDuplicates.endtext.numSkipped": {
+    "message": "Contactos saltados"
+  },
+  "handleDuplicates.endtext.ignoredFields": {
+    "message": "Tipos de campo ignorado"
+  },
+  "handleDuplicates.endtext.diffProps": {
+    "message": "Tipos de campo encontrados con valores no equivalentes"
+  },
+  "handleDuplicates.endtext.numChanged": {
+    "message": "Las entradas han cambiado"
+  },
+  "handleDuplicates.endtext.helpDevelopment": {
+    "message": "Puede ayudar a mejorar este extensión de Thunderbird archivando problemas o comentándolos, contribuyendo con traducciones o incluso escribiendo código. El sitio de desarrollo es:"
+  },
+  "handleDuplicates.endtext.provideFeedback": {
+    "message": "o envíe sus sugerencias directamente a la lista de correo pública:"
+  },
+  "handleDuplicates.feedbackMail": {
+    "message": "duplicate-contact-manager-for-thunderbird@googlegroups.com"
+  },
+  "handleDuplicates.devSiteUrl": {
+    "message": "http://code.google.com/p/duplicate-contact-manager-for-thundebird/"
+  },
+  "handleDuplicates.startbutton.label": {
+    "message": "Inicio"
+  },
+  "handleDuplicates.startbutton.accesskey": {
+    "message": "I"
+  },
+  "handleDuplicates.applynextbutton.label": {
+    "message": "Eliminar uno >"
+  },
+  "handleDuplicates.applynextbutton.accesskey": {
+    "message": "E"
+  },
+  "handleDuplicates.keepnextbutton.label": {
+    "message": "Conservar ambos >"
+  },
+  "handleDuplicates.keepnextbutton.accesskey": {
+    "message": "a"
+  },
+  "handleDuplicates.skipnextbutton.label": {
+    "message": "Saltar >"
+  },
+  "handleDuplicates.skipnextbutton.accesskey": {
+    "message": "S"
+  },
+  "handleDuplicates.stopbutton.label": {
+    "message": "Cancelar"
+  },
+  "handleDuplicates.quitbutton.label": {
+    "message": "Salir"
+  },
+  "handleDuplicates.contact": {
+    "message": "Contacto"
+  },
+  "handleDuplicates.firstcontact": {
+    "message": "Primer contacto"
+  },
+  "handleDuplicates.secondcontact": {
+    "message": "Segundo contacto"
+  },
+  "handleDuplicates.empty": {
+    "message": "Vacío"
+  },
+  "handleDuplicates.status_default": {
+    "message": "Buscando contactos duplicados..."
+  },
+  "handleDuplicates.status_nonefound": {
+    "message": "No se encontraron contactos duplicados"
+  },
+  "handleDuplicates.status_nfound": {
+    "message": "%s contactos duplicados posibles"
+  },
+  "handleDuplicates.status_of": {
+    "message": "%s de %s"
+  }
+}

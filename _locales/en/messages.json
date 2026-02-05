@@ -1,0 +1,446 @@
+{
+  "Contacts": {
+    "message": "contacts"
+  },
+  "cards": {
+    "message": "cards"
+  },
+  "to_be_kept": {
+    "message": "to be kept"
+  },
+  "to_be_removed": {
+    "message": "to be removed"
+  },
+  "pair": {
+    "message": "pair"
+  },
+  "parity": {
+    "message": "match"
+  },
+  "of": {
+    "message": "of"
+  },
+  "noMatch": {
+    "message": "No names, email addresses, and phone numbers to compare"
+  },
+  "matchFound": {
+    "message": "Match found"
+  },
+  "match": {
+    "message": "match"
+  },
+  "__Names_label": {
+    "message": "Names"
+  },
+  "__Emails_label": {
+    "message": "Email addresses"
+  },
+  "__PhoneNumbers_label": {
+    "message": "Phone numbers"
+  },
+  "SearchingForDuplicates": {
+    "message": "Searching for duplicates..."
+  },
+  "PleasePressStart": {
+    "message": "Please press Start."
+  },
+  "NoABookFound": {
+    "message": "No address book found!"
+  },
+  "Start": {
+    "message": "Start"
+  },
+  "Restart": {
+    "message": "Restart"
+  },
+  "finished": {
+    "message": "Finished"
+  },
+  "CardUID_label": {
+    "message": "Card UID"
+  },
+  "PhotoURI_label": {
+    "message": "Photo"
+  },
+  "FirstName_label": {
+    "message": "First Name"
+  },
+  "LastName_label": {
+    "message": "Last Name"
+  },
+  "PhoneticFirstName_label": {
+    "message": "Phonetic First Name"
+  },
+  "PhoneticLastName_label": {
+    "message": "Phonetic Last Name"
+  },
+  "_PhoneticName_label": {
+    "message": "Phonetic Name"
+  },
+  "DisplayName_label": {
+    "message": "Displayed Name"
+  },
+  "NickName_label": {
+    "message": "Nickname"
+  },
+  "_GoogleTalk_label": {
+    "message": "Google Talk"
+  },
+  "__MailListNames_label": {
+    "message": "Mailing lists"
+  },
+  "PrimaryEmail_label": {
+    "message": "Email"
+  },
+  "SecondEmail_label": {
+    "message": "Second Email"
+  },
+  "DefaultEmail_label": {
+    "message": "Default Email"
+  },
+  "CardType_label": {
+    "message": "Card Type"
+  },
+  "PreferMailFormat_label": {
+    "message": "Preferred Email Format"
+  },
+  "PreferDisplayName_label": {
+    "message": "Display Name preferred"
+  },
+  "WorkPhone_label": {
+    "message": "Work Phone"
+  },
+  "HomePhone_label": {
+    "message": "Home Phone"
+  },
+  "FaxNumber_label": {
+    "message": "Fax Number"
+  },
+  "PagerNumber_label": {
+    "message": "Pager Number"
+  },
+  "CellularNumber_label": {
+    "message": "Cellular Number"
+  },
+  "WorkPhoneType_label": {
+    "message": "Work Phone Type"
+  },
+  "HomePhoneType_label": {
+    "message": "Home Phone Type"
+  },
+  "FaxNumberType_label": {
+    "message": "Fax Number Type"
+  },
+  "PagerNumberType_label": {
+    "message": "Pager Number Type"
+  },
+  "CellularNumberType_label": {
+    "message": "Cellular Number Type"
+  },
+  "HomeAddress_label": {
+    "message": "Home Address"
+  },
+  "HomeAddress2_label": {
+    "message": "Home Address 2"
+  },
+  "HomeCity_label": {
+    "message": "Home City"
+  },
+  "HomeState_label": {
+    "message": "Home State"
+  },
+  "HomeZipCode_label": {
+    "message": "Home Zip Code"
+  },
+  "HomeCountry_label": {
+    "message": "Home Country"
+  },
+  "WorkAddress_label": {
+    "message": "Work Address"
+  },
+  "WorkAddress2_label": {
+    "message": "Work Address 2"
+  },
+  "WorkCity_label": {
+    "message": "Work City"
+  },
+  "WorkState_label": {
+    "message": "Work State"
+  },
+  "WorkZipCode_label": {
+    "message": "Work Zip Code"
+  },
+  "WorkCountry_label": {
+    "message": "Work Country"
+  },
+  "JobTitle_label": {
+    "message": "Job Title"
+  },
+  "Department_label": {
+    "message": "Department"
+  },
+  "Company_label": {
+    "message": "Company"
+  },
+  "_AimScreenName_label": {
+    "message": "AIM Name"
+  },
+  "AnniversaryYear_label": {
+    "message": "Anniversary Year"
+  },
+  "AnniversaryMonth_label": {
+    "message": "Anniversary Month"
+  },
+  "AnniversaryDay_label": {
+    "message": "Anniversary Day"
+  },
+  "SpouseName_label": {
+    "message": "Spouse"
+  },
+  "FamilyName_label": {
+    "message": "Family Name"
+  },
+  "DefaultAddress_label": {
+    "message": "Default Address"
+  },
+  "Category_label": {
+    "message": "Category"
+  },
+  "WebPage1_label": {
+    "message": "Web URL 1"
+  },
+  "WebPage2_label": {
+    "message": "Web URL 2"
+  },
+  "BirthYear_label": {
+    "message": "Birth Year"
+  },
+  "BirthMonth_label": {
+    "message": "Birth Month"
+  },
+  "BirthDay_label": {
+    "message": "Birth Day"
+  },
+  "Custom1_label": {
+    "message": "Custom 1"
+  },
+  "Custom2_label": {
+    "message": "Custom 2"
+  },
+  "Custom3_label": {
+    "message": "Custom 3"
+  },
+  "Custom4_label": {
+    "message": "Custom 4"
+  },
+  "Notes_label": {
+    "message": "Notes"
+  },
+  "PopularityIndex_label": {
+    "message": "Popularity Index"
+  },
+  "AllowRemoteContent_label": {
+    "message": "Allow Remote Content"
+  },
+  "LastModifiedDate_label": {
+    "message": "Last Modified"
+  },
+  "CorrectAddressBookSelectedPrompt": {
+    "message": "You seem to have selected an address list. When searching for duplicate contacts, not only this address list, but the whole address book which holds this list is going to be processed."
+  },
+  "true_label": {
+    "message": "yes"
+  },
+  "false_label": {
+    "message": "no"
+  },
+  "unknown_label": {
+    "message": "unknown"
+  },
+  "plaintext_label": {
+    "message": "plain text"
+  },
+  "html_label": {
+    "message": "HTML"
+  },
+  "toolsmenu.items.handleduplicates.label": {
+    "message": "Duplicate Contacts Manager..."
+  },
+  "toolsmenu.items.handleduplicates.accesskey": {
+    "message": "D"
+  },
+  "abookmenu.label": {
+    "message": "Duplicates"
+  },
+  "abookmenu.accesskey": {
+    "message": "C"
+  },
+  "abookmenu.items.handleduplicates.label": {
+    "message": "Find and manage duplicates..."
+  },
+  "abookmenu.items.handleduplicates.accesskey": {
+    "message": "f"
+  },
+  "abooktoolbar.label": {
+    "message": "Find Duplicates"
+  },
+  "abooktoolbar.tooltip": {
+    "message": "Finds duplicates in your Thunderbird address books"
+  },
+  "handleDuplicates.windowtitle": {
+    "message": "Find and Manage Duplicates"
+  },
+  "handleDuplicates.introheader": {
+    "message": "What’s happening here?"
+  },
+  "handleDuplicates.introtext": {
+    "message": "The selected address book(s) will be searched for matching potentially duplicate entries."
+  },
+  "handleDuplicates.chooseSecondary": {
+    "message": "If you choose two different address books, duplicates will be handled (only) across the two selected address books, otherwise within the same address book."
+  },
+  "handleDuplicates.introtext2": {
+    "message": "Each time a pair of candidates is presented, you can decide to skip them, to edit and keep them both, or to possibly edit one and remove the other."
+  },
+  "handleDuplicates.differentiator": {
+    "message": "If you wish to exclude entries from being shown as potential duplicates each time, you may give them different AIM names."
+  },
+  "handleDuplicates.removeWithoutAsking": {
+    "message": "Remove without asking all duplicates containing less information when the rest is the same between the two."
+  },
+  "handleDuplicates.preserveFirst": {
+    "message": "When using two different address books, do not automatically remove entries from the first one."
+  },
+  "handleDuplicates.deferInteractive": {
+    "message": "First collect all potential duplicates requiring manual treatment and then present them interactively."
+  },
+  "handleDuplicates.durationWarning": {
+    "message": "Depending on the number of addresses and the speed of your computer, this process might take several minutes."
+  },
+  "handleDuplicates.natTrunkPrefix": {
+    "message": "National phone number trunk prefix, e.g., '1' or '0'"
+  },
+  "handleDuplicates.intCallPrefix": {
+    "message": "International call (IDD) prefix, e.g., '011' or '00'"
+  },
+  "handleDuplicates.countryCallingCode": {
+    "message": "Default country calling code, e.g., '+1' or '+44'"
+  },
+  "handleDuplicates.consideredFields": {
+    "message": "Fields to consider"
+  },
+  "handleDuplicates.ignoredFields": {
+    "message": "Fields to ignore"
+  },
+  "handleDuplicates.introtext3": {
+    "message": "If you do not want to treat a potential duplicate, use 'Skip'. You can abort the process by pressing 'Stop'."
+  },
+  "handleDuplicates.introtext4": {
+    "message": "If you want to save changes and keep both entries, press 'Keep both'; for deleting one entry and keeping the other, press 'Remove one'."
+  },
+  "handleDuplicates.options": {
+    "message": "Options"
+  },
+  "handleDuplicates.endheader": {
+    "message": "Results"
+  },
+  "handleDuplicates.endtext": {
+    "message": "You just got rid of these duplicates and can now continue with something that’s more fun :-)"
+  },
+  "handleDuplicates.endtext.numBefore": {
+    "message": "Number of entries before"
+  },
+  "handleDuplicates.endtext.numAfter": {
+    "message": "Number of entries after"
+  },
+  "handleDuplicates.endtext.numRemoved": {
+    "message": "Entries removed"
+  },
+  "handleDuplicates.endtext.numRemovedAuto": {
+    "message": "Entries removed automatically"
+  },
+  "handleDuplicates.endtext.numPresented": {
+    "message": "Entry pairs presented"
+  },
+  "handleDuplicates.endtext.numRemovedMan": {
+    "message": "Entries removed manually"
+  },
+  "handleDuplicates.endtext.numSkipped": {
+    "message": "Entry pairs skipped"
+  },
+  "handleDuplicates.endtext.ignoredFields": {
+    "message": "Field types ignored"
+  },
+  "handleDuplicates.endtext.diffProps": {
+    "message": "Field types found with non-equivalent values"
+  },
+  "handleDuplicates.endtext.numChanged": {
+    "message": "Entries changed"
+  },
+  "handleDuplicates.endtext.helpDevelopment": {
+    "message": "You can help improve this Thunderbird Add-On by filing issues or commenting them, contributing translations, or even writing code. The development site is:"
+  },
+  "handleDuplicates.endtext.provideFeedback": {
+    "message": "or send your feedback directly to our public mailing list:"
+  },
+  "handleDuplicates.feedbackMail": {
+    "message": "duplicate-contact-manager-for-thunderbird@googlegroups.com"
+  },
+  "handleDuplicates.devSiteUrl": {
+    "message": "https://github.com/DDvO/Duplicate-Contacts-Manager"
+  },
+  "handleDuplicates.startbutton.label": {
+    "message": "Start"
+  },
+  "handleDuplicates.startbutton.accesskey": {
+    "message": "a"
+  },
+  "handleDuplicates.applynextbutton.label": {
+    "message": "Remove one >"
+  },
+  "handleDuplicates.applynextbutton.accesskey": {
+    "message": "R"
+  },
+  "handleDuplicates.keepnextbutton.label": {
+    "message": "Keep both >"
+  },
+  "handleDuplicates.keepnextbutton.accesskey": {
+    "message": "K"
+  },
+  "handleDuplicates.skipnextbutton.label": {
+    "message": "Skip >"
+  },
+  "handleDuplicates.skipnextbutton.accesskey": {
+    "message": "i"
+  },
+  "handleDuplicates.stopbutton.label": {
+    "message": "Stop"
+  },
+  "handleDuplicates.quitbutton.label": {
+    "message": "Quit"
+  },
+  "handleDuplicates.contact": {
+    "message": "Entry"
+  },
+  "handleDuplicates.firstcontact": {
+    "message": "First entry"
+  },
+  "handleDuplicates.secondcontact": {
+    "message": "Second entry"
+  },
+  "handleDuplicates.empty": {
+    "message": "empty"
+  },
+  "handleDuplicates.status_default": {
+    "message": "Searching for duplicates..."
+  },
+  "handleDuplicates.status_nonefound": {
+    "message": "No duplicates found"
+  },
+  "handleDuplicates.status_nfound": {
+    "message": "Found %s potential duplicates"
+  },
+  "handleDuplicates.status_of": {
+    "message": "%s of %s"
+  }
+}

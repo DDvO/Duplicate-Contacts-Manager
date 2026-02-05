@@ -2,9 +2,10 @@
 // file: duplicateEntriesWindowPrefs.js
 //
 // Load/save preferences for the duplicate-entries window. Prefix: extensions.DuplicateContactsManager.
-// loadPrefs(ctx) reads from prefs branch into ctx; applyPrefsToDOM(ctx) writes ctx to form;
-// readPrefsFromDOM(ctx) reads form into ctx; savePrefs(ctx) writes ctx to prefs branch.
-// ctx must have: prefsBranch (set by getPrefsBranch or caller), ignoredFieldsDefault, addressBookFields, ignoredFields, consideredFields, isSet, matchablesList.
+// Migrated to TB128: uses browser.storage.local instead of XPCOM preferences.
+// loadPrefs(ctx) reads from storage into ctx; applyPrefsToDOM(ctx) writes ctx to form;
+// readPrefsFromDOM(ctx) reads form into ctx; savePrefs(ctx) writes ctx to storage.
+// ctx must have: ignoredFieldsDefault, addressBookFields, ignoredFields, consideredFields, isSet, matchablesList.
 // Load after duplicateEntriesWindowFields.js, before duplicateEntriesWindow.js.
 
 var DuplicateEntriesWindowPrefs = (function() {
@@ -12,95 +13,165 @@ var DuplicateEntriesWindowPrefs = (function() {
 
 	var PREF_BRANCH_ID = "extensions.DuplicateContactsManager.";
 
+	// Use messenger namespace (Thunderbird preferred) or fallback to browser
+	const storageAPI = (typeof messenger !== 'undefined' && messenger.storage) ? messenger.storage : browser.storage;
+
+	/**
+	 * TB128: Returns a placeholder object (for compatibility). In TB128, we use browser.storage.local directly
+	 */
 	function getPrefsBranch() {
+		return {
+			_id: PREF_BRANCH_ID,
+			// Placeholder methods for compatibility
+			getBoolPref: function(name) { return false; },
+			getCharPref: function(name) { return ""; },
+			setBoolPref: function(name, value) {},
+			setCharPref: function(name, value) {}
+		};
+	}
+
+	/**
+	 * Reads preference values from storage into ctx. Sets RegExps from prefix strings.
+	 * TB128: Now async, uses browser.storage.local
+	 */
+	async function loadPrefs(ctx) {
+		if (!storageAPI || !storageAPI.local) {
+			console.warn("Storage API not available. Using defaults.");
+			// Set defaults
+			ctx.autoremoveDups = false;
+			ctx.preserveFirst = false;
+			ctx.deferInteractive = true;
+			ctx.natTrunkPrefix = "";
+			ctx.intCallPrefix = "";
+			ctx.countryCallingCode = "";
+			ctx.ignoredFields = ctx.ignoredFieldsDefault.slice();
+			return;
+		}
+
 		try {
-			var Prefs = Components.classes["@mozilla.org/preferences-service;1"]
-				.getService(Components.interfaces.nsIPrefService);
-			return Prefs.getBranch(PREF_BRANCH_ID);
-		} catch (e) {
-			return null;
+			const prefs = await storageAPI.local.get(PREF_BRANCH_ID + '*') || {};
+			
+			// Extract preferences (keys are prefixed with PREF_BRANCH_ID)
+			ctx.autoremoveDups = prefs[PREF_BRANCH_ID + 'autoremoveDups'] !== undefined ? prefs[PREF_BRANCH_ID + 'autoremoveDups'] : false;
+			ctx.preserveFirst = prefs[PREF_BRANCH_ID + 'preserveFirst'] !== undefined ? prefs[PREF_BRANCH_ID + 'preserveFirst'] : false;
+			ctx.deferInteractive = prefs[PREF_BRANCH_ID + 'deferInteractive'] !== undefined ? prefs[PREF_BRANCH_ID + 'deferInteractive'] : true;
+			ctx.natTrunkPrefix = prefs[PREF_BRANCH_ID + 'natTrunkPrefix'] || "";
+			ctx.intCallPrefix = prefs[PREF_BRANCH_ID + 'intCallPrefix'] || "";
+			ctx.countryCallingCode = prefs[PREF_BRANCH_ID + 'countryCallingCode'] || "";
+			
+			if (ctx.natTrunkPrefix) {
+				ctx.natTrunkPrefixReqExp = new RegExp("^" + ctx.natTrunkPrefix + "([1-9])");
+			}
+			if (ctx.intCallPrefix) {
+				ctx.intCallPrefixReqExp = new RegExp("^" + ctx.intCallPrefix + "([1-9])");
+			}
+			
+			ctx.ignoredFields = ctx.ignoredFieldsDefault.slice();
+			if (prefs[PREF_BRANCH_ID + 'ignoreFields']) {
+				ctx.ignoredFields = prefs[PREF_BRANCH_ID + 'ignoreFields'].split(/\s*,\s*/);
+			}
+		} catch (error) {
+			console.error("Error loading preferences:", error);
+			// Set defaults on error
+			ctx.autoremoveDups = false;
+			ctx.preserveFirst = false;
+			ctx.deferInteractive = true;
+			ctx.natTrunkPrefix = "";
+			ctx.intCallPrefix = "";
+			ctx.countryCallingCode = "";
+			ctx.ignoredFields = ctx.ignoredFieldsDefault.slice();
 		}
 	}
 
 	/**
-	 * Reads preference values from ctx.prefsBranch into ctx. Sets RegExps from prefix strings.
-	 */
-	function loadPrefs(ctx) {
-		if (!ctx.prefsBranch)
-			return;
-		try {
-			ctx.autoremoveDups = ctx.prefsBranch.getBoolPref('autoremoveDups');
-		} catch (e) {}
-		try {
-			ctx.preserveFirst = ctx.prefsBranch.getBoolPref('preserveFirst');
-		} catch (e) {}
-		try {
-			ctx.deferInteractive = ctx.prefsBranch.getBoolPref('deferInteractive');
-		} catch (e) {}
-		try {
-			ctx.natTrunkPrefix = ctx.prefsBranch.getCharPref('natTrunkPrefix');
-			ctx.natTrunkPrefixReqExp = new RegExp("^" + ctx.natTrunkPrefix + "([1-9])");
-		} catch (e) {}
-		try {
-			ctx.intCallPrefix = ctx.prefsBranch.getCharPref('intCallPrefix');
-			ctx.intCallPrefixReqExp = new RegExp("^" + ctx.intCallPrefix + "([1-9])");
-		} catch (e) {}
-		try {
-			ctx.countryCallingCode = ctx.prefsBranch.getCharPref('countryCallingCode');
-		} catch (e) {}
-		ctx.ignoredFields = ctx.ignoredFieldsDefault.slice();
-		try {
-			var prefStringValue = ctx.prefsBranch.getCharPref('ignoreFields');
-			if (prefStringValue.length > 0)
-				ctx.ignoredFields = prefStringValue.split(/\s*,\s*/);
-		} catch (e) {}
-	}
-
-	/**
 	 * Writes ctx preference values to the options form elements.
+	 * TB128: Updated for HTML DOM (checkboxes use .checked, inputs use .value)
 	 */
 	function applyPrefsToDOM(ctx) {
-		document.getElementById('autoremove').checked = ctx.autoremoveDups;
-		document.getElementById('preservefirst').checked = ctx.preserveFirst;
-		document.getElementById('deferInteractive').checked = ctx.deferInteractive;
-		document.getElementById('natTrunkPrefix').value = ctx.natTrunkPrefix;
-		document.getElementById('intCallPrefix').value = ctx.intCallPrefix;
-		document.getElementById('countryCallingCode').value = ctx.countryCallingCode;
+		var autoremoveEl = document.getElementById('autoremove');
+		var preservefirstEl = document.getElementById('preservefirst');
+		var deferInteractiveEl = document.getElementById('deferInteractive');
+		var natTrunkPrefixEl = document.getElementById('natTrunkPrefix');
+		var intCallPrefixEl = document.getElementById('intCallPrefix');
+		var countryCallingCodeEl = document.getElementById('countryCallingCode');
+		var consideredFieldsEl = document.getElementById('consideredFields');
+		var ignoredFieldsEl = document.getElementById('ignoredFields');
+
+		if (autoremoveEl) autoremoveEl.checked = ctx.autoremoveDups;
+		if (preservefirstEl) preservefirstEl.checked = ctx.preserveFirst;
+		if (deferInteractiveEl) deferInteractiveEl.checked = ctx.deferInteractive;
+		if (natTrunkPrefixEl) natTrunkPrefixEl.value = ctx.natTrunkPrefix || "";
+		if (intCallPrefixEl) intCallPrefixEl.value = ctx.intCallPrefix || "";
+		if (countryCallingCodeEl) countryCallingCodeEl.value = ctx.countryCallingCode || "";
+		
 		ctx.consideredFields = ctx.addressBookFields.filter(function(x) { return !ctx.ignoredFields.includes(x); });
-		document.getElementById('consideredFields').textContent = ctx.consideredFields
-			.filter(function(x) { return !ctx.isSet(x) && !ctx.matchablesList.includes(x); }).join(", ");
-		document.getElementById('ignoredFields').value = ctx.ignoredFields.join(", ");
+		if (consideredFieldsEl) {
+			consideredFieldsEl.textContent = ctx.consideredFields
+				.filter(function(x) { return !ctx.isSet(x) && !ctx.matchablesList.includes(x); }).join(", ");
+		}
+		if (ignoredFieldsEl) {
+			ignoredFieldsEl.value = ctx.ignoredFields.join(", ");
+		}
 	}
 
 	/**
 	 * Reads current values from the options form into ctx.
+	 * TB128: Updated for HTML DOM
 	 */
 	function readPrefsFromDOM(ctx) {
-		ctx.autoremoveDups = document.getElementById('autoremove').getAttribute('checked');
-		ctx.preserveFirst = document.getElementById('preservefirst').getAttribute('checked');
-		ctx.deferInteractive = document.getElementById('deferInteractive').getAttribute('checked');
-		ctx.natTrunkPrefix = document.getElementById('natTrunkPrefix').value;
-		ctx.intCallPrefix = document.getElementById('intCallPrefix').value;
-		ctx.countryCallingCode = document.getElementById('countryCallingCode').value;
-		ctx.ignoredFields = document.getElementById('ignoredFields').value.split(/\s*,\s*/);
-		ctx.natTrunkPrefixReqExp = new RegExp("^" + ctx.natTrunkPrefix + "([1-9])");
-		ctx.intCallPrefixReqExp = new RegExp("^" + ctx.intCallPrefix + "([1-9])");
+		var autoremoveEl = document.getElementById('autoremove');
+		var preservefirstEl = document.getElementById('preservefirst');
+		var deferInteractiveEl = document.getElementById('deferInteractive');
+		var natTrunkPrefixEl = document.getElementById('natTrunkPrefix');
+		var intCallPrefixEl = document.getElementById('intCallPrefix');
+		var countryCallingCodeEl = document.getElementById('countryCallingCode');
+		var ignoredFieldsEl = document.getElementById('ignoredFields');
+
+		ctx.autoremoveDups = autoremoveEl ? autoremoveEl.checked : false;
+		ctx.preserveFirst = preservefirstEl ? preservefirstEl.checked : false;
+		ctx.deferInteractive = deferInteractiveEl ? deferInteractiveEl.checked : true;
+		ctx.natTrunkPrefix = natTrunkPrefixEl ? natTrunkPrefixEl.value : "";
+		ctx.intCallPrefix = intCallPrefixEl ? intCallPrefixEl.value : "";
+		ctx.countryCallingCode = countryCallingCodeEl ? countryCallingCodeEl.value : "";
+		
+		if (ignoredFieldsEl) {
+			ctx.ignoredFields = ignoredFieldsEl.value.split(/\s*,\s*/).filter(function(f) { return f.trim().length > 0; });
+		} else {
+			ctx.ignoredFields = ctx.ignoredFieldsDefault.slice();
+		}
+		
+		if (ctx.natTrunkPrefix) {
+			ctx.natTrunkPrefixReqExp = new RegExp("^" + ctx.natTrunkPrefix + "([1-9])");
+		}
+		if (ctx.intCallPrefix) {
+			ctx.intCallPrefixReqExp = new RegExp("^" + ctx.intCallPrefix + "([1-9])");
+		}
 		ctx.consideredFields = ctx.addressBookFields.filter(function(x) { return !ctx.ignoredFields.includes(x); });
 	}
 
 	/**
-	 * Writes ctx preference values to the prefs branch.
+	 * Writes ctx preference values to storage.
+	 * TB128: Now async, uses browser.storage.local
 	 */
-	function savePrefs(ctx) {
-		if (!ctx.prefsBranch)
+	async function savePrefs(ctx) {
+		if (!storageAPI || !storageAPI.local) {
+			console.warn("Storage API not available. Cannot save preferences.");
 			return;
-		ctx.prefsBranch.setBoolPref('autoremoveDups', ctx.autoremoveDups);
-		ctx.prefsBranch.setBoolPref('preserveFirst', ctx.preserveFirst);
-		ctx.prefsBranch.setBoolPref('deferInteractive', ctx.deferInteractive);
-		ctx.prefsBranch.setCharPref('natTrunkPrefix', ctx.natTrunkPrefix);
-		ctx.prefsBranch.setCharPref('intCallPrefix', ctx.intCallPrefix);
-		ctx.prefsBranch.setCharPref('countryCallingCode', ctx.countryCallingCode);
-		ctx.prefsBranch.setCharPref('ignoreFields', ctx.ignoredFields.join(", "));
+		}
+
+		try {
+			await storageAPI.local.set({
+				[PREF_BRANCH_ID + 'autoremoveDups']: ctx.autoremoveDups,
+				[PREF_BRANCH_ID + 'preserveFirst']: ctx.preserveFirst,
+				[PREF_BRANCH_ID + 'deferInteractive']: ctx.deferInteractive,
+				[PREF_BRANCH_ID + 'natTrunkPrefix']: ctx.natTrunkPrefix || "",
+				[PREF_BRANCH_ID + 'intCallPrefix']: ctx.intCallPrefix || "",
+				[PREF_BRANCH_ID + 'countryCallingCode']: ctx.countryCallingCode || "",
+				[PREF_BRANCH_ID + 'ignoreFields']: ctx.ignoredFields.join(", ")
+			});
+		} catch (error) {
+			console.error("Error saving preferences:", error);
+		}
 	}
 
 	return {

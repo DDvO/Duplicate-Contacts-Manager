@@ -2,7 +2,8 @@
 
 This Thunderbird extension facilitates handling of redundant entries in address books.
 After installation it can be invoked via the `Tools->Duplicate Contacts Manager...` menu entry.
-One can also customize the `Toolbar` of the `Address Book` window with a `Find Duplicates` button.
+
+**Note:** This version (2.2.0+) has been migrated to Thunderbird 128+ (WebExtension/Manifest V3). For Thunderbird 68 and earlier, please use version 2.1.x.
 
 The Duplicate Contacts Manager searches address books for matching contact entries, also known as _cards_.
 It can automatically delete all cards that match and have equivalent or less information than some other one.
@@ -280,8 +281,8 @@ The card on the right will be preferred for deletion because it contains less in
 
 ## Configuration variables
 
-The options/configuration/preferences used by this Thunderbird extension are saved in configuration keys starting with `extensions.DuplicateContactsManager.` —
-for instance, the list of ignored fields is stored in the variable `ignoreFields`.
+The options/configuration/preferences used by this Thunderbird extension are saved using the WebExtension `storage` API (`browser.storage.local` or `messenger.storage.local`).
+Preferences are stored with keys starting with `extensions.DuplicateContactsManager.` — for instance, the list of ignored fields is stored in the variable `ignoreFields`.
 
 ## For developers
 

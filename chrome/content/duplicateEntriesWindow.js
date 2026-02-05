@@ -10,7 +10,7 @@
 
 /*
    References:
-   https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XPCOM/Reference/nsIAbCard_(Tb3)
+   // TB128: Migrated from XPCOM nsIAbCard to plain JavaScript objects (vCard properties)
    https://developer.mozilla.org/en-US/docs/Mozilla/Thunderbird/Address_Book_Examples
 */
 
@@ -35,9 +35,13 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 		},
 
 		/**
-		 * Will be called by duplicateEntriesWindow.xul once the according window is loaded
+		 * Initializes the duplicate-finder window.
+		 * TB128: Uses WebExtension APIs (addressBooks, storage, i18n) instead of XPCOM.
+		 * Loads preferences, populates address book dropdowns, and shows ready state.
+		 * Will be called by window.html once the window is loaded.
+		 * @async
 		 */
-		init: function() {
+		init: async function() {
 			var F = DuplicateEntriesWindowFields;
 			this.addressBookFields = F.addressBookFields;
 			this.matchablesList = F.matchablesList;
@@ -53,17 +57,17 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			this.defaultValue = F.defaultValue;
 			this.charWeight = F.charWeight;
 
-			this.abManager = DuplicateEntriesWindowContacts.getAbManager();
+			// Add vCard utilities to context
+			this.parseVCard = VCardUtils.parseVCard;
+			this.generateVCard = VCardUtils.generateVCard;
+
 			this.prefsBranch = DuplicateEntriesWindowPrefs.getPrefsBranch();
-			DuplicateEntriesWindowPrefs.loadPrefs(this);
+			await DuplicateEntriesWindowPrefs.loadPrefs(this);
 			DuplicateEntriesWindowPrefs.applyPrefsToDOM(this);
 
-			try { /* for Thunderbird 68+. */
-				var {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm");
-				this.stringBundle = Services.strings.createBundle("chrome://duplicatecontactsmanager/locale/duplicateContactsManager.properties");
-			} catch(e) {
-				this.stringBundle = document.getElementById('bundle_duplicateContactsManager');
-			}
+			// TB128: Use browser.i18n instead of string bundles
+			// No need for stringBundle in TB128
+
 			this.running = true;
 			this.statustext = document.getElementById('statusText');
 			this.progresstext = document.getElementById('progressText');
@@ -72,57 +76,68 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			this.attributesTableRows = document.getElementById('AttributesTableRows');
 			this.keepLeftRadioButton = document.getElementById('keepLeft');
 			this.keepRightRadioButton = document.getElementById('keepRight');
-			this.progresstext.value = "";
+			if (this.progresstext) this.progresstext.textContent = "";
 			DuplicateEntriesWindowUI.showReadyState(this);
 
-			if (!this.abManager || !this.abManager.directories || this.abManager.directories.length == 0) {
+			// TB128: Get address books using WebExtension API
+			var Contacts = DuplicateEntriesWindowContacts;
+			var addressBooks = await Contacts.getAddressBooks();
+			
+			if (!addressBooks || addressBooks.length === 0) {
 				this.disable('startbutton');
-				this.statustext.className = 'error-message'; /* not 'with-progress' */
-				this.statustext.textContent = this.getString("NoABookFound");
+				if (this.statustext) {
+					this.statustext.className = 'error-message';
+					this.statustext.textContent = this.getString("NoABookFound");
+				}
 				return;
 			}
-			if (this.abURI1 == null || this.abURI2 == null) {
-				var default_abook = this.abManager.directories.getNext().URI;
-				if (typeof window.opener.GetSelectedDirectory != 'undefined') {
-					const addressbookURIs = window.opener.GetSelectedDirectory().
-				                                match(/(moz-ab(mdb|osx)directory:\/\/([^\/]+\.mab|\/)).*/);
-					if (addressbookURIs && addressbookURIs.length > 0)
-						default_abook = addressbookURIs[1];
-				}
-				this.abURI1 = this.abURI2 = default_abook;
+
+			// Set default address books if not set
+			if (!this.abId1 || !this.abId2) {
+				this.abId1 = this.abId2 = addressBooks[0].id;
 			}
 
-			// We will process the first/selected address book, plus optionally a second one
-			// read all addressbooks, fill lists in preferences dialog
-			var allAddressBooks = this.abManager.directories;
-			var dirNames = new Array();
-			var URIs = new Array();
-			while (allAddressBooks.hasMoreElements()) {
-				var addressBook = allAddressBooks.getNext();
-				if (addressBook instanceof Components.interfaces.nsIAbDirectory)
-				{
-					dirNames.push(addressBook.dirName);
-					URIs    .push(addressBook.URI);
-				}
-			}
+			// Fill address book selection lists
+			var dirNames = addressBooks.map(ab => ab.name);
+			var ids = addressBooks.map(ab => ab.id);
 			var ablists = document.getElementById('addressbooklists');
-			var ablist1 = this.createSelectionList('addressbookname', dirNames, URIs, this.abURI1);
-			var ablist2 = this.createSelectionList('addressbookname', dirNames, URIs, this.abURI2);
-			ablists.appendChild(ablist1);
-			ablists.appendChild(ablist2);
+			if (ablists) {
+				var ablist1 = this.createSelectionList('addressbookname', dirNames, ids, this.abId1);
+				var ablist2 = this.createSelectionList('addressbookname', dirNames, ids, this.abId2);
+				ablists.appendChild(ablist1);
+				ablists.appendChild(ablist2);
+			}
 
-			this.statustext.className = ''; /* not 'with-progress' */
-			this.statustext.textContent = this.getString('PleasePressStart');
-			document.getElementById('startbutton').setAttribute('label', this.getString('Start'));
-			document.getElementById('startbutton').focus();
-		},
-
-		getString: function(name) {
-			return this.stringBundle_old ? this.stringBundle_old.getString(name) : this.stringBundle.GetStringFromName(name);
+			if (this.statustext) {
+				this.statustext.className = '';
+				this.statustext.textContent = this.getString('PleasePressStart');
+			}
+			var startButton = document.getElementById('startbutton');
+			if (startButton) {
+				startButton.textContent = this.getString('Start');
+				startButton.focus();
+			}
 		},
 
 		/**
-		 * Will be called by duplicateEntriesWindow.xul
+		 * Gets a localized string by key.
+		 * TB128: Uses WebExtension i18n API instead of string bundles.
+		 * @param {string} name - Message key
+		 * @returns {string} Localized message or key if not found
+		 */
+		getString: function(name) {
+			// TB128: Use browser.i18n API
+			if (typeof browser !== 'undefined' && browser.i18n) {
+				return browser.i18n.getMessage(name) || name;
+			}
+			if (typeof messenger !== 'undefined' && messenger.i18n) {
+				return messenger.i18n.getMessage(name) || name;
+			}
+			return name;
+		},
+
+		/**
+		 * Will be called by window.html (TB128)
 		 * once the according window is closed
 		 */
 		OnUnloadWindow: function() {
@@ -131,25 +146,32 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			this.vcards[this.BOOK_2] = null;
 		},
 
-		startSearch: function() {
+		startSearch: async function() {
 			if (this.restart) {
 				this.restart = false;
-				this.init();
+				await this.init();
 				return;
 			}
 			const ablist = document.getElementById('addressbooklists');
-			const ab1 = ablist.firstChild;
-			const ab2 = ab1.nextSibling;
-			if (ab1.selectedItem)
-				this.abURI1 = ab1.selectedItem.value;
-			if (ab2.selectedItem)
-				this.abURI2 = ab2.selectedItem.value;
-			this.abDir1 = this.abManager.getDirectory(this.abURI1);
-			this.abDir2 = this.abManager.getDirectory(this.abURI2);
-			if([this.abURI1, this.abURI2].includes("moz-abosxdirectory:///"))
-				alert("Mac OS X Address Book is read-only.\nYou can use it only for comparison.");
-			//It seems that Thunderbird 11 on Max OS 10.7 can actually be write fields, although an exception is thrown.
-			this.readAddressBooks();
+			const ab1 = ablist ? ablist.firstChild : null;
+			const ab2 = ab1 ? ab1.nextSibling : null;
+			
+			// TB128: Get address book IDs from selection lists
+			if (ab1 && ab1.selectedIndex >= 0) {
+				this.abId1 = ab1.options[ab1.selectedIndex].value;
+			}
+			if (ab2 && ab2.selectedIndex >= 0) {
+				this.abId2 = ab2.options[ab2.selectedIndex].value;
+			}
+			
+			// Get address book names for display
+			var Contacts = DuplicateEntriesWindowContacts;
+			var ab1_obj = await Contacts.getAddressBook(this.abId1);
+			var ab2_obj = await Contacts.getAddressBook(this.abId2);
+			this.abDir1Name = ab1_obj ? ab1_obj.name : '';
+			this.abDir2Name = ab2_obj ? ab2_obj.name : '';
+
+			await this.readAddressBooks();
 
 			DuplicateEntriesWindowPrefs.readPrefsFromDOM(this);
 			if (this.natTrunkPrefix != "" && !this.natTrunkPrefix.match(/^[0-9]{1,2}$/))
@@ -158,23 +180,32 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 				alert("International call prefix '"+this.intCallPrefix+"' should contain two to four digits");
 			if (this.countryCallingCode != "" && !this.countryCallingCode.match(/^(\+|[0-9])[0-9]{1,6}$/))
 				alert("Default country calling code '"+this.countryCallingCode+"' should contain a leading '+' or digit followed by one to six digits");
-			DuplicateEntriesWindowPrefs.savePrefs(this);
+			await DuplicateEntriesWindowPrefs.savePrefs(this);
 
 			this.purgeAttributesTable();
 			DuplicateEntriesWindowUI.showSearchingState(this);
-			this.statustext.className = 'with-progress';
-			this.statustext.textContent = this.getString('SearchingForDuplicates');
-			document.getElementById('statusAddressBook1_label').value = this.abDir1.dirName;
-			document.getElementById('statusAddressBook2_label').value = this.abDir2.dirName;
+			if (this.statustext) {
+				this.statustext.className = 'with-progress';
+				this.statustext.textContent = this.getString('SearchingForDuplicates');
+			}
+			var ab1Label = document.getElementById('statusAddressBook1_label');
+			var ab2Label = document.getElementById('statusAddressBook2_label');
+			if (ab1Label) ab1Label.textContent = this.abDir1Name;
+			if (ab2Label) ab2Label.textContent = this.abDir2Name;
 			this.updateDeletedInfo('statusAddressBook1_size' , this.BOOK_1, 0);
 			this.updateDeletedInfo('statusAddressBook2_size' , this.BOOK_2, 0);
 
 			// re-initialization needed in case of restart:
-			while (ablist.firstChild)
-				ablist.removeChild(ablist.firstChild);
+			if (ablist) {
+				while (ablist.firstChild)
+					ablist.removeChild(ablist.firstChild);
+			}
 			this.positionSearch = 0;
 			this.position1 = 0;
-			this.position2 = (this.abDir1 == this.abDir2 ? 0 : -1);
+			// TB128: Initialize position2 correctly
+			// If same book, start at -1 so first increment makes it 0, then we'll advance to 1 to compare card 0 with card 1
+			// If different books, start at -1 so first increment makes it 0
+			this.position2 = -1;
 			this.nowHandling = false;
 			this.positionDuplicates = 0;
 			this.duplicates = new Array();
@@ -200,85 +231,108 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			this.purgeAttributesTable();
 			if (!this.nowHandling) {
 				DuplicateEntriesWindowUI.disableDuplicateActionButtons(this);
-				this.window.setAttribute('wait-cursor', 'true');
-				this.statustext.className = 'with-progress';
-				this.statustext.textContent = this.getString('SearchingForDuplicates');
+				if (this.window && this.window.setAttribute) {
+					this.window.setAttribute('wait-cursor', 'true');
+				}
+				if (this.statustext) {
+					this.statustext.className = 'with-progress';
+					this.statustext.textContent = this.getString('SearchingForDuplicates');
+				}
 			}
 			this.updateProgress();
 			// starting the search via setTimeout allows redrawing the progress info
-			setTimeout(function() { DuplicateEntriesWindowSearch.runIntervalAction(DuplicateEntriesWindow); }, 13);
+			var self = this;
+			setTimeout(function() { 
+				if (typeof DuplicateEntriesWindowSearch !== 'undefined') {
+					DuplicateEntriesWindowSearch.runIntervalAction(self);
+				} else {
+					console.error("DuplicateEntriesWindowSearch is not defined!");
+				}
+			}, 13);
 		},
 
 		/**
 		 * Saves modifications to one card and deletes the other one.
+		 * TB128: Now async
 		 */
-		applyAndSearchNextDuplicate: function() {
+		applyAndSearchNextDuplicate: async function() {
 			// for the case that right one will be kept
-			var [deleAbDir, deleBook, deleIndex] = [this.abDir1, this.BOOK_1, this.position1];
-			var [keptAbDir, keptBook, keptIndex] = [this.abDir2, this.BOOK_2, this.position2];
+			var [deleAbId, deleBook, deleIndex] = [this.abId1, this.BOOK_1, this.position1];
+			var [keptAbId, keptBook, keptIndex] = [this.abId2, this.BOOK_2, this.position2];
 			if (this.sideKept == 'left') { // left one will be kept
-				[deleAbDir, deleBook, deleIndex, keptAbDir, keptBook, keptIndex] =
-				[keptAbDir, keptBook, keptIndex, deleAbDir, deleBook, deleIndex];
+				[deleAbId, deleBook, deleIndex, keptAbId, keptBook, keptIndex] =
+				[keptAbId, keptBook, keptIndex, deleAbId, deleBook, deleIndex];
 			}
-			this.updateAbCard(keptAbDir, keptBook, keptIndex, this.sideKept);
-			this.deleteAbCard(deleAbDir, deleBook, deleIndex, false);
+			await this.updateAbCard(keptAbId, keptBook, keptIndex, this.sideKept);
+			await this.deleteAbCard(deleAbId, deleBook, deleIndex, false);
 			this.searchNextDuplicate();
 		},
 
-		updateAbCard: function(abDir, book, index, side) {
+		updateAbCard: async function(abId, book, index, side) {
 			var card = this.vcards[book][index];
+			if (!card) {
+				console.error("updateAbCard: Card not found at book", book, "index", index);
+				return;
+			}
 
 			// see what's been modified
 			var updateFields = this.getCardFieldValues(side);
 			var entryModified = false;
 			for(let property in updateFields) {
 				const defaultValue = this.defaultValue(property); /* cannot be a set here */
-				if (card.getProperty(property, defaultValue) != updateFields[property]) {
-				// not using this.getProperty here to give a chance to update wrongly empty field
+				// TB128: Cards are plain objects, access properties directly
+				var currentValue = card.hasOwnProperty(property) ? card[property] : defaultValue;
+				if (currentValue != updateFields[property]) {
+					// not using this.getProperty here to give a chance to update wrongly empty field
 					try {
-						// this.debug("updating "+property+" from "+card.getProperty(property, defaultValue)+" to "+updateFields[property]);
-						card.setProperty(property, updateFields[property]);
+						card[property] = updateFields[property];
 						entryModified = true;
 					} catch (e) {
-						alert("Internal error: cannot set field '"+property+"' of "+card.displayName+": "+e);
+						alert("Internal error: cannot set field '"+property+"' of "+(card.DisplayName || card._id)+": "+e);
 					}
 				}
 			}
 			if (entryModified) {
 				this.vcardsSimplified[book][index] = null; // request reconstruction by getSimplifiedCard
 				try {
-					DuplicateEntriesWindowContacts.saveCard(abDir, card);
+					await DuplicateEntriesWindowContacts.saveCard(abId, card);
 					this.totalCardsChanged++;
 				} catch (e) {
-					alert("Internal error: cannot update card '"+card.displayName+"': "+e);
+					alert("Internal error: cannot update card '"+(card.DisplayName || card._id)+"': "+e);
 				}
 			}
 		},
 
 		/**
 		 * Saves modifications to both cards
+		 * TB128: Now async
 		 */
-		keepAndSearchNextDuplicate: function() {
-			this.updateAbCard(this.abDir1, this.BOOK_1, this.position1, 'left' );
-			this.updateAbCard(this.abDir2, this.BOOK_2, this.position2, 'right');
+		keepAndSearchNextDuplicate: async function() {
+			await this.updateAbCard(this.abId1, this.BOOK_1, this.position1, 'left' );
+			await this.updateAbCard(this.abId2, this.BOOK_2, this.position2, 'right');
 			this.searchNextDuplicate();
 		},
 
 		/**
 		 * Deletes the card identified by 'index' from the given address book.
+		 * TB128: Now async
 		 */
-		deleteAbCard: function(abDir, book, index, auto) {
+		deleteAbCard: async function(abId, book, index, auto) {
 			var card = this.vcards[book][index];
+			if (!card) {
+				console.warn("deleteAbCard: Card not found at book", book, "index", index);
+				return;
+			}
 			try {
-				DuplicateEntriesWindowContacts.deleteCard(abDir, card);
-				if (abDir == this.abDir1)
+				await DuplicateEntriesWindowContacts.deleteCard(abId, card);
+				if (abId == this.abId1)
 					this.totalCardsDeleted1++;
 				else
 					this.totalCardsDeleted2++;
 				if (auto)
 					this.totalCardsDeletedAuto++;
 			} catch (e) {
-				alert("Internal error: cannot remove card '"+card.displayName+"': "+e);
+				alert("Internal error: cannot remove card '"+(card.DisplayName || card._id)+"': "+e);
 			}
 			this.vcards[book][index] = null; // set empty element, but leave element number as is
 		},
@@ -307,6 +361,13 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			this.restart = true;
 		},
 
+		/**
+		 * Gets a property value from a card.
+		 * TB128: Delegates to CardValues module which handles plain JavaScript objects.
+		 * @param {Object} card - Card object (plain JavaScript object)
+		 * @param {string} property - Property name
+		 * @returns {*} Property value
+		 */
 		getProperty: function(card, property) {
 			return DuplicateEntriesWindowCardValues.getProperty(this, card, property);
 		},
@@ -341,22 +402,33 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			DuplicateEntriesWindowCardValues.enrichCardForComparison(this, card, mailLists);
 		},
 
-		readAddressBooks: function() {
+		readAddressBooks: async function() {
 			var Contacts = DuplicateEntriesWindowContacts;
-			if (!this.abDir1.isMailList) {
-				var result1 = Contacts.getAllAbCards(this.abDir1, this);
-				this.vcards[this.BOOK_1] = result1.cards;
-				this.vcardsSimplified[this.BOOK_1] = new Array();
-				this.totalCardsBefore = result1.totalBefore;
-			}
-			if (this.abDir2 != this.abDir1 && !this.abDir2.isMailList) {
-				var result2 = Contacts.getAllAbCards(this.abDir2, this);
-				this.vcards[this.BOOK_2] = result2.cards;
-				this.vcardsSimplified[this.BOOK_2] = new Array();
-				this.totalCardsBefore += result2.totalBefore;
-			} else {
-				this.vcards[this.BOOK_2] = this.vcards[this.BOOK_1];
-				this.vcardsSimplified[this.BOOK_2] = this.vcardsSimplified[this.BOOK_1];
+			// TB128: getAllAbCards is async and takes address book ID
+			try {
+				if (this.abId1) {
+					console.log("Loading contacts from address book 1:", this.abId1);
+					var result1 = await Contacts.getAllAbCards(this.abId1, this);
+					this.vcards[this.BOOK_1] = result1.cards;
+					this.vcardsSimplified[this.BOOK_1] = new Array();
+					this.totalCardsBefore = result1.totalBefore;
+					console.log("Loaded", result1.cards.length, "contacts from address book 1");
+				}
+				if (this.abId2 && this.abId2 != this.abId1) {
+					console.log("Loading contacts from address book 2:", this.abId2);
+					var result2 = await Contacts.getAllAbCards(this.abId2, this);
+					this.vcards[this.BOOK_2] = result2.cards;
+					this.vcardsSimplified[this.BOOK_2] = new Array();
+					this.totalCardsBefore += result2.totalBefore;
+					console.log("Loaded", result2.cards.length, "contacts from address book 2");
+				} else {
+					this.vcards[this.BOOK_2] = this.vcards[this.BOOK_1];
+					this.vcardsSimplified[this.BOOK_2] = this.vcardsSimplified[this.BOOK_1];
+					console.log("Using same address book for both, total contacts:", this.vcards[this.BOOK_1] ? this.vcards[this.BOOK_1].length : 0);
+				}
+			} catch (error) {
+				console.error("Error reading address books:", error);
+				alert("Error loading address books: " + error.message);
 			}
 		},
 

@@ -20,11 +20,19 @@ var DuplicateEntriesWindowDisplay = (function() {
 
 	/**
 	 * Returns [both_empty, equ] for set comparison display (⊇ ⊆ ≅).
+	 * TB128: Cards are plain JavaScript objects, access properties directly.
+	 * @param {Object} card1 - Card 1 (plain object)
+	 * @param {Object} card2 - Card 2 (plain object)
+	 * @param {string} property - Property name (should be a Set property)
+	 * @returns {[boolean, string]} [both_empty, equ] where equ is '≅', '⊇', '⊆', or ''
 	 */
 	function setRelation(card1, card2, property) {
 		const defaultValue_Set = new Set();  /* should not really be needed here */
-		const value1 = card1.getProperty(property, defaultValue_Set);
-		const value2 = card2.getProperty(property, defaultValue_Set);
+		// TB128: Cards are plain objects, access properties directly
+		const value1 = card1.hasOwnProperty(property) ? card1[property] : defaultValue_Set;
+		const value2 = card2.hasOwnProperty(property) ? card2[property] : defaultValue_Set;
+		if (value1 === null || value1 === undefined) value1 = defaultValue_Set;
+		if (value2 === null || value2 === undefined) value2 = defaultValue_Set;
 		const both_empty = value1.size == 0 && value2.size == 0;
 		let equ;
 		if (value1.isSuperset(value2)) {
@@ -42,8 +50,17 @@ var DuplicateEntriesWindowDisplay = (function() {
 	}
 
 	/**
-	 * Creates table row for one address book field for side-by-side comparison and editing.
+	 * Creates HTML table row for one address book field for side-by-side comparison and editing.
+	 * TB128: Uses HTML elements (td, span, input, textarea) instead of XUL elements.
 	 * Editable fields will be listed in ctx.editableFields.
+	 * @param {object} ctx - Context (window object)
+	 * @param {Object} card1 - Card 1 (plain JavaScript object)
+	 * @param {Object} card2 - Card 2 (plain JavaScript object)
+	 * @param {*} defaultValue - Default value for this property
+	 * @param {*} leftValue - Display value for left card
+	 * @param {*} rightValue - Display value for right card
+	 * @param {string} property - Property name
+	 * @param {HTMLElement} row - Table row element to populate
 	 */
 	function displayCardField(ctx, card1, card2, defaultValue, leftValue, rightValue, property, row) {
 		ctx.displayedFields.push(property);
@@ -51,10 +68,11 @@ var DuplicateEntriesWindowDisplay = (function() {
 		if (editable)
 			pushIfNew(property, ctx.editableFields);
 
-		const cell1 = document.createElement('hbox');
-		const cell2 = document.createElement('hbox');
-		const cellEqu = document.createElement('hbox');
-		const descEqu = document.createElement('description');
+		// TB128: Use HTML elements instead of XUL
+		const cell1 = document.createElement('td');
+		const cell2 = document.createElement('td');
+		const cellEqu = document.createElement('td');
+		const descEqu = document.createElement('span');
 		cellEqu.className = 'equivalence';
 		cellEqu.appendChild(descEqu);
 
@@ -89,7 +107,10 @@ var DuplicateEntriesWindowDisplay = (function() {
 						equ = '';
 				}
 				else if (ctx.isNumerical(property)) {
-					const comparison = card1.getProperty(property, 0) - card2.getProperty(property, 0);
+					// TB128: Access properties directly
+					const val1 = card1.hasOwnProperty(property) ? card1[property] : 0;
+					const val2 = card2.hasOwnProperty(property) ? card2[property] : 0;
+					const comparison = val1 - val2;
 					if      (comparison < 0)
 						equ = '<';
 					else if (comparison > 0)
@@ -111,15 +132,16 @@ var DuplicateEntriesWindowDisplay = (function() {
 		    (property == 'SecondEmail' ||
 		     property != 'CellularNumber' && ctx.isPhoneNumber(property)))
 			equ = '⋮';
-		descEqu.setAttribute('value', equ);
+		descEqu.textContent = equ;
 
 		let cell1valuebox;
 		let cell2valuebox;
 
 		if (property == 'PhotoURI') {
 			descEqu.style.marginTop = '1em';
-			cell1valuebox = document.createElement('image');
-			cell2valuebox = document.createElement('image');
+			// TB128: Use HTML img instead of XUL image
+			cell1valuebox = document.createElement('img');
+			cell2valuebox = document.createElement('img');
 		} else if (ctx.isSelection(property)) {
 			var labels;
 			if (property == 'PreferMailFormat') {
@@ -135,24 +157,40 @@ var DuplicateEntriesWindowDisplay = (function() {
 			cell2valuebox = ctx.createSelectionList(null, labels, values, rightValue);
 		} else {
 			function make_valuebox(value) {
-				const valuebox = editable ? document.createElement('textbox') :
-				                 property == '__MailListNames' ? document.createElement('description')
-				                                               : document.createElement('label');
+				// TB128: Use HTML elements instead of XUL
+				let valuebox;
+				if (editable) {
+					if (property == 'Notes') {
+						valuebox = document.createElement('textarea');
+						valuebox.rows = 3;
+					} else {
+						valuebox = document.createElement('input');
+						valuebox.type = 'text';
+					}
+				} else if (property == '__MailListNames') {
+					valuebox = document.createElement('span');
+				} else {
+					valuebox = document.createElement('span');
+				}
 				valuebox.className = 'textbox';
-				if (property == '__MailListNames')
+				if (property == '__MailListNames') {
 					valuebox.textContent = value;
-				else
-					valuebox.setAttribute('value', value);
-				if (property == 'Notes')
-					valuebox.setAttribute('multiline', 'true');
+				} else if (editable && valuebox.tagName === 'INPUT') {
+					valuebox.value = value;
+				} else if (editable && valuebox.tagName === 'TEXTAREA') {
+					valuebox.value = value;
+				} else {
+					valuebox.textContent = value;
+				}
 				return valuebox;
 			}
 			cell1valuebox = make_valuebox( leftValue);
 			cell2valuebox = make_valuebox(rightValue);
 		}
 
-		cell1valuebox.setAttribute('flex', '2');
-		cell2valuebox.setAttribute('flex', '2');
+		// TB128: No flex attribute in HTML, use CSS classes instead
+		cell1valuebox.style.flex = '2';
+		cell2valuebox.style.flex = '2';
 		/* valuebox id is like 'left_FieldName' / 'right_FieldName' for getCardFieldValues */
 		cell1valuebox.setAttribute('id',  'left_'+property);
 		cell2valuebox.setAttribute('id', 'right_'+property);
@@ -166,32 +204,59 @@ var DuplicateEntriesWindowDisplay = (function() {
 		row.appendChild(cellEqu);
 		row.appendChild(cell2);
 
-		ctx.attributesTableRows.appendChild(row);
+		if (ctx.attributesTableRows) {
+			ctx.attributesTableRows.appendChild(row);
+		} else {
+			console.error("displayCardField: attributesTableRows not available");
+		}
 		if (property == 'PhotoURI') {
 			cell1valuebox.height = 100;
 			cell2valuebox.height = 100;
-			cell1valuebox.setAttribute('flex', "");
-			cell2valuebox.setAttribute('flex', "");
-			/* preserve aspect ratio; flex would be ignored if set before appendChild(row) */
-			cell1valuebox.src = card1.getProperty('PhotoURI', "");
-			cell2valuebox.src = card2.getProperty('PhotoURI', "");
+			cell1valuebox.style.flex = "";
+			cell2valuebox.style.flex = "";
+			/* preserve aspect ratio */
+			// TB128: Access properties directly
+			cell1valuebox.src = card1.hasOwnProperty('PhotoURI') ? card1['PhotoURI'] : "";
+			cell2valuebox.src = card2.hasOwnProperty('PhotoURI') ? card2['PhotoURI'] : "";
 			/* actual image will be loaded asynchronously */
 		}
 	}
 
 	/**
-	 * Creates table with address book fields for side-by-side comparison and editing.
+	 * Creates HTML table with address book fields for side-by-side comparison and editing.
+	 * TB128: Uses HTML table elements and plain JavaScript card objects.
+	 * @param {object} ctx - Context (window object)
+	 * @param {Object} card1 - Card 1 (plain JavaScript object)
+	 * @param {Object} card2 - Card 2 (plain JavaScript object)
+	 * @param {number} comparison - Comparison result (-2, -1, 0, or 1)
+	 * @param {number} preference - Preference for deletion (<0, 0, or >0)
+	 * @param {boolean} namesmatch - Whether names match
+	 * @param {boolean} mailsmatch - Whether emails match
+	 * @param {boolean} phonesmatch - Whether phone numbers match
 	 */
 	function displayCardData(ctx, card1, card2, comparison, preference,
 			namesmatch, mailsmatch, phonesmatch) {
 		DuplicateEntriesWindowDisplay.purgeAttributesTable(ctx);
 		ctx.displayedFields = [];
 		ctx.editableFields = [];
+		// Ensure tablepane is visible and attributesTableRows exists
+		if (!ctx.attributesTableRows) {
+			ctx.attributesTableRows = document.getElementById('AttributesTableRows');
+		}
+		if (!ctx.attributesTableRows) {
+			console.error("displayCardData: AttributesTableRows element not found");
+			return;
+		}
+		// Ensure tablepane is visible
+		DuplicateEntriesWindowUI.show('tablepane');
 		DuplicateEntriesWindowUI.showComparisonTableHeader(ctx);
 		const cardsEqu = document.getElementById('cardsEqu');
-		cardsEqu.value = comparison == -2 ? '' :
-		                 comparison == 0 ? '≅' :
-		                 comparison <  0 ? '⋦' : '⋧';
+		if (cardsEqu) {
+			// TB128: cardsEqu is a <td> element, use textContent instead of value
+			cardsEqu.textContent = comparison == -2 ? '' :
+			                       comparison == 0 ? '≅' :
+			                       comparison <  0 ? '⋦' : '⋧';
+		}
 
 		const mail1 = ctx.getAbstractedTransformedProperty(card1, 'PrimaryEmail');
 		const mail2 = ctx.getAbstractedTransformedProperty(card2, 'PrimaryEmail');
@@ -213,28 +278,33 @@ var DuplicateEntriesWindowDisplay = (function() {
 		}
 		for (var j = 0; j < fields.length; j++) {
 			const property = fields[j];
-			var row = document.createElement('row');
-			var labelcell = document.createElement('label');
+			// TB128: Use HTML tr/td instead of XUL row/label
+			var row = document.createElement('tr');
+			var labelcell = document.createElement('td');
+			var labelspan = document.createElement('span');
 			var localName = property;
 			try {
 				localName = ctx.getString(property + '_label');
 			} catch (e) {}
-			labelcell.setAttribute('value', localName + ':');
-			labelcell.setAttribute('class', 'field');
+			labelspan.textContent = localName + ':';
+			labelspan.setAttribute('class', 'field');
+			labelcell.appendChild(labelspan);
 			row.appendChild(labelcell);
 			if (ctx.matchablesList.includes(property)) {
-				const cell1 = document.createElement('label');
-				const cellEqu = document.createElement('hbox');
-				const descEqu = document.createElement('description');
+				const cell1 = document.createElement('td');
+				const cellEqu = document.createElement('td');
+				const descEqu = document.createElement('span');
 				cellEqu.className = 'equivalence';
 				cellEqu.appendChild(descEqu);
 				if (namesmatch && property == '__Names' ||
 				    mailsmatch && property == '__Emails' ||
 				    phonesmatch && property == '__PhoneNumbers')
-					descEqu.setAttribute('value', '≃');
+					descEqu.textContent = '≃';
 				row.appendChild(cell1);
 				row.appendChild(cellEqu);
-				ctx.attributesTableRows.appendChild(row);
+				if (ctx.attributesTableRows) {
+					ctx.attributesTableRows.appendChild(row);
+				}
 			} else {
 				const defaultValue = ctx.defaultValue(property);
 				const leftValue = ctx.getProperty(card1, property);
@@ -251,31 +321,61 @@ var DuplicateEntriesWindowDisplay = (function() {
 					displayCardField(ctx, card1, card2, defaultValue, leftValue, rightValue, property, row);
 			}
 		}
+		// Debug: Check if any rows were added
+		if (ctx.attributesTableRows && ctx.attributesTableRows.children.length <= 1) {
+			console.warn("displayCardData: No field rows were added to the table. Total rows:", ctx.attributesTableRows.children.length);
+		}
 		ctx.setContactLeftRight(preference < 0 ? 'right' : 'left');
 	}
 
 	/**
-	 * Removes all rows (excluding header) from the attribute comparison & edit table.
+	 * Removes all rows (excluding header) from the HTML attribute comparison & edit table.
+	 * @param {object} ctx - Context (window object)
 	 */
 	function purgeAttributesTable(ctx) {
-		DuplicateEntriesWindowUI.hideComparisonTableHeader(ctx);
-		while (ctx.attributesTableRows.firstChild.nextSibling) {
-			ctx.attributesTableRows.removeChild(ctx.attributesTableRows.firstChild.nextSibling);
+		if (!ctx.attributesTableRows) {
+			ctx.attributesTableRows = document.getElementById('AttributesTableRows');
 		}
+		if (ctx.attributesTableRows) {
+			// Remove all rows except the first one (tableheader with id="tableheader")
+			// Use a copy of childNodes array since we're modifying the DOM
+			var rows = Array.from(ctx.attributesTableRows.children);
+			for (var i = 0; i < rows.length; i++) {
+				var row = rows[i];
+				// Keep the tableheader row (first row with id="tableheader")
+				if (row.id !== 'tableheader') {
+					ctx.attributesTableRows.removeChild(row);
+				}
+			}
+		}
+		DuplicateEntriesWindowUI.hideComparisonTableHeader(ctx);
 		ctx.displayedFields = null;
 		ctx.editableFields = null;
 	}
 
 	/**
 	 * Returns an object with all editable field values for the given side ('left' or 'right').
+	 * TB128: Handles HTML select/input/textarea elements.
 	 * Used when reading edited values from the table (save field in list for later retrieval).
+	 * @param {object} ctx - Context (window object)
+	 * @param {string} side - 'left' or 'right'
+	 * @returns {Object} Object with property names as keys and values as values
 	 */
 	function getCardFieldValues(ctx, side) {
 		var result = {};
 		for (var i = 0; i < ctx.editableFields.length; i++) {
 			const id = side + '_' + ctx.editableFields[i];
 			const valuebox = document.getElementById(id);
-			const value = valuebox.selectedItem ? valuebox.selectedItem.value : valuebox.value;
+			if (!valuebox) continue;
+			// TB128: Handle HTML select/input/textarea elements
+			let value;
+			if (valuebox.tagName === 'SELECT') {
+				value = valuebox.options[valuebox.selectedIndex] ? valuebox.options[valuebox.selectedIndex].value : '';
+			} else if (valuebox.tagName === 'INPUT' || valuebox.tagName === 'TEXTAREA') {
+				value = valuebox.value;
+			} else {
+				value = valuebox.textContent || '';
+			}
 			result[ctx.editableFields[i]] = value;
 		}
 		return result;

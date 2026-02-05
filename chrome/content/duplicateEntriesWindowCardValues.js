@@ -10,9 +10,21 @@
 var DuplicateEntriesWindowCardValues = (function() {
 	"use strict";
 
+	/**
+	 * Gets a property value from a card object.
+	 * TB128: Cards are plain JavaScript objects, access properties directly instead of using getProperty().
+	 * @param {object} ctx - Context (window object)
+	 * @param {Object} card - Card object (plain JavaScript object)
+	 * @param {string} property - Property name
+	 * @returns {*} Property value (formatted for display)
+	 */
 	function getProperty(ctx, card, property) {
 		var defaultValue = ctx.defaultValue(property);
-		var value = card.getProperty(property, defaultValue);
+		// TB128: Cards are plain objects, access properties directly
+		var value = card.hasOwnProperty(property) ? card[property] : defaultValue;
+		if (value === null || value === undefined) {
+			value = defaultValue;
+		}
 		if (ctx.isSelection(property) && value == "")
 			return defaultValue;
 		if (ctx.isSet(property))
@@ -75,7 +87,7 @@ var DuplicateEntriesWindowCardValues = (function() {
 	/**
 	 * @param {object} ctx - context (window)
 	 * @param {[string, string, string]} nameArray - [firstName, lastName, displayName]
-	 * @param {nsIAbCard} card
+	 * @param {Object} card - Card object (plain JavaScript object, TB128)
 	 * @returns {[string, string, string]} [firstName, lastName, displayName]
 	 */
 	function completeFirstLastDisplayName(ctx, nameArray, card) {
@@ -109,9 +121,18 @@ var DuplicateEntriesWindowCardValues = (function() {
 		return [fn, ln, dn];
 	}
 
+	/**
+	 * Gets or creates a simplified card object for matching.
+	 * Simplified cards contain abstracted names, emails, and phones.
+	 * @param {object} ctx - Context (window object)
+	 * @param {number} book - Book index (BOOK_1 or BOOK_2)
+	 * @param {number} i - Card index
+	 * @returns {Object} Simplified card object
+	 */
 	function getSimplifiedCard(ctx, book, i) {
 		if (!ctx.vcardsSimplified[book][i] && ctx.vcards[book][i]) {
-			var card = ctx.vcards[book][i].QueryInterface(Components.interfaces.nsIAbCard);
+			// TB128: Cards are plain objects, no QueryInterface needed
+			var card = ctx.vcards[book][i];
 			var vcard = {};
 			var fn = getAbstractedTransformedProperty(ctx, card, 'FirstName');
 			var ln = getAbstractedTransformedProperty(ctx, card, 'LastName');
@@ -147,7 +168,11 @@ var DuplicateEntriesWindowCardValues = (function() {
 	 * Enriches a card with virtual properties used for comparison (__NonEmptyFields,
 	 * __CharWeight, __MailListNames, __Emails, __PhoneNumbers). Called by
 	 * DuplicateEntriesWindowContacts.getAllAbCards for each card.
+	 * TB128: Cards are plain JavaScript objects, set properties directly.
 	 * ctx must have: consideredFields, isNumerical, defaultValue, isText, isEmail, isPhoneNumber, charWeight.
+	 * @param {object} ctx - Context (window object)
+	 * @param {Object} card - Card object (plain JavaScript object) to enrich
+	 * @param {Array} mailLists - Array of [name, emails] arrays for mailing lists
 	 */
 	function enrichCardForComparison(ctx, card, mailLists) {
 		var nonemptyFields = 0;
@@ -157,27 +182,33 @@ var DuplicateEntriesWindowCardValues = (function() {
 			if (ctx.isNumerical(property))
 				continue;
 			var defaultValue = ctx.defaultValue(property);
-			var value = card.getProperty(property, defaultValue);
+			// TB128: Cards are plain objects, access properties directly
+			var value = card.hasOwnProperty(property) ? card[property] : defaultValue;
+			if (value === null || value === undefined) {
+				value = defaultValue;
+			}
 			if (value != defaultValue)
 				nonemptyFields += 1;
 			if (ctx.isText(property) || ctx.isEmail(property) || ctx.isPhoneNumber(property))
 				charWeight += ctx.charWeight(value, property);
 		}
-		card.setProperty('__NonEmptyFields', nonemptyFields);
-		card.setProperty('__CharWeight', charWeight);
+		// TB128: Set properties directly on plain object
+		card['__NonEmptyFields'] = nonemptyFields;
+		card['__CharWeight'] = charWeight;
 
 		var mailListNames = new Set();
-		var email = card.primaryEmail;
+		// TB128: Access primaryEmail directly (may be PrimaryEmail property)
+		var email = card.primaryEmail || card.PrimaryEmail || '';
 		if (email) {
 			for (var i = 0; i < mailLists.length; i++) {
 				if (mailLists[i][1].includes(email))
 					mailListNames.add(mailLists[i][0]);
 			}
 		}
-		card.setProperty('__MailListNames', mailListNames);
-		card.setProperty('__Emails', propertySet(ctx, card, ['PrimaryEmail', 'SecondEmail']));
-		card.setProperty('__PhoneNumbers', propertySet(ctx, card, ['HomePhone', 'WorkPhone',
-			'FaxNumber', 'PagerNumber', 'CellularNumber']));
+		card['__MailListNames'] = mailListNames;
+		card['__Emails'] = propertySet(ctx, card, ['PrimaryEmail', 'SecondEmail']);
+		card['__PhoneNumbers'] = propertySet(ctx, card, ['HomePhone', 'WorkPhone',
+			'FaxNumber', 'PagerNumber', 'CellularNumber']);
 	}
 
 	return {

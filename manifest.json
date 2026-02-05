@@ -1,22 +1,28 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "duplicateContactsManager",
   "description": "Duplicate Contacts Manager for Thunderbird",
-  "version": "2.1.1",
+  "version": "2.2.0",
   "author": "Marian Steinbach, David von Oheimb, et al.",
   "homepage_url": "https://addons.mozilla.org/thunderbird/addon/2505",
-  "legacy" : {
-    "type": "xul",
-    "options" : {
-      "page" : "chrome://duplicatecontactsmanager/content/options.xul",
-      "open_in_tab" : false
-    }
-  },
-  "applications": {
+  "default_locale": "en",
+  "browser_specific_settings": {
     "gecko": {
       "id": "duplicateContactsManager@ddvo.net",
-      "strict_min_version": "68.0"
+      "strict_min_version": "128.0"
     }
+  },
+  "permissions": [
+    "addressBooks",
+    "accountsRead",
+    "menus",
+    "storage"
+  ],
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "action": {
+    "default_title": "Duplicate Contacts Manager"
   },
   "icons": {
     "64": "chrome/content/kate.png"

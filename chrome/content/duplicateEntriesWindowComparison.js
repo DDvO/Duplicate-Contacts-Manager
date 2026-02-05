@@ -42,17 +42,23 @@ var DuplicateEntriesWindowComparison = (function() {
 
 	/**
 	 * Returns the union of property names from two address book cards.
-	 * @param {nsIAbCard} c1
-	 * @param {nsIAbCard} c2
+	 * TB128: Cards are plain objects, enumerate properties directly.
+	 * @param {Object} c1 - Card 1 (plain object)
+	 * @param {Object} c2 - Card 2 (plain object)
 	 * @returns {string[]}
 	 */
 	function propertyUnion(c1, c2) {
 		var union = [];
-		for (var i = 0; i < 2; i++) {
-			var it = i === 0 ? c1.properties : c2.properties;
-			while (it.hasMoreElements()) {
-				var name = it.getNext().QueryInterface(Components.interfaces.nsIProperty).name;
-				pushIfNew(name, union);
+		// Enumerate properties from both cards
+		for (var prop in c1) {
+			// Include all properties, including virtual ones (starting with __)
+			if (c1.hasOwnProperty(prop)) {
+				pushIfNew(prop, union);
+			}
+		}
+		for (var prop in c2) {
+			if (c2.hasOwnProperty(prop)) {
+				pushIfNew(prop, union);
 			}
 		}
 		return union;
@@ -60,8 +66,9 @@ var DuplicateEntriesWindowComparison = (function() {
 
 	/**
 	 * Compares two address book cards for "equivalent or less information".
-	 * @param {nsIAbCard} c1 - Card 1
-	 * @param {nsIAbCard} c2 - Card 2
+	 * TB128: Cards are plain objects.
+	 * @param {Object} c1 - Card 1 (plain object)
+	 * @param {Object} c2 - Card 2 (plain object)
 	 * @param {object} context - Must have: consideredFields, metaProperties,
 	 *   isNumerical(property), isEmail(property), isPhoneNumber(property), isSet(property), isText(property),
 	 *   defaultValue(property), getAbstractedTransformedProperty(card, property), nonequivalentProperties (array)
@@ -92,8 +99,11 @@ var DuplicateEntriesWindowComparison = (function() {
 			var defaultValue = context.isSet(property) ? new Set() : context.defaultValue(property);
 			var value1, value2;
 			if (context.isSet(property)) {
-				value1 = c1.getProperty(property, defaultValue);
-				value2 = c2.getProperty(property, defaultValue);
+				// TB128: Access properties directly
+				value1 = c1.hasOwnProperty(property) ? c1[property] : defaultValue;
+				value2 = c2.hasOwnProperty(property) ? c2[property] : defaultValue;
+				if (value1 === null || value1 === undefined) value1 = defaultValue;
+				if (value2 === null || value2 === undefined) value2 = defaultValue;
 			} else {
 				value1 = context.getAbstractedTransformedProperty(c1, property);
 				value2 = context.getAbstractedTransformedProperty(c2, property);
@@ -131,14 +141,23 @@ var DuplicateEntriesWindowComparison = (function() {
 			comparison = preference = c1_less_complete ? -1 : 1;
 		} else {
 			comparison = c1_less_complete ? 0 : -2;
-			preference = c1.getProperty('__NonEmptyFields', 0) - c2.getProperty('__NonEmptyFields', 0);
-			if (preference == 0)
-				preference = c1.getProperty('__CharWeight', 0) - c2.getProperty('__CharWeight', 0);
-			if (preference == 0)
-				preference = c1.getProperty('PopularityIndex', 0) - c2.getProperty('PopularityIndex', 0);
+			// TB128: Access properties directly
+			var nonEmpty1 = c1.hasOwnProperty('__NonEmptyFields') ? c1['__NonEmptyFields'] : 0;
+			var nonEmpty2 = c2.hasOwnProperty('__NonEmptyFields') ? c2['__NonEmptyFields'] : 0;
+			preference = nonEmpty1 - nonEmpty2;
 			if (preference == 0) {
-				var date1 = c1.getProperty('LastModifiedDate', 0);
-				var date2 = c2.getProperty('LastModifiedDate', 0);
+				var charWeight1 = c1.hasOwnProperty('__CharWeight') ? c1['__CharWeight'] : 0;
+				var charWeight2 = c2.hasOwnProperty('__CharWeight') ? c2['__CharWeight'] : 0;
+				preference = charWeight1 - charWeight2;
+			}
+			if (preference == 0) {
+				var pop1 = c1.hasOwnProperty('PopularityIndex') ? c1['PopularityIndex'] : 0;
+				var pop2 = c2.hasOwnProperty('PopularityIndex') ? c2['PopularityIndex'] : 0;
+				preference = pop1 - pop2;
+			}
+			if (preference == 0) {
+				var date1 = c1.hasOwnProperty('LastModifiedDate') ? c1['LastModifiedDate'] : 0;
+				var date2 = c2.hasOwnProperty('LastModifiedDate') ? c2['LastModifiedDate'] : 0;
 				if (date1 != 0 && date2 != 0)
 					preference = date1 - date2;
 			}

@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="UTF-8">
+	<title data-i18n="handleDuplicates.windowtitle">Find and Manage Duplicates</title>
+	<link rel="stylesheet" href="skin/classic/duplicateContactsManager.css">
+	<style>
+		body {
+			margin: 0;
+			padding: 8px;
+			font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+			display: flex;
+			flex-direction: column;
+			height: 100vh;
+			box-sizing: border-box;
+		}
+		.flex-row {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+		}
+		.flex-col {
+			display: flex;
+			flex-direction: column;
+		}
+		.flex-1 {
+			flex: 1;
+		}
+		.flex-2 {
+			flex: 2;
+		}
+		.flex-3 {
+			flex: 3;
+		}
+		.hidden {
+			display: none;
+		}
+		button {
+			margin: 2px;
+			padding: 4px 8px;
+		}
+		button:disabled {
+			opacity: 0.5;
+			cursor: not-allowed;
+		}
+		#statusBar {
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			padding: 4px;
+		}
+		#statusText_container {
+			flex: 2;
+		}
+		#statusText {
+			word-wrap: break-word;
+		}
+		#statusAddressBook1, #statusAddressBook2 {
+			flex: 3;
+		}
+		#progress {
+			flex: 2;
+		}
+		#progressMeter {
+			width: 100%;
+		}
+		#explanation, 		#tablepane, #endinfo {
+			flex: 1;
+			overflow-y: auto;
+		}
+		/* When visible, tablepane is shown via JS (display: flex); do not force display here so initial display:none is effective */
+		#tablepane {
+			flex-direction: column;
+		}
+		#AttributesTable {
+			width: 100%;
+			border-collapse: collapse;
+		}
+		#AttributesTable th, #AttributesTable td {
+			padding: 4px 8px;
+			text-align: left;
+			border: 1px solid #ddd;
+		}
+		#AttributesTableRows tr {
+			display: table-row;
+		}
+		#explanation {
+			text-align: center;
+		}
+		.descTitle {
+			font-weight: bold;
+			margin-top: 10px;
+			margin-bottom: 5px;
+		}
+		.text-line {
+			padding-top: 2px;
+			padding-bottom: 2px;
+			margin-top: 0px;
+			margin-bottom: 0px;
+			line-height: 1em;
+		}
+		.value {
+			margin-left: 0px;
+			padding-left: 0px;
+		}
+		.fields {
+			margin-top: 5px;
+			margin-bottom: 5px;
+			margin-left: 1em;
+			font-family: monospace;
+			font-size: smaller;
+			user-select: text;
+		}
+		.text-link {
+			color: blue;
+			text-decoration: underline;
+			cursor: pointer;
+		}
+		#addressbooklists {
+			display: flex;
+			flex-direction: row;
+			justify-content: center;
+			align-items: center;
+			margin: 10px 0;
+		}
+		#AttributesTable {
+			width: 100%;
+			border-collapse: collapse;
+		}
+		#AttributesTable th, #AttributesTable td {
+			padding: 4px;
+			border: 1px solid #ccc;
+		}
+		.keep {
+			background-color: #e8f5e9;
+		}
+		.remove {
+			background-color: #ffebee;
+		}
+		.equivalence {
+			text-align: center;
+		}
+		.field {
+			font-weight: bold;
+		}
+		input[type="text"], textarea {
+			padding: 2px 4px;
+			border: 1px solid #ccc;
+		}
+		input.slim {
+			width: 60px;
+		}
+		#ignoredFields {
+			width: 100%;
+			height: 60px;
+		}
+		.tbox {
+			margin: 10px 0;
+		}
+		#bottom {
+			display: flex;
+			flex-direction: row;
+			padding: 4px;
+			border-top: 1px solid #ccc;
+		}
+	</style>
+	<!-- Script load order is required: see ARCHITECTURE_AND_HISTORY.md. -->
+	<script src="chrome/content/vCardUtils.js"></script>
+	<script src="chrome/content/duplicateEntriesWindowState.js"></script>
+	<script src="chrome/content/duplicateEntriesWindowContacts.js"></script>
+	<script src="chrome/content/duplicateEntriesWindowFields.js"></script>
+	<script src="chrome/content/duplicateEntriesWindowPrefs.js"></script>
+	<script src="chrome/content/duplicateEntriesWindowMatching.js"></script>
+	<script src="chrome/content/duplicateEntriesWindowCardValues.js"></script>
+	<script src="chrome/content/duplicateEntriesWindowComparison.js"></script>
+	<script src="chrome/content/duplicateEntriesWindowUI.js"></script>
+	<script src="chrome/content/duplicateEntriesWindowDisplay.js"></script>
+	<script src="chrome/content/duplicateEntriesWindowSearch.js"></script>
+	<script src="chrome/content/duplicateEntriesWindow.js"></script>
+	<script src="chrome/content/window-init.js"></script>
+</head>
+<body id="handleDuplicates-window">
+	<div class="flex-row" id="duplicatesButtonsBox" style="justify-content: center; padding: 8px;">
+		<button id="startbutton" class="dialog" data-i18n="handleDuplicates.startbutton.label">Start</button>
+		<button id="skipnextbutton" class="dialog" disabled="true" data-i18n="handleDuplicates.skipnextbutton.label">Skip</button>
+		<button id="keepnextbutton" class="dialog" disabled="true" data-i18n="handleDuplicates.keepnextbutton.label">Keep Both</button>
+		<button id="applynextbutton" class="dialog" disabled="true" data-i18n="handleDuplicates.applynextbutton.label">Apply</button>
+		<div style="flex: 1;"></div>
+		<button id="stopbutton" class="dialog" style="display: none" data-i18n="handleDuplicates.stopbutton.label">Stop</button>
+		<button id="quitbutton" class="dialog" style="display: none" data-i18n="handleDuplicates.quitbutton.label">Quit</button>
+	</div>
+	
+	<div class="flex-row" id="statusBar">
+		<div id="statusText_container" class="flex-2">
+			<span id="statusText" data-i18n="handleDuplicates.status_default">Ready</span>
+		</div>
+		<div style="flex: 1;"></div>
+		<div id="statusAddressBook1" class="flex-3" style="display: none">
+			<label id="statusAddressBook1_label" class="addressbookname">AddressBook1</label>
+			<label id="statusAddressBook1_size"></label>
+		</div>
+		<div style="flex: 1;"></div>
+		<div id="progress" class="flex-2">
+			<progress id="progressMeter" value="0" max="100" style="display: none; width: 100%;"></progress>
+			<label id="progressText"></label>
+		</div>
+		<div style="flex: 1;"></div>
+		<div id="statusAddressBook2" class="flex-3" style="display: none">
+			<label id="statusAddressBook2_label" class="addressbookname">AddressBook2</label>
+			<label id="statusAddressBook2_size"></label>
+		</div>
+		<div style="flex: 1;"></div>
+	</div>
+	
+	<div class="flex-col" id="explanation" style="display: none; flex: 1; overflow-y: auto;">
+		<div class="flex-col" style="text-align: center; flex: 1;">
+			<p class="descTitle" data-i18n="handleDuplicates.introheader">Introduction</p>
+			<p data-i18n="handleDuplicates.introtext">This tool helps you find and manage duplicate contacts.</p>
+			<p data-i18n="handleDuplicates.chooseSecondary">Choose address books to compare:</p>
+			<div id="addressbooklists"></div>
+			<p data-i18n="handleDuplicates.introtext2">Configure options below.</p>
+			<p data-i18n="handleDuplicates.differentiator">Differentiator text</p>
+			<p class="descTitle" data-i18n="handleDuplicates.options">Options</p>
+			<label><input type="checkbox" id="autoremove" data-i18n="handleDuplicates.removeWithoutAsking"> Remove duplicates without asking</label>
+			<label><input type="checkbox" id="preservefirst" data-i18n="handleDuplicates.preserveFirst"> Preserve first</label>
+			<label><input type="checkbox" id="deferInteractive" data-i18n="handleDuplicates.deferInteractive"> Defer interactive</label>
+			<div class="flex-row">
+				<input type="text" class="slim" id="natTrunkPrefix" style="width: 60px;" />
+				<span data-i18n="handleDuplicates.natTrunkPrefix">National trunk prefix</span>
+			</div>
+			<div class="flex-row">
+				<input type="text" class="slim" id="intCallPrefix" style="width: 80px;" />
+				<span data-i18n="handleDuplicates.intCallPrefix">International call prefix</span>
+			</div>
+			<div class="flex-row">
+				<input type="text" class="slim" id="countryCallingCode" style="width: 100px;" />
+				<span data-i18n="handleDuplicates.countryCallingCode">Country calling code</span>
+			</div>
+			<p><span data-i18n="handleDuplicates.consideredFields">Considered fields</span>: </p>
+			<p class="text-line value fields" id="consideredFields"></p>
+			<p><span data-i18n="handleDuplicates.ignoredFields">Ignored fields</span>: </p>
+			<textarea id="ignoredFields" cols="90" rows="3" style="width: 100%;"></textarea>
+		</div>
+	</div>
+	
+	<div class="flex-col" id="tablepane" style="display: none; flex: 1; overflow-y: auto;">
+		<table id="AttributesTable">
+			<thead>
+				<tr>
+					<th style="flex: 0;"></th>
+					<th style="flex: 3;"></th>
+					<th class="equivalence" style="flex: 0;"></th>
+					<th style="flex: 3;"></th>
+				</tr>
+			</thead>
+			<tbody id="AttributesTableRows">
+				<tr id="tableheader">
+					<td id="fieldLabels" class="field"> </td>
+					<td id="headerLeft" class="keep">
+						<label><input type="radio" id="keepLeft" name="keepSide" value="left" checked data-i18n="to_be_kept"> To be kept</label>
+					</td>
+					<td id="cardsEqu" class="equivalence"></td>
+					<td id="headerRight" class="remove">
+						<label><input type="radio" id="keepRight" name="keepSide" value="right" data-i18n="to_be_removed"> To be removed</label>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	
+	<div class="flex-col" id="endinfo" style="display: none; flex: 1; overflow-y: auto;">
+		<div class="flex-col" style="flex: 1;">
+			<p class="descTitle" data-i18n="handleDuplicates.endheader">Finished</p>
+			<div class="tbox">
+				<div class="flex-row"><span class="text-line" data-i18n="handleDuplicates.endtext.numBefore">Cards before</span>: <span class="text-line value" id="resultNumBefore">0</span></div>
+				<div class="flex-row"><span class="text-line" data-i18n="handleDuplicates.endtext.numAfter">Cards after</span>: <span class="text-line value" id="resultNumAfter">0</span></div>
+				<div class="flex-row"><span class="text-line" data-i18n="handleDuplicates.endtext.numRemovedMan">Removed manually</span>: <span class="text-line value" id="resultNumRemovedMan">0</span></div>
+				<div class="flex-row"><span class="text-line" data-i18n="handleDuplicates.endtext.numRemovedAuto">Removed automatically</span>: <span class="text-line value" id="resultNumRemovedAuto">0</span></div>
+				<div class="flex-row"><span class="text-line" data-i18n="handleDuplicates.endtext.numChanged">Changed</span>: <span class="text-line value" id="resultNumChanged">0</span></div>
+				<div class="flex-row"><span class="text-line" data-i18n="handleDuplicates.endtext.numSkipped">Skipped</span>: <span class="text-line value" id="resultNumSkipped">0</span></div>
+				<div class="flex-row"><span data-i18n="handleDuplicates.endtext.diffProps">Different properties</span>: </div>
+				<p class="text-line value fields" id="resultDiffProps"></p>
+				<div class="flex-row"><span data-i18n="handleDuplicates.consideredFields">Considered fields</span>: </div>
+				<p class="text-line value fields" id="resultConsideredFields"></p>
+				<div class="flex-row"><span data-i18n="handleDuplicates.endtext.ignoredFields">Ignored fields</span>: </div>
+				<p class="text-line value fields" id="resultIgnoredFields"></p>
+			</div>
+			<div class="tbox">
+				<p data-i18n="handleDuplicates.endtext.helpDevelopment">You can help improve this Thunderbird Add-On by filing issues or commenting them, contributing translations, or even writing code. The development site is:</p>
+				<p><a class="text-link" href="https://github.com/DDvO/Duplicate-Contacts-Manager" data-i18n="handleDuplicates.devSiteUrl">https://github.com/DDvO/Duplicate-Contacts-Manager</a></p>
+			</div>
+		</div>
+	</div>
+	
+	<div id="bottom" class="chromeClass-status">
+		<div style="flex: 1;"></div>
+	</div>
+</body>
+</html>

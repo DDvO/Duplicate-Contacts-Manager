@@ -1,0 +1,446 @@
+{
+  "Contacts": {
+    "message": "contacts"
+  },
+  "cards": {
+    "message": "contacts"
+  },
+  "to_be_kept": {
+    "message": "à conserver"
+  },
+  "to_be_removed": {
+    "message": "à enlever"
+  },
+  "pair": {
+    "message": "couple"
+  },
+  "parity": {
+    "message": "parité"
+  },
+  "of": {
+    "message": "sur"
+  },
+  "noMatch": {
+    "message": "Pas de noms, adresses \\u00e9lectroniques et téléphones à comparer"
+  },
+  "matchFound": {
+    "message": "Match trouvé"
+  },
+  "match": {
+    "message": "correspondent"
+  },
+  "__Names_label": {
+    "message": "Noms"
+  },
+  "__Emails_label": {
+    "message": "Les adresses \\u00e9lectroniques"
+  },
+  "__PhoneNumbers_label": {
+    "message": "T\\u00e9l\\u00e9phones"
+  },
+  "SearchingForDuplicates": {
+    "message": "Recherche des doublons..."
+  },
+  "PleasePressStart": {
+    "message": "Appuyez sur D\\u00e9marrer SVP."
+  },
+  "NoABookFound": {
+    "message": "Aucun liste d\\'adresses trouv\\u00e9!"
+  },
+  "Start": {
+    "message": "Démarrer"
+  },
+  "Restart": {
+    "message": "Nouveau démarrer"
+  },
+  "finished": {
+    "message": "Termin\\u00e9"
+  },
+  "CardUID_label": {
+    "message": "Identification de contact"
+  },
+  "PhotoURI_label": {
+    "message": "Photo"
+  },
+  "FirstName_label": {
+    "message": "Pr\\u00e9nom"
+  },
+  "LastName_label": {
+    "message": "Nom"
+  },
+  "PhoneticFirstName_label": {
+    "message": "Pr\\u00e9nom abr\\u00e9g\\u00e9"
+  },
+  "PhoneticLastName_label": {
+    "message": "Nom abr\\u00e9g\\u00e9"
+  },
+  "_PhoneticName_label": {
+    "message": "Pseudo"
+  },
+  "DisplayName_label": {
+    "message": "Nom \\u00e0 afficher"
+  },
+  "NickName_label": {
+    "message": "Surnom"
+  },
+  "_GoogleTalk_label": {
+    "message": "Google Talk"
+  },
+  "__MailListNames_label": {
+    "message": "Listes de diffusion"
+  },
+  "PrimaryEmail_label": {
+    "message": "Adresse \\u00e9lectronique"
+  },
+  "SecondEmail_label": {
+    "message": "Adresse alternative"
+  },
+  "DefaultEmail_label": {
+    "message": "Email par d\\u00e9faut"
+  },
+  "CardType_label": {
+    "message": "Type de Contact"
+  },
+  "PreferMailFormat_label": {
+    "message": "Format d\\'Email pr\\u00e9f\\u00e9r\\u00e9"
+  },
+  "PreferDisplayName_label": {
+    "message": "Nom \\u00e0 afficher pr\\u00e9f\\u00e9r\\u00e9"
+  },
+  "WorkPhone_label": {
+    "message": "T\\u00e9l\\u00e9phone Travail"
+  },
+  "HomePhone_label": {
+    "message": "T\\u00e9l\\u00e9phone domicile"
+  },
+  "FaxNumber_label": {
+    "message": "Num\\u00e9ro de Fax"
+  },
+  "PagerNumber_label": {
+    "message": "Num\\u00e9ro de Pager"
+  },
+  "CellularNumber_label": {
+    "message": "Num\\u00e9ro de Portable"
+  },
+  "WorkPhoneType_label": {
+    "message": "Type de t\\u00e9l\\u00e9phone au travail"
+  },
+  "HomePhoneType_label": {
+    "message": "Type de t\\u00e9l\\u00e9phone au domicile"
+  },
+  "FaxNumberType_label": {
+    "message": "Type de Fax"
+  },
+  "PagerNumberType_label": {
+    "message": "Type de Pager"
+  },
+  "CellularNumberType_label": {
+    "message": "Type de Portable"
+  },
+  "HomeAddress_label": {
+    "message": "Adresse domicile"
+  },
+  "HomeAddress2_label": {
+    "message": "Adresse domicile 2"
+  },
+  "HomeCity_label": {
+    "message": "Ville du domicile"
+  },
+  "HomeState_label": {
+    "message": "Etat/Prov. du domicile"
+  },
+  "HomeZipCode_label": {
+    "message": "Code Postal du domicile"
+  },
+  "HomeCountry_label": {
+    "message": "Pays du domicile"
+  },
+  "WorkAddress_label": {
+    "message": "Adresse Travail"
+  },
+  "WorkAddress2_label": {
+    "message": "Adresse Travail 2"
+  },
+  "WorkCity_label": {
+    "message": "Ville du Travail"
+  },
+  "WorkState_label": {
+    "message": "Etat/Prov. du Travail"
+  },
+  "WorkZipCode_label": {
+    "message": "Code Postal du Travail"
+  },
+  "WorkCountry_label": {
+    "message": "Pays du Travail"
+  },
+  "JobTitle_label": {
+    "message": "Fonction"
+  },
+  "Department_label": {
+    "message": "Service"
+  },
+  "Company_label": {
+    "message": "Soci\\u00e9t\\u00e9"
+  },
+  "_AimScreenName_label": {
+    "message": "Pseudo AIM"
+  },
+  "AnniversaryYear_label": {
+    "message": "Ann\\u00e9e d\\'anniversaire"
+  },
+  "AnniversaryMonth_label": {
+    "message": "Mois d'anniversaire"
+  },
+  "AnniversaryDay_label": {
+    "message": "Jour d'anniversaire"
+  },
+  "SpouseName_label": {
+    "message": "Epouse"
+  },
+  "FamilyName_label": {
+    "message": "Nom de famille"
+  },
+  "DefaultAddress_label": {
+    "message": "Addresse par d\\u00e9faut"
+  },
+  "Category_label": {
+    "message": "Cat\\u00e9gorie"
+  },
+  "WebPage1_label": {
+    "message": "Page Web 1"
+  },
+  "WebPage2_label": {
+    "message": "Page Web 2"
+  },
+  "BirthYear_label": {
+    "message": "Ann\\u00e9e de naissance"
+  },
+  "BirthMonth_label": {
+    "message": "Mois de naissance"
+  },
+  "BirthDay_label": {
+    "message": "Jour de naissance"
+  },
+  "Custom1_label": {
+    "message": "Divers 1"
+  },
+  "Custom2_label": {
+    "message": "Divers 2"
+  },
+  "Custom3_label": {
+    "message": "Divers 3"
+  },
+  "Custom4_label": {
+    "message": "Divers 4"
+  },
+  "Notes_label": {
+    "message": "Remarques"
+  },
+  "PopularityIndex_label": {
+    "message": "index des popularité"
+  },
+  "AllowRemoteContent_label": {
+    "message": "Permettre contenu externe"
+  },
+  "LastModifiedDate_label": {
+    "message": "Derni\\u00e8re modification"
+  },
+  "CorrectAddressBookSelectedPrompt": {
+    "message": "Vous semblez avoir s\\u00e9lectionn\\u00e9 une liste d\\'adresses. Lors de la recherche de doublons, ce n\\'est pas seulement cette liste, mais tout le carnet \\u00e0 laquelle elle appartient qui sera utilis\\u00e9."
+  },
+  "true_label": {
+    "message": "oui"
+  },
+  "false_label": {
+    "message": "non"
+  },
+  "unknown_label": {
+    "message": "desconnu"
+  },
+  "plaintext_label": {
+    "message": "texte clair"
+  },
+  "html_label": {
+    "message": "HTML"
+  },
+  "toolsmenu.items.handleduplicates.label": {
+    "message": "Duplicate Contacts Manager..."
+  },
+  "toolsmenu.items.handleduplicates.accesskey": {
+    "message": "D"
+  },
+  "abookmenu.label": {
+    "message": "Doublons"
+  },
+  "abookmenu.accesskey": {
+    "message": "D"
+  },
+  "abookmenu.items.handleduplicates.label": {
+    "message": "Cherche et traite les doublons..."
+  },
+  "abookmenu.items.handleduplicates.accesskey": {
+    "message": "C"
+  },
+  "abooktoolbar.label": {
+    "message": "Recherche des doublons"
+  },
+  "abooktoolbar.tooltip": {
+    "message": "Recherche les doublons de votre carnet d'adresses"
+  },
+  "handleDuplicates.windowtitle": {
+    "message": "Recherche et traitement des doublons du Carnet d'Adresses"
+  },
+  "handleDuplicates.introheader": {
+    "message": "Comment ça marche ?"
+  },
+  "handleDuplicates.introtext": {
+    "message": "Les entrées correspondantes potentiellement dupliquées vont maintenant être recherchées dans le(s) carnet(s) d'adresses sélectionné(s) ci-dessous."
+  },
+  "handleDuplicates.chooseSecondary": {
+    "message": "Les contacts du premier carnet d’adresse seront comparés (uniquement) à ceux du second. Mettre deux fois le même carnet permet de rechercher les contacts similaires dans celui-ci."
+  },
+  "handleDuplicates.introtext2": {
+    "message": "Chaque fois qu'une paire de candidats est présentée, vous pouvez décider de les ignorer, de les modifier et de les conserver tous les deux, ou de modifier un et d'en supprimer l'autre."
+  },
+  "handleDuplicates.differentiator": {
+    "message": "Si vous souhaitez empêcher les entrées d'être affichées en tant que doublons potentiels à chaque fois, vous pouvez leur donner différents pseudos AIM."
+  },
+  "handleDuplicates.removeWithoutAsking": {
+    "message": "Automatiquement supprimer un des contacts lorsqu’ils sont totalement identiques (ou conserver celui qui a un champs en plus)."
+  },
+  "handleDuplicates.preserveFirst": {
+    "message": "Lorsque vous utilisez deux carnets d'adresses différents, ne supprimez pas automatiquement les entrées du premier."
+  },
+  "handleDuplicates.deferInteractive": {
+    "message": "Collecter tous les duplicats potentiels avant de les présenter."
+  },
+  "handleDuplicates.durationWarning": {
+    "message": "En fonction du nombre d'adresses et du CPU de votre ordinateur, ce processus peut prendre plusieurs minutes."
+  },
+  "handleDuplicates.natTrunkPrefix": {
+    "message": "Préfixe de numéro de téléphone national, par ex. '0'"
+  },
+  "handleDuplicates.intCallPrefix": {
+    "message": "Préfixe de numéro de téléphone international, par ex. '00'"
+  },
+  "handleDuplicates.countryCallingCode": {
+    "message": "Code international par défaut, par ex. '+33'"
+  },
+  "handleDuplicates.consideredFields": {
+    "message": "Champs à considérer"
+  },
+  "handleDuplicates.ignoredFields": {
+    "message": "Champs à ignorer"
+  },
+  "handleDuplicates.introtext3": {
+    "message": "Vous pouvez tout arrêter à n'importe quel moment en pressant sur 'Annuler'. Si vous ne voulez pas traiter un doublon, utilisez le bouton 'Passer'."
+  },
+  "handleDuplicates.introtext4": {
+    "message": "Si vous souhaitez enregistrer les modifications et conserver les deux entrées, cliquez sur 'Conserver les deux'; pour supprimer une entrée, cliquez sur 'Supprimer un'."
+  },
+  "handleDuplicates.options": {
+    "message": "Options"
+  },
+  "handleDuplicates.endheader": {
+    "message": "Résultats"
+  },
+  "handleDuplicates.endtext": {
+    "message": "Vous venez de vous débarrasser des doublons et pouvez maintenant continuer avec quelque chose de plus amusant  :-)"
+  },
+  "handleDuplicates.endtext.numBefore": {
+    "message": "Nombre de contacts avant"
+  },
+  "handleDuplicates.endtext.numAfter": {
+    "message": "Nombre de contacts après"
+  },
+  "handleDuplicates.endtext.numRemoved": {
+    "message": "Nombre de contacts enlevés"
+  },
+  "handleDuplicates.endtext.numRemovedAuto": {
+    "message": "Contacts enlevés automatiquement"
+  },
+  "handleDuplicates.endtext.numPresented": {
+    "message": "Paires de contacts présentés"
+  },
+  "handleDuplicates.endtext.numRemovedMan": {
+    "message": "Contacts enlevés manuellement"
+  },
+  "handleDuplicates.endtext.numSkipped": {
+    "message": "Contacts passés"
+  },
+  "handleDuplicates.endtext.ignoredFields": {
+    "message": "Types de champs ignorés"
+  },
+  "handleDuplicates.endtext.diffProps": {
+    "message": "Types de champs trouvés avec des valeurs non équivalentes"
+  },
+  "handleDuplicates.endtext.numChanged": {
+    "message": "Nombre de contact modifiés"
+  },
+  "handleDuplicates.endtext.helpDevelopment": {
+    "message": "Vous pouvez aider à améliorer cette extension de Thunderbird en classant des problèmes ou en les commentant, en apportant des traductions, ou même en écrivant du code. Le site de développement est:"
+  },
+  "handleDuplicates.endtext.provideFeedback": {
+    "message": "Pour aider à améliorer cette extension, envoyez vos commentaires par email à:"
+  },
+  "handleDuplicates.feedbackMail": {
+    "message": "duplicate-contact-manager-for-thunderbird@googlegroups.com"
+  },
+  "handleDuplicates.devSiteUrl": {
+    "message": "http://code.google.com/p/duplicate-contact-manager-for-thundebird/"
+  },
+  "handleDuplicates.startbutton.label": {
+    "message": "Démarrer"
+  },
+  "handleDuplicates.startbutton.accesskey": {
+    "message": "D"
+  },
+  "handleDuplicates.applynextbutton.label": {
+    "message": "Supprimer un >"
+  },
+  "handleDuplicates.applynextbutton.accesskey": {
+    "message": "S"
+  },
+  "handleDuplicates.keepnextbutton.label": {
+    "message": "Conserver les deux >"
+  },
+  "handleDuplicates.keepnextbutton.accesskey": {
+    "message": "C"
+  },
+  "handleDuplicates.skipnextbutton.label": {
+    "message": "Passer >"
+  },
+  "handleDuplicates.skipnextbutton.accesskey": {
+    "message": "P"
+  },
+  "handleDuplicates.stopbutton.label": {
+    "message": "Annuler"
+  },
+  "handleDuplicates.quitbutton.label": {
+    "message": "Quitter"
+  },
+  "handleDuplicates.contact": {
+    "message": "Contact"
+  },
+  "handleDuplicates.firstcontact": {
+    "message": "Premier contact"
+  },
+  "handleDuplicates.secondcontact": {
+    "message": "Second contact"
+  },
+  "handleDuplicates.empty": {
+    "message": "vide"
+  },
+  "handleDuplicates.status_default": {
+    "message": "Recherche des doublons en cours..."
+  },
+  "handleDuplicates.status_nonefound": {
+    "message": "Aucun doublon n'a été trouvé"
+  },
+  "handleDuplicates.status_nfound": {
+    "message": "%s doublons possibles ont été trouvés"
+  },
+  "handleDuplicates.status_of": {
+    "message": "%s sur %s"
+  }
+}
