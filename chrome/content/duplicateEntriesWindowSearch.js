@@ -53,6 +53,10 @@ var DuplicateEntriesWindowSearch = (function() {
 			}
 			
 			++(ctx.position2);
+			// Same book: never compare a card with itself (position2 must be > position1)
+			if (ctx.abId1 == ctx.abId2 && ctx.position2 <= ctx.position1) {
+				ctx.position2 = ctx.position1 + 1;
+			}
 			if (ctx.position2 >= ctx.vcards[ctx.BOOK_2].length) {
 				do {
 					ctx.position1++;

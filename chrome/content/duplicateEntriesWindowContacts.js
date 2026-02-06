@@ -97,19 +97,16 @@ var DuplicateEntriesWindowContacts = (function() {
 							console.warn("Error getting mailing list details:", e);
 						}
 					} else {
-						// Regular contact - parse vCard to get properties
+						// Regular contact: prefer parsing vCard so N (FirstName/LastName) and all fields are correct
 						var cardProps = {};
-						if (contact.properties) {
-							// If properties are already parsed, use them
-							cardProps = contact.properties;
-						} else if (contact.vCard && context && context.parseVCard) {
-							// Parse vCard string
+						if (contact.vCard && context && context.parseVCard) {
 							cardProps = context.parseVCard(contact.vCard);
+						} else if (contact.properties) {
+							cardProps = contact.properties;
 						} else {
-							// Fallback: use contact properties directly
-							cardProps = contact.properties || {};
+							cardProps = {};
 						}
-						
+
 						// Add internal tracking properties
 						cardProps._id = contact.id;
 						cardProps._addressBookId = addressBookId;

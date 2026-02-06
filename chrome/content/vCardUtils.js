@@ -33,7 +33,7 @@ var VCardUtils = (function() {
 			// Process accumulated value
 			if (currentProperty && currentValue.length > 0) {
 				var value = currentValue.join('').replace(/\\n/g, '\n').replace(/\\,/g, ',').replace(/\\;/g, ';').replace(/\\\\/g, '\\');
-				setProperty(props, currentProperty, value);
+				applyParsedProperty(props, currentProperty, value);
 				currentValue = [];
 			}
 
@@ -51,12 +51,12 @@ var VCardUtils = (function() {
 			var propertyPart = line.substring(0, colonIndex);
 			var valuePart = line.substring(colonIndex + 1);
 
-			// Extract property name (before first semicolon)
+			// Extract property name (before first semicolon). vCard 3.0/4.0 are case-insensitive.
 			var semicolonIndex = propertyPart.indexOf(';');
-			var propertyName = semicolonIndex === -1 ? propertyPart : propertyPart.substring(0, semicolonIndex);
+			var propertyName = (semicolonIndex === -1 ? propertyPart : propertyPart.substring(0, semicolonIndex)).toUpperCase();
 
 			// Map vCard properties to Thunderbird property names
-			currentProperty = mapVCardPropertyToTB(propertyName, propertyPart);
+			currentProperty = mapVCardPropertyToTB(propertyName, propertyPart.toUpperCase());
 			if (valuePart) {
 				currentValue.push(valuePart);
 			}
@@ -65,7 +65,7 @@ var VCardUtils = (function() {
 		// Process last property
 		if (currentProperty && currentValue.length > 0) {
 			var value = currentValue.join('').replace(/\\n/g, '\n').replace(/\\,/g, ',').replace(/\\;/g, ';').replace(/\\\\/g, '\\');
-			setProperty(props, currentProperty, value);
+			applyParsedProperty(props, currentProperty, value);
 		}
 
 		return props;
@@ -97,8 +97,7 @@ var VCardUtils = (function() {
 
 		// Handle structured name (N property)
 		if (vCardProp === 'N') {
-			// N format: Family;Given;Additional;Prefix;Suffix
-			// We'll parse this in setProperty
+			// N format: Family;Given;Additional;Prefix;Suffix — parsed in applyParsedProperty
 			return 'N';
 		}
 
@@ -131,24 +130,27 @@ var VCardUtils = (function() {
 
 		// Handle EMAIL - check if we already have PrimaryEmail
 		if (vCardProp === 'EMAIL') {
-			return 'PrimaryEmail'; // Will handle SecondEmail in setProperty
+			return 'PrimaryEmail'; // SecondEmail handled in applyParsedProperty
 		}
 
 		return propMap[vCardProp] || vCardProp;
 	}
 
 	/**
-	 * Sets a property value, handling special cases like structured names and multiple emails.
+	 * Applies a single parsed vCard property to props (internal use in parseVCard).
+	 * Handles N -> FirstName/LastName, multiple emails, TEL, ADR, BDAY, etc.
 	 * @param {Object} props - Properties object
-	 * @param {string} property - Property name
+	 * @param {string} property - Property name (e.g. 'N', 'PrimaryEmail')
 	 * @param {string} value - Property value
 	 */
-	function setProperty(props, property, value) {
+	function applyParsedProperty(props, property, value) {
 		if (property === 'N') {
-			// Parse structured name: Family;Given;Additional;Prefix;Suffix
-			var parts = value.split(';');
-			if (parts.length >= 2) {
+			// Parse structured name: Family;Given;Additional;Prefix;Suffix (vCard 3.0/4.0 use semicolon)
+			var parts = value.split(';').map(function(p) { return (p || '').trim(); });
+			if (parts.length >= 1) {
 				props['LastName'] = parts[0] || '';
+			}
+			if (parts.length >= 2) {
 				props['FirstName'] = parts[1] || '';
 			}
 			if (parts.length >= 3 && parts[2]) {
