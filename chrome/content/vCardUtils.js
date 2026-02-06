@@ -128,8 +128,8 @@ var VCardUtils = (function() {
 			return 'HomeAddress';
 		}
 
-		// Handle EMAIL - check if we already have PrimaryEmail
-		if (vCardProp === 'EMAIL') {
+		// Handle EMAIL and grouped ITEMn.EMAIL (e.g. ITEM1.EMAIL, ITEM2.EMAIL from some exporters)
+		if (vCardProp === 'EMAIL' || /^ITEM\d+\.EMAIL$/i.test(vCardProp)) {
 			return 'PrimaryEmail'; // SecondEmail handled in applyParsedProperty
 		}
 
