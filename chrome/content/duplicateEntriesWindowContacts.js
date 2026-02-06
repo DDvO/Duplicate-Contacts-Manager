@@ -186,7 +186,6 @@ var DuplicateEntriesWindowContacts = (function() {
 
 		try {
 			// Generate vCard from card properties
-			// Note: context is not available here, so we use VCardUtils directly
 			var vCardString;
 			if (typeof VCardUtils !== 'undefined' && VCardUtils.generateVCard) {
 				vCardString = VCardUtils.generateVCard(card);
@@ -194,10 +193,14 @@ var DuplicateEntriesWindowContacts = (function() {
 				throw new Error("No vCard generator available");
 			}
 
-			// Update the contact
-			await addressBooksAPI.contacts.update(addressBookId, card._id, {
-				vCard: vCardString
-			});
+			if (!card._id) {
+				// New contact: API create(parentId, vCard) returns new contact id
+				var newId = await addressBooksAPI.contacts.create(addressBookId, vCardString);
+				card._id = newId;
+			} else {
+				// Update: API update(id, vCard) — contact id and vCard string only
+				await addressBooksAPI.contacts.update(card._id, vCardString);
+			}
 		} catch (error) {
 			console.error("Error saving card:", error);
 			throw error;
@@ -218,7 +221,8 @@ var DuplicateEntriesWindowContacts = (function() {
 		}
 
 		try {
-			await addressBooksAPI.contacts.delete(addressBookId, card._id);
+			// API: delete(id) — contact id only (unique within profile)
+			await addressBooksAPI.contacts.delete(card._id);
 		} catch (error) {
 			console.error("Error deleting card:", error);
 			throw error;

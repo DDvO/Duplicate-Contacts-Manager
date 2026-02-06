@@ -68,18 +68,41 @@
 			flex: 1;
 			overflow-y: auto;
 		}
-		/* When visible, tablepane is shown via JS (display: flex); do not force display here so initial display:none is effective */
+		/* When visible, tablepane is shown via JS (display: flex); do not force display here so initial display:none is effective.
+		   Overflow on inner .tablepane-scroll only, so scrollbar sits in reserved padding. */
 		#tablepane {
 			flex-direction: column;
+			overflow: hidden;
+		}
+		/* Scroll container: reserve space for scrollbar so it sits to the right of the table, not inside the right column */
+		.tablepane-scroll {
+			flex: 1;
+			overflow-y: auto;
+			overflow-x: hidden;
+			padding-right: 17px;
+			box-sizing: border-box;
 		}
 		#AttributesTable {
 			width: 100%;
 			border-collapse: collapse;
+			table-layout: fixed;
+			box-sizing: border-box;
+		}
+		/* Force left and right data columns to equal width so the right border is visible */
+		#AttributesTable col.data-col-equal {
+			width: 37%;
 		}
 		#AttributesTable th, #AttributesTable td {
 			padding: 4px 8px;
 			text-align: left;
 			border: 1px solid #ddd;
+			box-sizing: border-box;
+		}
+		#AttributesTable td input,
+		#AttributesTable td textarea,
+		#AttributesTable td span.textbox {
+			width: 100%;
+			box-sizing: border-box;
 		}
 		#AttributesTableRows tr {
 			display: table-row;
@@ -123,19 +146,15 @@
 			align-items: center;
 			margin: 10px 0;
 		}
-		#AttributesTable {
-			width: 100%;
-			border-collapse: collapse;
-		}
-		#AttributesTable th, #AttributesTable td {
-			padding: 4px;
-			border: 1px solid #ccc;
-		}
 		.keep {
 			background-color: #e8f5e9;
 		}
 		.remove {
 			background-color: #ffebee;
+		}
+		#AttributesTable td.equivalence {
+			text-align: center;
+			vertical-align: middle;
 		}
 		.equivalence {
 			text-align: center;
@@ -156,12 +175,6 @@
 		}
 		.tbox {
 			margin: 10px 0;
-		}
-		#bottom {
-			display: flex;
-			flex-direction: row;
-			padding: 4px;
-			border-top: 1px solid #ccc;
 		}
 	</style>
 	<!-- Script load order is required: see ARCHITECTURE_AND_HISTORY.md. -->
@@ -243,16 +256,15 @@
 		</div>
 	</div>
 	
-	<div class="flex-col" id="tablepane" style="display: none; flex: 1; overflow-y: auto;">
+	<div class="flex-col" id="tablepane" style="display: none; flex: 1;">
+		<div class="tablepane-scroll">
 		<table id="AttributesTable">
-			<thead>
-				<tr>
-					<th style="flex: 0;"></th>
-					<th style="flex: 3;"></th>
-					<th class="equivalence" style="flex: 0;"></th>
-					<th style="flex: 3;"></th>
-				</tr>
-			</thead>
+			<colgroup>
+				<col style="width: 18%;">
+				<col class="data-col-equal">
+				<col class="equivalence" style="width: 8%;">
+				<col class="data-col-equal">
+			</colgroup>
 			<tbody id="AttributesTableRows">
 				<tr id="tableheader">
 					<td id="fieldLabels" class="field"> </td>
@@ -266,6 +278,7 @@
 				</tr>
 			</tbody>
 		</table>
+		</div>
 	</div>
 	
 	<div class="flex-col" id="endinfo" style="display: none; flex: 1; overflow-y: auto;">
@@ -290,10 +303,6 @@
 				<p><a class="text-link" href="https://github.com/DDvO/Duplicate-Contacts-Manager" data-i18n="handleDuplicates.devSiteUrl">https://github.com/DDvO/Duplicate-Contacts-Manager</a></p>
 			</div>
 		</div>
-	</div>
-	
-	<div id="bottom" class="chromeClass-status">
-		<div style="flex: 1;"></div>
 	</div>
 </body>
 </html>
