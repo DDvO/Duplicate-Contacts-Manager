@@ -8,7 +8,7 @@ This document describes the **internal architecture** of the duplicate-finder wi
 
 ## Architecture
 
-**Note:** As of version 2.2.0, this add-on has been migrated to Thunderbird 128+ (WebExtension/Manifest V3). The duplicate-finder window is now implemented as an HTML window (`window.html`) instead of XUL, and uses WebExtension APIs instead of XPCOM.
+**Note:** As of version 2.2.0, this add-on has been migrated to Thunderbird 128+ (WebExtension/Manifest V3). The duplicate-finder window is now implemented as an HTML window (`window.html` in the project root) instead of XUL, and uses WebExtension APIs instead of XPCOM. The TB128 entry point is `background.js`, which creates the menu and opens `window.html` via `runtime.getURL("window.html")`. The legacy XUL files (`duplicateContactsManager.js`, `duplicateEntriesWindow.xul`) remain for TB68 compatibility.
 
 The add-on's duplicate-finder window is implemented as a single HTML window (`window.html`) and a main script (`duplicateEntriesWindow.js`) that orchestrates several JavaScript modules. The main script holds window state (cards, positions, preferences, DOM references) and delegates logic to the modules. Modules are loaded in a fixed order so that dependencies are available when each script runs.
 
@@ -223,6 +223,12 @@ The add-on's duplicate-finder window is implemented as a single HTML window (`wi
 ---
 
 ## Change history
+
+### Version 2.2.1 (post-2.2.0 fixes)
+* Fix preferences loading: Storage API does not support wildcards; request explicit keys in `loadPrefs`.
+* Fix `setRelation` in Display: use `let` instead of `const` for values that may be reassigned.
+* Fix matchable rows: add missing 4th cell (right column) to match table structure.
+* Fix overflow: add `overflow-x: hidden`, `min-width: 0` to explanation/endinfo; `overflow-wrap` on `.fields`; reduce `#ignoredFields` cols.
 
 ### Version 2.2.0 (TB128 Migration)
 * **Major migration to Thunderbird 128+ (WebExtension/Manifest V3)**

@@ -29,8 +29,8 @@ var DuplicateEntriesWindowDisplay = (function() {
 	function setRelation(card1, card2, property) {
 		const defaultValue_Set = new Set();  /* should not really be needed here */
 		// TB128: Cards are plain objects, access properties directly
-		const value1 = card1.hasOwnProperty(property) ? card1[property] : defaultValue_Set;
-		const value2 = card2.hasOwnProperty(property) ? card2[property] : defaultValue_Set;
+		let value1 = card1.hasOwnProperty(property) ? card1[property] : defaultValue_Set;
+		let value2 = card2.hasOwnProperty(property) ? card2[property] : defaultValue_Set;
 		if (value1 === null || value1 === undefined) value1 = defaultValue_Set;
 		if (value2 === null || value2 === undefined) value2 = defaultValue_Set;
 		const both_empty = value1.size == 0 && value2.size == 0;
@@ -293,6 +293,7 @@ var DuplicateEntriesWindowDisplay = (function() {
 			if (ctx.matchablesList.includes(property)) {
 				const cell1 = document.createElement('td');
 				const cellEqu = document.createElement('td');
+				const cell2 = document.createElement('td');
 				const descEqu = document.createElement('span');
 				cellEqu.className = 'equivalence';
 				cellEqu.appendChild(descEqu);
@@ -302,6 +303,7 @@ var DuplicateEntriesWindowDisplay = (function() {
 					descEqu.textContent = '≃';
 				row.appendChild(cell1);
 				row.appendChild(cellEqu);
+				row.appendChild(cell2);
 				if (ctx.attributesTableRows) {
 					ctx.attributesTableRows.appendChild(row);
 				}
@@ -310,7 +312,7 @@ var DuplicateEntriesWindowDisplay = (function() {
 				const leftValue = ctx.getProperty(card1, property);
 				const rightValue = ctx.getProperty(card2, property);
 				const displayOnlyIfDifferent = /^(PhotoType|CellularNumberType|HomePhoneType|WorkPhoneType|FaxNumberType|PagerNumberType|UID|UUID|CardUID)$/;
-				const displayAlways = /^(FirstName|LastName|DisplayName|_AimScreenName|PrimaryEmail|SecondEmail|CellularNumber|HomePhone|WorkPhone|FaxNumber|Notes|PopularityIndex)$/;
+				const displayAlways = /^(FirstName|LastName|DisplayName|_AimScreenName|PrimaryEmail|SecondEmail|CellularNumber|HomePhone|WorkPhone|FaxNumber|Notes|PopularityIndex|LastModifiedDate)$/;
 				if ((!property.match(displayOnlyIfDifferent) || leftValue != rightValue) &&
 				    (   ( leftValue &&  leftValue != defaultValue)
 				     || (rightValue && rightValue != defaultValue)

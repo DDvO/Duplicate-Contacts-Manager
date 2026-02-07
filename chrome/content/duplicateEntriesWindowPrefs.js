@@ -49,7 +49,17 @@ var DuplicateEntriesWindowPrefs = (function() {
 		}
 
 		try {
-			const prefs = await storageAPI.local.get(PREF_BRANCH_ID + '*') || {};
+			// Storage API does not support wildcards; request explicit keys
+			const prefsKeys = [
+				PREF_BRANCH_ID + 'autoremoveDups',
+				PREF_BRANCH_ID + 'preserveFirst',
+				PREF_BRANCH_ID + 'deferInteractive',
+				PREF_BRANCH_ID + 'natTrunkPrefix',
+				PREF_BRANCH_ID + 'intCallPrefix',
+				PREF_BRANCH_ID + 'countryCallingCode',
+				PREF_BRANCH_ID + 'ignoreFields'
+			];
+			const prefs = await storageAPI.local.get(prefsKeys) || {};
 			
 			// Extract preferences (keys are prefixed with PREF_BRANCH_ID)
 			ctx.autoremoveDups = prefs[PREF_BRANCH_ID + 'autoremoveDups'] !== undefined ? prefs[PREF_BRANCH_ID + 'autoremoveDups'] : false;
