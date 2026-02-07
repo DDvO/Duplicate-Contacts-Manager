@@ -78,6 +78,11 @@ var VCardUtils = (function() {
 	 * @returns {string} - Thunderbird property name
 	 */
 	function mapVCardPropertyToTB(vCardProp, fullProperty) {
+		// Handle grouped ITEMn.FN (DisplayName)
+		if (/^ITEM\d+\.FN$/i.test(vCardProp)) {
+			return 'DisplayName';
+		}
+
 		var propMap = {
 			'FN': 'DisplayName',
 			'N': 'N', // Structured name - will be parsed separately
@@ -95,14 +100,14 @@ var VCardUtils = (function() {
 			'REV': 'LastModifiedDate'
 		};
 
-		// Handle structured name (N property)
-		if (vCardProp === 'N') {
+		// Handle structured name (N property) and grouped ITEMn.N
+		if (vCardProp === 'N' || /^ITEM\d+\.N$/i.test(vCardProp)) {
 			// N format: Family;Given;Additional;Prefix;Suffix — parsed in applyParsedProperty
 			return 'N';
 		}
 
-		// Handle TEL with TYPE parameter
-		if (vCardProp === 'TEL' && fullProperty) {
+		// Handle TEL with TYPE parameter (and grouped ITEMn.TEL)
+		if ((vCardProp === 'TEL' || /^ITEM\d+\.TEL$/i.test(vCardProp)) && fullProperty) {
 			if (fullProperty.indexOf('TYPE=CELL') !== -1 || fullProperty.indexOf('TYPE=MOBILE') !== -1) {
 				return 'CellularNumber';
 			} else if (fullProperty.indexOf('TYPE=WORK') !== -1) {
@@ -118,8 +123,8 @@ var VCardUtils = (function() {
 			return 'CellularNumber';
 		}
 
-		// Handle ADR with TYPE parameter
-		if (vCardProp === 'ADR' && fullProperty) {
+		// Handle ADR with TYPE parameter (and grouped ITEMn.ADR)
+		if ((vCardProp === 'ADR' || /^ITEM\d+\.ADR$/i.test(vCardProp)) && fullProperty) {
 			if (fullProperty.indexOf('TYPE=HOME') !== -1) {
 				return 'HomeAddress';
 			} else if (fullProperty.indexOf('TYPE=WORK') !== -1) {
@@ -168,11 +173,11 @@ var VCardUtils = (function() {
 			if (!props['CellularNumber']) {
 				props['CellularNumber'] = value;
 			}
-		} else if (property === 'ADR') {
+		} else if (property === 'ADR' || property === 'HomeAddress' || property === 'WorkAddress') {
 			// Parse address: ;;;Street;City;State;Zip;Country
 			var parts = value.split(';');
 			if (parts.length >= 4) {
-				var baseProp = property.replace('Address', '');
+				var baseProp = (property === 'ADR') ? 'Home' : property.replace('Address', '');
 				props[baseProp + 'Address'] = parts[3] || '';
 				props[baseProp + 'Address2'] = parts[4] || '';
 				props[baseProp + 'City'] = parts[5] || '';

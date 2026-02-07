@@ -67,6 +67,8 @@
 		#explanation, 		#tablepane, #endinfo {
 			flex: 1;
 			overflow-y: auto;
+			overflow-x: hidden;
+			min-width: 0;
 		}
 		/* When visible, tablepane is shown via JS (display: flex); do not force display here so initial display:none is effective.
 		   Overflow on inner .tablepane-scroll only, so scrollbar sits in reserved padding. */
@@ -107,8 +109,9 @@
 		#AttributesTableRows tr {
 			display: table-row;
 		}
+		#handleDuplicates-window #explanation,
 		#explanation {
-			text-align: center;
+			text-align: left;
 		}
 		.descTitle {
 			font-weight: bold;
@@ -133,6 +136,9 @@
 			font-family: monospace;
 			font-size: smaller;
 			user-select: text;
+			overflow-wrap: break-word;
+			word-break: break-word;
+			max-width: 100%;
 		}
 		.text-link {
 			color: blue;
@@ -171,7 +177,11 @@
 		}
 		#ignoredFields {
 			width: 100%;
+			max-width: 100%;
 			height: 60px;
+			box-sizing: border-box;
+			font-family: monospace;
+			font-size: smaller;
 		}
 		.tbox {
 			margin: 10px 0;
@@ -225,8 +235,8 @@
 		<div style="flex: 1;"></div>
 	</div>
 	
-	<div class="flex-col" id="explanation" style="display: none; flex: 1; overflow-y: auto;">
-		<div class="flex-col" style="text-align: center; flex: 1;">
+	<div class="flex-col" id="explanation" style="display: none; flex: 1; overflow-y: auto; overflow-x: hidden; min-width: 0;">
+		<div class="flex-col" style="text-align: left; flex: 1; min-width: 0;">
 			<p class="descTitle" data-i18n="handleDuplicates.introheader">Introduction</p>
 			<p data-i18n="handleDuplicates.introtext">This tool helps you find and manage duplicate contacts.</p>
 			<p data-i18n="handleDuplicates.chooseSecondary">Choose address books to compare:</p>
@@ -252,7 +262,7 @@
 			<p><span data-i18n="handleDuplicates.consideredFields">Considered fields</span>: </p>
 			<p class="text-line value fields" id="consideredFields"></p>
 			<p><span data-i18n="handleDuplicates.ignoredFields">Ignored fields</span>: </p>
-			<textarea id="ignoredFields" cols="90" rows="3" style="width: 100%;"></textarea>
+			<textarea id="ignoredFields" class="fields" cols="40" rows="3" style="width: 100%;"></textarea>
 		</div>
 	</div>
 	
