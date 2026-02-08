@@ -1,3 +1,6 @@
-mk
-*~
-.idea
+# Build artifacts
+*.xpi
+
+# OS
+.DS_Store
+Thumbs.db

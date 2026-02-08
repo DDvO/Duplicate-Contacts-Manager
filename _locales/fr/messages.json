@@ -21,7 +21,7 @@
     "message": "sur"
   },
   "noMatch": {
-    "message": "Pas de noms, adresses \\u00e9lectroniques et téléphones à comparer"
+    "message": "Pas de noms, adresses électroniques et téléphones à comparer"
   },
   "matchFound": {
     "message": "Match trouvé"
@@ -33,28 +33,28 @@
     "message": "Noms"
   },
   "__Emails_label": {
-    "message": "Les adresses \\u00e9lectroniques"
+    "message": "Les adresses électroniques"
   },
   "__PhoneNumbers_label": {
-    "message": "T\\u00e9l\\u00e9phones"
+    "message": "Téléphones"
   },
   "SearchingForDuplicates": {
     "message": "Recherche des doublons..."
   },
   "PleasePressStart": {
-    "message": "Appuyez sur D\\u00e9marrer SVP."
+    "message": "Appuyez sur Démarrer SVP."
   },
   "NoABookFound": {
-    "message": "Aucun liste d\\'adresses trouv\\u00e9!"
+    "message": "Aucune liste d'adresses trouvée!"
   },
   "Start": {
     "message": "Démarrer"
   },
   "Restart": {
-    "message": "Nouveau démarrer"
+    "message": "Nouveau démarrage"
   },
   "finished": {
-    "message": "Termin\\u00e9"
+    "message": "Terminé"
   },
   "CardUID_label": {
     "message": "Identification de contact"
@@ -63,22 +63,22 @@
     "message": "Photo"
   },
   "FirstName_label": {
-    "message": "Pr\\u00e9nom"
+    "message": "Prénom"
   },
   "LastName_label": {
     "message": "Nom"
   },
   "PhoneticFirstName_label": {
-    "message": "Pr\\u00e9nom abr\\u00e9g\\u00e9"
+    "message": "Prénom abrégé"
   },
   "PhoneticLastName_label": {
-    "message": "Nom abr\\u00e9g\\u00e9"
+    "message": "Nom abrégé"
   },
   "_PhoneticName_label": {
     "message": "Pseudo"
   },
   "DisplayName_label": {
-    "message": "Nom \\u00e0 afficher"
+    "message": "Nom à afficher"
   },
   "NickName_label": {
     "message": "Surnom"
@@ -90,43 +90,43 @@
     "message": "Listes de diffusion"
   },
   "PrimaryEmail_label": {
-    "message": "Adresse \\u00e9lectronique"
+    "message": "Adresse électronique"
   },
   "SecondEmail_label": {
     "message": "Adresse alternative"
   },
   "DefaultEmail_label": {
-    "message": "Email par d\\u00e9faut"
+    "message": "Email par défaut"
   },
   "CardType_label": {
     "message": "Type de Contact"
   },
   "PreferMailFormat_label": {
-    "message": "Format d\\'Email pr\\u00e9f\\u00e9r\\u00e9"
+    "message": "Format d'Email préféré"
   },
   "PreferDisplayName_label": {
-    "message": "Nom \\u00e0 afficher pr\\u00e9f\\u00e9r\\u00e9"
+    "message": "Nom à afficher préféré"
   },
   "WorkPhone_label": {
-    "message": "T\\u00e9l\\u00e9phone Travail"
+    "message": "Téléphone Travail"
   },
   "HomePhone_label": {
-    "message": "T\\u00e9l\\u00e9phone domicile"
+    "message": "Téléphone domicile"
   },
   "FaxNumber_label": {
-    "message": "Num\\u00e9ro de Fax"
+    "message": "Numéro de Fax"
   },
   "PagerNumber_label": {
-    "message": "Num\\u00e9ro de Pager"
+    "message": "Numéro de Pager"
   },
   "CellularNumber_label": {
-    "message": "Num\\u00e9ro de Portable"
+    "message": "Numéro de Portable"
   },
   "WorkPhoneType_label": {
-    "message": "Type de t\\u00e9l\\u00e9phone au travail"
+    "message": "Type de téléphone au travail"
   },
   "HomePhoneType_label": {
-    "message": "Type de t\\u00e9l\\u00e9phone au domicile"
+    "message": "Type de téléphone au domicile"
   },
   "FaxNumberType_label": {
     "message": "Type de Fax"
@@ -180,13 +180,13 @@
     "message": "Service"
   },
   "Company_label": {
-    "message": "Soci\\u00e9t\\u00e9"
+    "message": "Société"
   },
   "_AimScreenName_label": {
     "message": "Pseudo AIM"
   },
   "AnniversaryYear_label": {
-    "message": "Ann\\u00e9e d\\'anniversaire"
+    "message": "Année d'anniversaire"
   },
   "AnniversaryMonth_label": {
     "message": "Mois d'anniversaire"
@@ -201,10 +201,10 @@
     "message": "Nom de famille"
   },
   "DefaultAddress_label": {
-    "message": "Addresse par d\\u00e9faut"
+    "message": "Adresse par défaut"
   },
   "Category_label": {
-    "message": "Cat\\u00e9gorie"
+    "message": "Catégorie"
   },
   "WebPage1_label": {
     "message": "Page Web 1"
@@ -213,7 +213,7 @@
     "message": "Page Web 2"
   },
   "BirthYear_label": {
-    "message": "Ann\\u00e9e de naissance"
+    "message": "Année de naissance"
   },
   "BirthMonth_label": {
     "message": "Mois de naissance"
@@ -237,16 +237,16 @@
     "message": "Remarques"
   },
   "PopularityIndex_label": {
-    "message": "index des popularité"
+    "message": "Index de popularité"
   },
   "AllowRemoteContent_label": {
     "message": "Permettre contenu externe"
   },
   "LastModifiedDate_label": {
-    "message": "Derni\\u00e8re modification"
+    "message": "Dernière modification"
   },
   "CorrectAddressBookSelectedPrompt": {
-    "message": "Vous semblez avoir s\\u00e9lectionn\\u00e9 une liste d\\'adresses. Lors de la recherche de doublons, ce n\\'est pas seulement cette liste, mais tout le carnet \\u00e0 laquelle elle appartient qui sera utilis\\u00e9."
+    "message": "Vous semblez avoir sélectionné une liste d'adresses. Lors de la recherche de doublons, ce n'est pas seulement cette liste, mais tout le carnet à laquelle elle appartient qui sera utilisé."
   },
   "true_label": {
     "message": "oui"
@@ -255,7 +255,7 @@
     "message": "non"
   },
   "unknown_label": {
-    "message": "desconnu"
+    "message": "inconnu"
   },
   "plaintext_label": {
     "message": "texte clair"
