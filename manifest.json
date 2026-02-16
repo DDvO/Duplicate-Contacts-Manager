@@ -14,7 +14,6 @@
   },
   "permissions": [
     "addressBooks",
-    "accountsRead",
     "menus",
     "storage"
   ],
