@@ -9,3 +9,6 @@ Thumbs.db
 .vs/
 .vscode/
 .cursor/
+
+# Reference files (not to be included in builds)
+duplicateEntriesWindowOriginal.js

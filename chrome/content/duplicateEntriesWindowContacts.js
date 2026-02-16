@@ -96,27 +96,27 @@ var DuplicateEntriesWindowContacts = (function() {
 						} catch (e) {
 							console.warn("Error getting mailing list details:", e);
 						}
+				} else {
+					// Regular contact: prefer parsing vCard so N (FirstName/LastName) and all fields are correct
+					var cardProps = {};
+					if (contact.vCard && context && context.parseVCard) {
+						cardProps = context.parseVCard(contact.vCard);
+					} else if (contact.properties) {
+						cardProps = contact.properties;
 					} else {
-						// Regular contact: prefer parsing vCard so N (FirstName/LastName) and all fields are correct
-						var cardProps = {};
-						if (contact.vCard && context && context.parseVCard) {
-							cardProps = context.parseVCard(contact.vCard);
-						} else if (contact.properties) {
-							cardProps = contact.properties;
-						} else {
-							cardProps = {};
-						}
-
-						// Add internal tracking properties
-						cardProps._id = contact.id;
-						cardProps._addressBookId = addressBookId;
-						if (contact.vCard) {
-							cardProps._vCard = contact.vCard;
-						}
-						
-						abCards.push(cardProps);
-						processedCount++;
+						cardProps = {};
 					}
+
+					// Add internal tracking properties
+					cardProps._id = contact.id;
+					cardProps._addressBookId = addressBookId;
+					if (contact.vCard) {
+						cardProps._vCard = contact.vCard;
+					}
+					
+					abCards.push(cardProps);
+					processedCount++;
+				}
 				} catch (e) {
 					console.warn("Error processing contact at index", i, ":", e);
 				}

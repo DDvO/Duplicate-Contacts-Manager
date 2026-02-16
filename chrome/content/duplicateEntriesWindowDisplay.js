@@ -209,17 +209,17 @@
 		} else {
 			console.error("displayCardField: attributesTableRows not available");
 		}
-		if (property == 'PhotoURI') {
-			cell1valuebox.height = 100;
-			cell2valuebox.height = 100;
-			cell1valuebox.style.flex = "";
-			cell2valuebox.style.flex = "";
-			/* preserve aspect ratio */
-			// TB128: Access properties directly
-			cell1valuebox.src = card1.hasOwnProperty('PhotoURI') ? card1['PhotoURI'] : "";
-			cell2valuebox.src = card2.hasOwnProperty('PhotoURI') ? card2['PhotoURI'] : "";
-			/* actual image will be loaded asynchronously */
-		}
+	if (property == 'PhotoURI') {
+		cell1valuebox.height = 100;
+		cell2valuebox.height = 100;
+		cell1valuebox.style.flex = "";
+		cell2valuebox.style.flex = "";
+		/* preserve aspect ratio */
+		// TB128: Access properties directly
+		cell1valuebox.src = card1.hasOwnProperty('PhotoURI') ? card1['PhotoURI'] : "";
+		cell2valuebox.src = card2.hasOwnProperty('PhotoURI') ? card2['PhotoURI'] : "";
+		/* actual image will be loaded asynchronously */
+	}
 	}
 
 	/**

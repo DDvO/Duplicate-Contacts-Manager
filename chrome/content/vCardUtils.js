@@ -18,58 +18,114 @@ var VCardUtils = (function() {
 		var lines = vCardString.split(/\r?\n/);
 		var currentProperty = null;
 		var currentValue = [];
+		var currentPropertyParams = null; // Track parameters for special handling
 
-		for (var i = 0; i < lines.length; i++) {
-			var line = lines[i].trim();
+	for (var i = 0; i < lines.length; i++) {
+		var line = lines[i];
+		
+		// Handle line continuation (starts with space or tab) - DON'T trim before this check!
+		if (line.length > 0 && (line[0] === ' ' || line[0] === '\t')) {
+			if (currentProperty) {
+				// Remove the leading space/tab and add to current value
+				currentValue.push(line.substring(1).trim());
+			}
+			continue;
+		}
+		
+		// Now we can trim for non-continuation lines
+		line = line.trim();
+
+		// Process accumulated value
+		if (currentProperty && currentValue.length > 0) {
+			var value = currentValue.join('').replace(/\\n/g, '\n').replace(/\\,/g, ',').replace(/\\;/g, ';').replace(/\\\\/g, '\\');
 			
-			// Handle line continuation (starts with space or tab)
-			if (line.length > 0 && (line[0] === ' ' || line[0] === '\t')) {
-				if (currentProperty) {
-					currentValue.push(line.substring(1));
-				}
-				continue;
+			// Special handling for PHOTO with base64 encoding
+			if (currentProperty === 'PhotoURI' && currentPropertyParams) {
+				value = processPhotoValue(value, currentPropertyParams);
 			}
-
-			// Process accumulated value
-			if (currentProperty && currentValue.length > 0) {
-				var value = currentValue.join('').replace(/\\n/g, '\n').replace(/\\,/g, ',').replace(/\\;/g, ';').replace(/\\\\/g, '\\');
-				applyParsedProperty(props, currentProperty, value);
-				currentValue = [];
-			}
+			
+			applyParsedProperty(props, currentProperty, value);
+			currentValue = [];
+			currentPropertyParams = null;
+		}
 
 			// Skip empty lines and BEGIN/END
 			if (!line || line === 'BEGIN:VCARD' || line === 'END:VCARD') {
 				continue;
 			}
 
-			// Parse property line (format: PROPERTY[;PARAM=VALUE]*:VALUE)
-			var colonIndex = line.indexOf(':');
-			if (colonIndex === -1) {
-				continue;
-			}
-
-			var propertyPart = line.substring(0, colonIndex);
-			var valuePart = line.substring(colonIndex + 1);
-
-			// Extract property name (before first semicolon). vCard 3.0/4.0 are case-insensitive.
-			var semicolonIndex = propertyPart.indexOf(';');
-			var propertyName = (semicolonIndex === -1 ? propertyPart : propertyPart.substring(0, semicolonIndex)).toUpperCase();
-
-			// Map vCard properties to Thunderbird property names
-			currentProperty = mapVCardPropertyToTB(propertyName, propertyPart.toUpperCase());
-			if (valuePart) {
-				currentValue.push(valuePart);
-			}
+		// Parse property line (format: PROPERTY[;PARAM=VALUE]*:VALUE)
+		var colonIndex = line.indexOf(':');
+		if (colonIndex === -1) {
+			continue;
 		}
 
-		// Process last property
-		if (currentProperty && currentValue.length > 0) {
-			var value = currentValue.join('').replace(/\\n/g, '\n').replace(/\\,/g, ',').replace(/\\;/g, ';').replace(/\\\\/g, '\\');
-			applyParsedProperty(props, currentProperty, value);
+		var propertyPart = line.substring(0, colonIndex);
+		var valuePart = line.substring(colonIndex + 1);
+
+		// Extract property name (before first semicolon). vCard 3.0/4.0 are case-insensitive.
+		var semicolonIndex = propertyPart.indexOf(';');
+		var propertyName = (semicolonIndex === -1 ? propertyPart : propertyPart.substring(0, semicolonIndex)).toUpperCase();
+
+		// Map vCard properties to Thunderbird property names
+		currentProperty = mapVCardPropertyToTB(propertyName, propertyPart.toUpperCase());
+		
+		// Store property parameters for special processing (e.g., PHOTO encoding)
+		if (propertyName === 'PHOTO') {
+			currentPropertyParams = propertyPart.toUpperCase();
+		}
+		
+		if (valuePart) {
+			currentValue.push(valuePart);
+		}
 		}
 
-		return props;
+	// Process last property
+	if (currentProperty && currentValue.length > 0) {
+		var value = currentValue.join('').replace(/\\n/g, '\n').replace(/\\,/g, ',').replace(/\\;/g, ';').replace(/\\\\/g, '\\');
+		
+		// Special handling for PHOTO with base64 encoding
+		if (currentProperty === 'PhotoURI' && currentPropertyParams) {
+			value = processPhotoValue(value, currentPropertyParams);
+		}
+		
+		applyParsedProperty(props, currentProperty, value);
 	}
+
+	return props;
+}
+
+/**
+ * Processes a PHOTO field value, converting base64 data to data URI if needed.
+ * @param {string} value - The photo value (may be base64, data URI, or regular URI)
+ * @param {string} propertyParams - The property parameters (e.g., "PHOTO;ENCODING=BASE64;TYPE=JPEG")
+ * @returns {string} - Processed photo value suitable for img src
+ */
+function processPhotoValue(value, propertyParams) {
+	// If already a data URI or other URI scheme, return as-is
+	if (value.indexOf(':') !== -1 && (value.startsWith('data:') || value.startsWith('http:') || value.startsWith('https:') || value.startsWith('file:'))) {
+		return value;
+	}
+	
+	// Check if it's base64 encoded
+	var upperParams = propertyParams.toUpperCase();
+	if (upperParams.indexOf('ENCODING=BASE64') !== -1 || upperParams.indexOf('ENCODING=B') !== -1) {
+		// Extract image type (TYPE=JPEG, TYPE=PNG, etc.)
+		var imageType = 'image/jpeg'; // default
+		var typeMatch = upperParams.match(/TYPE=([A-Z]+)/);
+		if (typeMatch) {
+			var type = typeMatch[1].toLowerCase();
+			// Normalize jpeg variants
+			if (type === 'jpg') type = 'jpeg';
+			imageType = 'image/' + type;
+		}
+		// Convert to data URI
+		return 'data:' + imageType + ';base64,' + value;
+	}
+	
+	// Return as-is (might be a URI without scheme)
+	return value;
+}
 
 	/**
 	 * Maps vCard property names to Thunderbird property names.
