@@ -104,11 +104,11 @@ var DuplicateEntriesWindowUI = (function() {
 			var other = side == 'right' ? 'left' : 'right';
 			var to_be_kept = ctx.getString('to_be_kept');
 			var to_be_removed = ctx.getString('to_be_removed');
-			// TB128: Update label text using textContent or by finding label element
-			var leftLabel = ctx.keepLeftRadioButton.nextElementSibling || ctx.keepLeftRadioButton.parentElement.querySelector('label');
-			var rightLabel = ctx.keepRightRadioButton.nextElementSibling || ctx.keepRightRadioButton.parentElement.querySelector('label');
-			if (leftLabel) leftLabel.textContent = side == 'right' ? to_be_removed : to_be_kept;
-			if (rightLabel) rightLabel.textContent = side == 'right' ? to_be_kept : to_be_removed;
+			// TB128: Update header label spans (do not replace label content or the radio is removed)
+			var leftLabelEl = document.getElementById('headerLeftLabel');
+			var rightLabelEl = document.getElementById('headerRightLabel');
+			if (leftLabelEl) leftLabelEl.textContent = side == 'right' ? to_be_removed : to_be_kept;
+			if (rightLabelEl) rightLabelEl.textContent = side == 'right' ? to_be_kept : to_be_removed;
 			// TB128: HTML radio buttons use .checked property
 			ctx.keepLeftRadioButton.checked = (side != 'right');
 			ctx.keepRightRadioButton.checked = (side == 'right');

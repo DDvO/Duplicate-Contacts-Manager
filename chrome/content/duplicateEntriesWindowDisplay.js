@@ -9,7 +9,7 @@
 // createSelectionList, sideKept, setContactLeftRight.
 // Load after duplicateEntriesWindowUI.js, before duplicateEntriesWindow.js.
 
-var DuplicateEntriesWindowDisplay = (function() {
+	var DuplicateEntriesWindowDisplay = (function() {
 	"use strict";
 
 	function pushIfNew(elem, array) {
@@ -44,9 +44,9 @@ var DuplicateEntriesWindowDisplay = (function() {
 			if (value2.isSuperset(value1))
 				equ = '⊆';
 			else
-				equ = '';
-		}
-		return [both_empty, equ];
+		equ = '';
+	}
+	return [both_empty, equ];
 	}
 
 	/**

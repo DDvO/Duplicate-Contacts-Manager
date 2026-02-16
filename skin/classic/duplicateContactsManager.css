@@ -159,6 +159,19 @@
 #handleDuplicates-window .remove {
 	background-color: #FF6F6F;
 }
+/* Override TB/extension page styles that force white on td when loaded from XPI */
+#handleDuplicates-window #headerLeft {
+	text-align: center;
+}
+#handleDuplicates-window #headerRight {
+	text-align: center;
+}
+#handleDuplicates-window #headerLeft.keep {
+	background-color: #33BF33 !important;
+}
+#handleDuplicates-window #headerRight.remove {
+	background-color: #FF6F6F !important;
+}
 #handleDuplicates-window #explanation {
 	font-size: 12px;
 	margin: 20px;
