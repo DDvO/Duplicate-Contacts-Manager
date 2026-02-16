@@ -20,11 +20,7 @@ var DuplicateEntriesWindowCardValues = (function() {
 	 */
 	function getProperty(ctx, card, property) {
 		var defaultValue = ctx.defaultValue(property);
-		// TB128: Cards are plain objects, access properties directly
-		var value = card.hasOwnProperty(property) ? card[property] : defaultValue;
-		if (value === null || value === undefined) {
-			value = defaultValue;
-		}
+		var value = card.getProperty(property, defaultValue);
 		if (ctx.isSelection(property) && value == "")
 			return defaultValue;
 		if (ctx.isSet(property))
@@ -199,33 +195,27 @@ var DuplicateEntriesWindowCardValues = (function() {
 			if (ctx.isNumerical(property))
 				continue;
 			var defaultValue = ctx.defaultValue(property);
-			// TB128: Cards are plain objects, access properties directly
-			var value = card.hasOwnProperty(property) ? card[property] : defaultValue;
-			if (value === null || value === undefined) {
-				value = defaultValue;
-			}
+			var value = card.getProperty(property, defaultValue);
 			if (value != defaultValue)
 				nonemptyFields += 1;
 			if (ctx.isText(property) || ctx.isEmail(property) || ctx.isPhoneNumber(property))
 				charWeight += ctx.charWeight(value, property);
 		}
-		// TB128: Set properties directly on plain object
-		card['__NonEmptyFields'] = nonemptyFields;
-		card['__CharWeight'] = charWeight;
+		card.setProperty('__NonEmptyFields', nonemptyFields);
+		card.setProperty('__CharWeight', charWeight);
 
 		var mailListNames = new Set();
-		// TB128: Access primaryEmail directly (may be PrimaryEmail property)
-		var email = card.primaryEmail || card.PrimaryEmail || '';
+		var email = card.getProperty('PrimaryEmail', '') || card.primaryEmail || '';
 		if (email) {
 			for (var i = 0; i < mailLists.length; i++) {
 				if (mailLists[i][1].includes(email))
 					mailListNames.add(mailLists[i][0]);
 			}
 		}
-		card['__MailListNames'] = mailListNames;
-		card['__Emails'] = propertySet(ctx, card, ['PrimaryEmail', 'SecondEmail']);
-		card['__PhoneNumbers'] = propertySet(ctx, card, ['HomePhone', 'WorkPhone',
-			'FaxNumber', 'PagerNumber', 'CellularNumber']);
+		card.setProperty('__MailListNames', mailListNames);
+		card.setProperty('__Emails', propertySet(ctx, card, ['PrimaryEmail', 'SecondEmail']));
+		card.setProperty('__PhoneNumbers', propertySet(ctx, card, ['HomePhone', 'WorkPhone',
+			'FaxNumber', 'PagerNumber', 'CellularNumber']));
 	}
 
 	return {

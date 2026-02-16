@@ -114,6 +114,18 @@ var DuplicateEntriesWindowContacts = (function() {
 						cardProps._vCard = contact.vCard;
 					}
 					
+					// Add helper methods for property access (similar to nsIAbCard API)
+					cardProps.getProperty = function(property, defaultValue) {
+						var value = this.hasOwnProperty(property) ? this[property] : defaultValue;
+						if (value === null || value === undefined) {
+							value = defaultValue;
+						}
+						return value;
+					};
+					cardProps.setProperty = function(property, value) {
+						this[property] = value;
+					};
+					
 					abCards.push(cardProps);
 					processedCount++;
 				}
@@ -137,35 +149,6 @@ var DuplicateEntriesWindowContacts = (function() {
 			console.error("Error in getAllAbCards:", error);
 			return { cards: [], totalBefore: 0 };
 		}
-	}
-
-	/**
-	 * Reads a single property from a card.
-	 * TB128: Cards are plain objects, access properties directly.
-	 * @param {Object} card - Card object (plain JS object)
-	 * @param {string} property - Property name
-	 * @param {string|number} defaultValue - Default value
-	 * @returns {string|number} - Property value or default
-	 */
-	function getCardProperty(card, property, defaultValue) {
-		if (!card || typeof card !== 'object') {
-			return defaultValue;
-		}
-		return card.hasOwnProperty(property) ? card[property] : defaultValue;
-	}
-
-	/**
-	 * Writes a single property to a card (in memory only). Call saveCard to persist.
-	 * TB128: Cards are plain objects, set properties directly.
-	 * @param {Object} card - Card object (plain JS object)
-	 * @param {string} property - Property name
-	 * @param {string|number} value - Value to set
-	 */
-	function setCardProperty(card, property, value) {
-		if (!card || typeof card !== 'object') {
-			return;
-		}
-		card[property] = value;
 	}
 
 	/**
@@ -230,8 +213,6 @@ var DuplicateEntriesWindowContacts = (function() {
 		getAddressBooks: getAddressBooks,
 		getAddressBook: getAddressBook,
 		getAllAbCards: getAllAbCards,
-		getCardProperty: getCardProperty,
-		setCardProperty: setCardProperty,
 		saveCard: saveCard,
 		deleteCard: deleteCard
 	};
