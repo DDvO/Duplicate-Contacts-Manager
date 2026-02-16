@@ -12,11 +12,19 @@
 	var DuplicateEntriesWindowDisplay = (function() {
 	"use strict";
 
-	function pushIfNew(elem, array) {
+	function pushIfNew(elem, array) { /* well, this 'function' has a side effect on array */
 		if (!array.includes(elem))
 			array.push(elem);
 		return array;
 	}
+/*
+T.prototype.pushIfNew = function(elem) {
+	if (!this.includes(elem))
+		this.push(elem);
+where T = Array would be an elegant extension of the built-in JS type Array. Yet in TB this not allowed for security and compatibility reasons.
+It also would have the weird effect of adding an extra enumerable value to each array, as described here:
+https://stackoverflow.com/questions/948358/adding-custom-functions-into-array-prototype
+*/
 
 	/**
 	 * Returns [both_empty, equ] for set comparison display (⊇ ⊆ ≅).
@@ -69,6 +77,7 @@
 			pushIfNew(property, ctx.editableFields);
 
 		// TB128: Use HTML elements instead of XUL
+		// Create input/display elements for the field
 		const cell1 = document.createElement('td');
 		const cell2 = document.createElement('td');
 		const cellEqu = document.createElement('td');
@@ -85,6 +94,7 @@
 		} else {
 			identical = leftValue == rightValue;
 			both_empty = leftValue == defaultValue && rightValue == defaultValue;
+			// all but first email address/phone number
 			if        (ctx.isEmail(property)) {
 				[both_empty, equ] = setRelation(card1, card2, '__Emails');
 			} else if (ctx.isPhoneNumber(property)) {
@@ -122,12 +132,14 @@
 					equ = '';
 			}
 		}
+		// only non-identical and not set-equal properties should be highlighted by color
 		if (!identical) {
 			cell1.setAttribute('class', ctx.sideKept == 'left' ? 'keep' : 'remove');
 			cell2.setAttribute('class', ctx.sideKept == 'left' ? 'remove' : 'keep');
 		}
 		if (both_empty)
 			equ = '';
+		// sets displayed over multiple lines lead to multiple lines with same symbol
 		if (equ != '' &&
 		    (property == 'SecondEmail' ||
 		     property != 'CellularNumber' && ctx.isPhoneNumber(property)))
@@ -138,6 +150,7 @@
 		let cell2valuebox;
 
 		if (property == 'PhotoURI') {
+			// move a bit lower
 			descEqu.style.marginTop = '1em';
 			// TB128: Use HTML img instead of XUL image
 			cell1valuebox = document.createElement('img');
@@ -161,6 +174,7 @@
 				let valuebox;
 				if (editable) {
 					if (property == 'Notes') {
+						// [Obsolete TB68] multiline ignored by Thunderbird 68+; TB128 uses <textarea>
 						valuebox = document.createElement('textarea');
 						valuebox.rows = 3;
 					} else {
@@ -214,7 +228,8 @@
 		cell2valuebox.height = 100;
 		cell1valuebox.style.flex = "";
 		cell2valuebox.style.flex = "";
-		/* preserve aspect ratio */
+		// preserve aspect ratio:
+		// would be ignored if done before appendChild(row):
 		// TB128: Access properties directly
 		cell1valuebox.src = card1.hasOwnProperty('PhotoURI') ? card1['PhotoURI'] : "";
 		cell2valuebox.src = card2.hasOwnProperty('PhotoURI') ? card2['PhotoURI'] : "";
@@ -253,16 +268,20 @@
 		const cardsEqu = document.getElementById('cardsEqu');
 		if (cardsEqu) {
 			// TB128: cardsEqu is a <td> element, use textContent instead of value
+			// &cong; yields syntax error; &#8773; verbatim
 			cardsEqu.textContent = comparison == -2 ? '' :
 			                       comparison == 0 ? '≅' :
 			                       comparison <  0 ? '⋦' : '⋧';
 		}
 
+		// this.debug("popularityIndex: "+card1.getProperty('PopularityIndex', 0)+ " lastModifiedDate: " +card1.getProperty('LastModifiedDate', 0));
 		const mail1 = ctx.getAbstractedTransformedProperty(card1, 'PrimaryEmail');
 		const mail2 = ctx.getAbstractedTransformedProperty(card2, 'PrimaryEmail');
+		// if two different mail primary addresses are available, show SecondEmail field such that it can be filled in
 		const displaySecondMail = (mail1 != '' && mail2 != '' && mail1 != mail2);
 		const dn1 = ctx.getAbstractedTransformedProperty(card1, 'DisplayName');
 		const dn2 = ctx.getAbstractedTransformedProperty(card2, 'DisplayName');
+		// if combination of first and last name is different from display name, show nickname field such that it can be filled in
 		const displayNickName = (dn1 != '' && dn1 != ctx.getAbstractedTransformedProperty(card1,'FirstName')+" "+
 			ctx.getAbstractedTransformedProperty(card1, 'LastName'))
 			|| (dn2 != '' && dn2 != ctx.getAbstractedTransformedProperty(card2,'FirstName')+" "+

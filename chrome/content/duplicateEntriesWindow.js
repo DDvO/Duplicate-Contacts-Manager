@@ -10,8 +10,9 @@
 
 /*
    References:
-   // TB128: Migrated from XPCOM nsIAbCard to plain JavaScript objects (vCard properties)
+   https://developer.mozilla.org/en-US/docs/Mozilla/Tech/XPCOM/Reference/nsIAbCard_(Tb3) [obsolete for TB128+]
    https://developer.mozilla.org/en-US/docs/Mozilla/Thunderbird/Address_Book_Examples
+   // TB128: Migrated from XPCOM nsIAbCard to plain JavaScript objects (vCard properties)
 */
 
 if (typeof(DuplicateContactsManager_Running) == "undefined") {
@@ -171,6 +172,8 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			this.abDir1Name = ab1_obj ? ab1_obj.name : '';
 			this.abDir2Name = ab2_obj ? ab2_obj.name : '';
 
+			// We will process the first/selected address book, plus optionally a second one
+			// read all addressbooks, fill lists in preferences dialog
 			await this.readAddressBooks();
 
 			DuplicateEntriesWindowPrefs.readPrefsFromDOM(this);

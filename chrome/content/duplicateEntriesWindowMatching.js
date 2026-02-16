@@ -14,6 +14,10 @@ var DuplicateEntriesWindowMatching = (function() {
 	 * @returns {string}
 	 */
 	function simplifyText(text) {
+		// [Obsolete approach] Removing singleton digits and letters is too aggressive:
+		// - "von" becomes "v" then "", losing information
+		// - Phone numbers like "123 4 567" would become "123 567"
+		// Therefore, singletons are preserved.
 		return text
 			.replace(/[\"\'\-_:,;\.\!\?\&\+]+/g, '')
 			.replace(/[ÂÁÀÃÅâáàãåĀāĂăĄąǺǻ]/g, 'a')
@@ -48,13 +52,18 @@ var DuplicateEntriesWindowMatching = (function() {
 	 */
 	function pruneText(text, property, config) {
 		if (config.isText(property)) {
+			// this does not remove any real information and keeps letter case
 			text = text
+				// remove multiple white space
 				.replace(/[\s]{2,}/g, ' ')
+				// remove leading and trailing whitespace
 				.replace(/^\s+/, "")
 				.replace(/\s+$/, "");
 		}
 		if (config.isPhoneNumber(property)) {
+			// strip non-digits
 			text = text.replace(/[^+0-9]/g, '');
+			// strip irrelevant '+'
 			text = text.replace(/^\+/g, 'X').replace(/\+/g, '').replace(/^X/g, '+');
 		}
 		return text;
@@ -62,6 +71,7 @@ var DuplicateEntriesWindowMatching = (function() {
 
 	/**
 	 * Normalizes and simplifies a value for comparison (lowercase, umlauts, phone prefixes, etc.).
+	 * Steps: 1. Convert to lowercase (loses information for case-sensitive fields) 2. Transcribe umlauts and ligatures 3. Simplify text 4. Normalize phone numbers
 	 * @param {string} text
 	 * @param {string} property
 	 * @param {object} config - { isText(property), isPhoneNumber(property), natTrunkPrefix, countryCallingCode, natTrunkPrefixReqExp, intCallPrefix, intCallPrefixReqExp }
@@ -72,11 +82,13 @@ var DuplicateEntriesWindowMatching = (function() {
 		if (property == 'PhotoURI')
 			return text;
 		if (property.match(/Email$/) && ((p = text.match(/(^[^@]*)(@aol\..*$)/i)))) {
+			// for AOL, email part before '@' is case-sensitive!
 			text = p[1] + p[2].toLowerCase();
 		} else {
 			text = text.toLowerCase();
 		}
 		if (config.isText(property)) {
+			// transcribe umlauts and ligatures
 			text = text
 				.replace(/[ÄÆäæǼǽ]/g, 'ae')
 				.replace(/[ÖöŒœ]/g, 'oe')
@@ -86,10 +98,14 @@ var DuplicateEntriesWindowMatching = (function() {
 			text = simplifyText(text);
 		}
 		if (config.isPhoneNumber(property)) {
+			// Strip national trunk prefix (e.g., 0 in many countries)
 			if (config.natTrunkPrefix != "" && config.countryCallingCode != "" && text.match(config.natTrunkPrefixReqExp))
 				text = config.countryCallingCode + text.substr(config.natTrunkPrefix.length);
+			// Strip international call prefix (e.g., 00 or 011) and country code
 			if (config.intCallPrefix != "" && text.match(config.intCallPrefixReqExp))
 				text = '+' + text.substr(config.intCallPrefix.length);
+			// [Obsolete approach] Previous versions stripped specific country codes (+1, +7, +20, etc.)
+			// based on Wikipedia list. Now uses configurable countryCallingCode preference instead.
 		}
 		return text;
 	}
@@ -120,16 +136,21 @@ var DuplicateEntriesWindowMatching = (function() {
 	// --- Matching (on simplified vcard objects: FirstName, LastName, DisplayName, _AimScreenName, PrimaryEmail, SecondEmail, Phone1, Phone2, Phone3) ---
 
 	function noMailsPhonesMatch(vcard) {
+		// strings are already abstracted, e.g., normalized to lowercase
+		// numbers are already abstracted, e.g., non-digits are stripped
 		return vcard['PrimaryEmail'] == "" && vcard['SecondEmail'] == "" &&
 			vcard['Phone1'] == "" && vcard['Phone2'] == "" && vcard['Phone3'] == "";
 	}
 
 	function noNamesMatch(vcard) {
+		// strings are already abstracted, e.g., normalized to lowercase
+		// numbers are already abstracted, e.g., non-digits are stripped
 		return vcard['FirstName'] == "" && vcard['LastName'] == "" &&
 			vcard['DisplayName'] == "" && vcard['_AimScreenName'] == "";
 	}
 
 	function phonesMatch(vcard1, vcard2) {
+		// numbers are already abstracted, e.g., non-digits are stripped
 		var a1 = vcard1['Phone1'], a2 = vcard1['Phone2'], a3 = vcard1['Phone3'];
 		var b1 = vcard2['Phone1'], b2 = vcard2['Phone2'], b3 = vcard2['Phone3'];
 		return (a1 != "" && (a1 == b1 || a1 == b2 || a1 == b3)) ||
@@ -138,6 +159,7 @@ var DuplicateEntriesWindowMatching = (function() {
 	}
 
 	function mailsMatch(vcard1, vcard2) {
+		// strings are already abstracted, e.g., normalized to lowercase
 		var a1 = vcard1['PrimaryEmail'], a2 = vcard1['SecondEmail'];
 		var b1 = vcard2['PrimaryEmail'], b2 = vcard2['SecondEmail'];
 		return (a1 != "" && (a1 == b1 || a1 == b2)) ||
@@ -145,6 +167,8 @@ var DuplicateEntriesWindowMatching = (function() {
 	}
 
 	function namesMatch(vcard1, vcard2) {
+		// vcards are already abstracted and with names completed
+		// strings are already abstracted, e.g., normalized to lowercase
 		function subEq1(name1, name2) {
 			return name2 != "" && name2.length + 2 <= name1.length && (
 				name1.startsWith(name2 + " ") ||
@@ -158,6 +182,12 @@ var DuplicateEntriesWindowMatching = (function() {
 		var f2 = vcard2['FirstName'], l2 = vcard2['LastName'];
 		var d1 = vcard1['DisplayName'], a1 = vcard1['_AimScreenName'];
 		var d2 = vcard2['DisplayName'], a2 = vcard2['_AimScreenName'];
+		// this.debug("namesMatch: "+f1+"#"+l1+"#"+d1+ " vs. " +f2+"#"+l2+"#"+d2);
+		// _AimScreenNames exist and match
+		// both DisplayNames consist of one word or more than one word and match
+		// FirstNames and LastNames exist and match
+		// no DisplayNames, but FirstNames and LastNames match
+		// only First/Last exists and matches other DisplayName (both conditions)
 		return (a1 != "" && subEq(a1, a2)) ||
 			(d1 != "" && (d1.match(/ /) == d2.match(/ /)) && subEq(d1, d2)) ||
 			(f1 != "" && l1 != "" && subEq(f1, f2) && subEq(l1, l2)) ||

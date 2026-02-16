@@ -50,26 +50,33 @@ var DuplicateEntriesWindowCardValues = (function() {
 	}
 
 	function getPrunedProperty(ctx, card, property) {
+		/* sets are treated as strings here */
 		var defaultValue = ctx.defaultValue(property);
+		// filter out ignored fields
 		if (ctx.ignoredFields.includes(property))
 			return defaultValue;
 		var value = DuplicateEntriesWindowMatching.pruneText(getProperty(ctx, card, property), property, ctx.getNormalizationConfig());
-		/* Strip any stray email address duplicates from names, inserted by some email clients as default names */
+		// Strip any stray email address duplicates from names, which get inserted by some email clients as default names:
 		if (ctx.isFirstLastDisplayName(property)) {
 			if (value == getPrunedProperty(ctx, card, 'PrimaryEmail') || value == getPrunedProperty(ctx, card, 'SecondEmail'))
 				return defaultValue;
 		}
 		if (ctx.isEmail(property))
+			// Normalize googlemail.com to gmail.com (same service, different domains)
 			value = value.replace(/@googlemail.com$/i, "@gmail.com");
 		return value;
 	}
 
+	/**
+	 * Pipeline: raw value -> pruned (whitespace) -> transformed (name fixing) -> abstracted (lowercase, etc.)
+	 */
 	function getTransformedProperty(ctx, card, property) {
 		var value = getPrunedProperty(ctx, card, property);
 		var M = DuplicateEntriesWindowMatching;
 		if (ctx.isFirstLastDisplayName(property)) {
 			var p, fn, ln;
 			if (property == 'DisplayName') {
+				// Correct DisplayName by constructing from FirstName + LastName if both exist
 				if ((p = value.match(/^([^,]+),\s+(.+)$/))) {
 					var pair = M.transformMiddlePrefixName(p[2], p[1]);
 					value = pair[0] + " " + pair[1];
@@ -104,6 +111,7 @@ var DuplicateEntriesWindowCardValues = (function() {
 	 * @returns {[string, string, string]} [firstName, lastName, displayName]
 	 */
 	function completeFirstLastDisplayName(ctx, nameArray, card) {
+		// Avoid parsing email usernames like no-reply@ or no.service@ as first+last names
 		var fn = nameArray[0], ln = nameArray[1], dn = nameArray[2];
 		if (dn == "" && fn != "" && ln != "")
 			dn = fn + " " + ln;
@@ -113,6 +121,7 @@ var DuplicateEntriesWindowCardValues = (function() {
 				if (p && p[1] == "no")
 					p = undefined;
 				if (!p)
+					// second attempt works because email has not been converted to lower-case:
 					p = email.match(/^\s*([A-Z][a-z0-9_\x80-\uFFFF]*)([A-Z][a-z0-9_\x80-\uFFFF]*)@/);
 				return p;
 			}
@@ -124,8 +133,10 @@ var DuplicateEntriesWindowCardValues = (function() {
 			if (p) {
 				var cfg = ctx.getNormalizationConfig();
 				if (fn == "")
+					// strip digits, then abstract
 					fn = DuplicateEntriesWindowMatching.abstract(p[1].replace(/[0-9]/g, ''), 'FirstName', cfg);
 				if (ln == "")
+					// strip digits, then abstract
 					ln = DuplicateEntriesWindowMatching.abstract(p[2].replace(/[0-9]/g, ''), 'LastName', cfg);
 				if (dn == "")
 					dn = fn + " " + ln;
@@ -188,23 +199,28 @@ var DuplicateEntriesWindowCardValues = (function() {
 	 * @param {Array} mailLists - Array of [name, emails] arrays for mailing lists
 	 */
 	function enrichCardForComparison(ctx, card, mailLists) {
+		// calculate nonemptyFields and charWeight
 		var nonemptyFields = 0;
 		var charWeight = 0;
 		for (var index = 0; index < ctx.consideredFields.length; index++) {
 			var property = ctx.consideredFields[index];
+			/* ignore PopularityIndex, LastModifiedDate and other integers */
 			if (ctx.isNumerical(property))
 				continue;
 			var defaultValue = ctx.defaultValue(property);
 			var value = card.getProperty(property, defaultValue);
 			if (value != defaultValue)
 				nonemptyFields += 1;
+			// Calculate character weight to determine preferred card (more "real" content = higher weight)
 			if (ctx.isText(property) || ctx.isEmail(property) || ctx.isPhoneNumber(property))
 				charWeight += ctx.charWeight(value, property);
 		}
 		card.setProperty('__NonEmptyFields', nonemptyFields);
 		card.setProperty('__CharWeight', charWeight);
 
+		// record all mailing lists that the card belongs to
 		var mailListNames = new Set();
+		// only this email address is relevant
 		var email = card.getProperty('PrimaryEmail', '') || card.primaryEmail || '';
 		if (email) {
 			for (var i = 0; i < mailLists.length; i++) {
@@ -213,7 +229,10 @@ var DuplicateEntriesWindowCardValues = (function() {
 			}
 		}
 		card.setProperty('__MailListNames', mailListNames);
+		// set further virtual properties
+		// treat email addresses as a set
 		card.setProperty('__Emails', propertySet(ctx, card, ['PrimaryEmail', 'SecondEmail']));
+		// treat phone numbers as a set
 		card.setProperty('__PhoneNumbers', propertySet(ctx, card, ['HomePhone', 'WorkPhone',
 			'FaxNumber', 'PagerNumber', 'CellularNumber']));
 	}

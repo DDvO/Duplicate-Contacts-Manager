@@ -23,10 +23,11 @@ var DuplicateEntriesWindowState = (function() {
 			statustext: '',
 			progresstext: '',
 			progressmeter: null,
-			window: null,
+		window: null,
 
-			BOOK_1: 0,
-			BOOK_2: 1,
+		// Constants for first index of vcards arrays (address book identifiers)
+		BOOK_1: 0,
+		BOOK_2: 1,
 			vcards: [],
 			vcardsSimplified: [],
 

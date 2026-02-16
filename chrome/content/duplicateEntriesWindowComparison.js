@@ -20,11 +20,20 @@ Set.prototype.toString = function() {
 var DuplicateEntriesWindowComparison = (function() {
 	"use strict";
 
+	/* well, this 'function' has a side effect on array */
 	function pushIfNew(elem, array) {
 		if (!array.includes(elem))
 			array.push(elem);
 		return array;
 	}
+	/*
+T.prototype.pushIfNew = function(elem) {
+	if (!this.includes(elem))
+		this.push(elem);
+where T = Array would be an elegant extension of the built-in JS type Array. Yet in TB this not allowed for security and compatibility reasons.
+It also would have the weird effect of adding an extra enumerable value to each array, as described here:
+https://stackoverflow.com/questions/948358/adding-custom-functions-into-array-prototype
+*/
 
 	/**
 	 * Returns true if setA is a superset of setB (every element of setB is in setA).
@@ -108,7 +117,9 @@ var DuplicateEntriesWindowComparison = (function() {
 				value1 = context.getAbstractedTransformedProperty(c1, property);
 				value2 = context.getAbstractedTransformedProperty(c2, property);
 			}
+			// this.debug("compareCards: "+property+" = "+value1+" vs. "+value2);
 			if (value1 != value2) {
+				// Build diffProp map: property -> 1 (c1 preferred) or 2 (c2 preferred) or 0 (incomparable)
 				var diffProp = property == '__MailListNames' ? "(MailingListMembership)" :
 					property == '__Emails' ? "{PrimaryEmail,SecondEmail}" :
 					property == '__PhoneNumbers' ? "{CellularNumber,HomePhone,WorkPhone,FaxNumber,PagerNumber}" :
@@ -124,6 +135,7 @@ var DuplicateEntriesWindowComparison = (function() {
 					if (!value1.includes(value2))
 						c2_less_complete = false;
 				} else if (context.isSet(property)) {
+					// this.debug("compareCards: "+property+": "+value1.toString()+" vs. "+value2.toString()+": "+value1.isSuperset(value2)+" "+value2.isSuperset(value1));
 					if (!isSupersetOf(value2, value1))
 						c1_less_complete = false;
 					if (!isSupersetOf(value1, value2))
@@ -138,9 +150,15 @@ var DuplicateEntriesWindowComparison = (function() {
 		}
 
 		if (c1_less_complete != c2_less_complete) {
+			// already clear that cards are incomparable
 			comparison = preference = c1_less_complete ? -1 : 1;
 		} else {
 			comparison = c1_less_complete ? 0 : -2;
+			// Calculate preference for deletion:
+			// - If cards are equivalent (comparison == 0), prefer the one with fewer nonempty fields
+			//   (or if equal, lower charWeight, or if equal, card2 by default)
+			// - If one card has more information (comparison > 0), it's incomparable (-1)
+			// - preference >= 0 means prefer to delete c2; preference < 0 means prefer to delete c1
 			// TB128: Access properties directly
 			var nonEmpty1 = c1.hasOwnProperty('__NonEmptyFields') ? c1['__NonEmptyFields'] : 0;
 			var nonEmpty2 = c2.hasOwnProperty('__NonEmptyFields') ? c2['__NonEmptyFields'] : 0;
@@ -162,6 +180,7 @@ var DuplicateEntriesWindowComparison = (function() {
 					preference = date1 - date2;
 			}
 		}
+		// this.debug("compareCards: comparison = "+comparison+" preference = "+preference+" for "+c1.DisplayName+" vs. "+c2.DisplayName);
 		return [comparison, preference];
 	}
 

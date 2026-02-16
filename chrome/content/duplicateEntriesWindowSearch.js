@@ -30,8 +30,10 @@ var DuplicateEntriesWindowSearch = (function() {
 			return false;
 		}
 		
-		if (!ctx.vcards[ctx.BOOK_1][ctx.position1])
-			ctx.position2 = ctx.vcards[ctx.BOOK_2].length;
+	// If the current position is deleted, force the search for a next one by
+	// setting the position2 to the end.
+	if (!ctx.vcards[ctx.BOOK_1][ctx.position1])
+		ctx.position2 = ctx.vcards[ctx.BOOK_2].length;
 
 		ctx.positionSearch++;
 		// Calculate max iterations based on address book sizes
@@ -52,19 +54,21 @@ var DuplicateEntriesWindowSearch = (function() {
 				return false;
 			}
 			
-			++(ctx.position2);
-			// Same book: never compare a card with itself (position2 must be > position1)
-			if (ctx.abId1 == ctx.abId2 && ctx.position2 <= ctx.position1) {
-				ctx.position2 = ctx.position1 + 1;
-			}
-			if (ctx.position2 >= ctx.vcards[ctx.BOOK_2].length) {
-				do {
-					ctx.position1++;
-					if (ctx.updateProgress) ctx.updateProgress();
-					if (ctx.position1 + (ctx.abId1 == ctx.abId2 ? 1 : 0) >= ctx.vcards[ctx.BOOK_1].length)
-						return false;
-				} while (ctx.position1 < ctx.vcards[ctx.BOOK_1].length && !ctx.vcards[ctx.BOOK_1][ctx.position1]);
-				ctx.position2 = (ctx.abId1 == ctx.abId2 ? ctx.position1 + 1 : 0);
+		++(ctx.position2);
+		// Same book: never compare a card with itself (position2 must be > position1)
+		// if same book, make sure it's possible to have ...,position1, position2.
+		if (ctx.abId1 == ctx.abId2 && ctx.position2 <= ctx.position1) {
+			ctx.position2 = ctx.position1 + 1;
+		}
+		if (ctx.position2 >= ctx.vcards[ctx.BOOK_2].length) {
+			do {
+				ctx.position1++;
+				if (ctx.updateProgress) ctx.updateProgress();
+				if (ctx.position1 + (ctx.abId1 == ctx.abId2 ? 1 : 0) >= ctx.vcards[ctx.BOOK_1].length)
+					return false;
+			} while (ctx.position1 < ctx.vcards[ctx.BOOK_1].length && !ctx.vcards[ctx.BOOK_1][ctx.position1]);
+			// if same book, we start searching the pair with the position after.
+			ctx.position2 = (ctx.abId1 == ctx.abId2 ? ctx.position1 + 1 : 0);
 			}
 		} while (ctx.position2 < ctx.vcards[ctx.BOOK_2].length && !ctx.vcards[ctx.BOOK_2][ctx.position2]);
 		
@@ -195,15 +199,17 @@ var DuplicateEntriesWindowSearch = (function() {
 					continue;
 				}
 				
-				// Check AIM screen names (use empty string if undefined)
-				var aim1 = simplified_card1['_AimScreenName'] || '';
-				var aim2 = simplified_card2['_AimScreenName'] || '';
-				if (aim1 != aim2)
-					continue;
+			// Check AIM screen names (use empty string if undefined)
+			// useful for manual differentiation to prevent repeated treatment
+			var aim1 = simplified_card1['_AimScreenName'] || '';
+			var aim2 = simplified_card2['_AimScreenName'] || '';
+			if (aim1 != aim2)
+				continue;
 				
-				var M = DuplicateEntriesWindowMatching;
-				var namesmatch = M.namesMatch(simplified_card1, simplified_card2);
-				var mailsmatch = M.mailsMatch(simplified_card1, simplified_card2);
+			var M = DuplicateEntriesWindowMatching;
+			var namesmatch = M.namesMatch(simplified_card1, simplified_card2);
+			// this.debug("namesMatch: "+(namesmatch));
+			var mailsmatch = M.mailsMatch(simplified_card1, simplified_card2);
 				var phonesmatch = M.phonesMatch(simplified_card1, simplified_card2);
 				var nomailsphonesmatch = M.noMailsPhonesMatch(simplified_card1) &&
 				                        M.noMailsPhonesMatch(simplified_card2);
@@ -240,10 +246,11 @@ var DuplicateEntriesWindowSearch = (function() {
 						else
 							ctx.deleteAbCard(ctx.abId2, ctx.BOOK_2, ctx.position2, true);
 						}
-					} else {
-						if (ctx.deferInteractive && !ctx.nowHandling) {
-							if (!ctx.duplicates) ctx.duplicates = [];
-							ctx.duplicates.push([ctx.position1, ctx.position2]);
+				} else {
+					// Found duplicate or unmatchable pair - append to queue
+					if (ctx.deferInteractive && !ctx.nowHandling) {
+						if (!ctx.duplicates) ctx.duplicates = [];
+						ctx.duplicates.push([ctx.position1, ctx.position2]);
 						} else {
 							if (DuplicateEntriesWindowUI && DuplicateEntriesWindowUI.showDuplicatePairState) {
 								DuplicateEntriesWindowUI.showDuplicatePairState(ctx);

@@ -111,10 +111,11 @@ var DuplicateEntriesWindowPrefs = (function() {
 		if (preservefirstEl) preservefirstEl.checked = ctx.preserveFirst;
 		if (deferInteractiveEl) deferInteractiveEl.checked = ctx.deferInteractive;
 		if (natTrunkPrefixEl) natTrunkPrefixEl.value = ctx.natTrunkPrefix || "";
-		if (intCallPrefixEl) intCallPrefixEl.value = ctx.intCallPrefix || "";
-		if (countryCallingCodeEl) countryCallingCodeEl.value = ctx.countryCallingCode || "";
-		
-		ctx.consideredFields = ctx.addressBookFields.filter(function(x) { return !ctx.ignoredFields.includes(x); });
+	if (intCallPrefixEl) intCallPrefixEl.value = ctx.intCallPrefix || "";
+	if (countryCallingCodeEl) countryCallingCodeEl.value = ctx.countryCallingCode || "";
+	
+	// consideredFields = addressBookFields - ignoredFields
+	ctx.consideredFields = ctx.addressBookFields.filter(function(x) { return !ctx.ignoredFields.includes(x); });
 		if (consideredFieldsEl) {
 			consideredFieldsEl.textContent = ctx.consideredFields
 				.filter(function(x) { return !ctx.isSet(x) && !ctx.matchablesList.includes(x); }).join(", ");
@@ -153,10 +154,11 @@ var DuplicateEntriesWindowPrefs = (function() {
 		if (ctx.natTrunkPrefix) {
 			ctx.natTrunkPrefixReqExp = new RegExp("^" + ctx.natTrunkPrefix + "([1-9])");
 		}
-		if (ctx.intCallPrefix) {
-			ctx.intCallPrefixReqExp = new RegExp("^" + ctx.intCallPrefix + "([1-9])");
-		}
-		ctx.consideredFields = ctx.addressBookFields.filter(function(x) { return !ctx.ignoredFields.includes(x); });
+	if (ctx.intCallPrefix) {
+		ctx.intCallPrefixReqExp = new RegExp("^" + ctx.intCallPrefix + "([1-9])");
+	}
+	// consideredFields = addressBookFields - ignoredFields
+	ctx.consideredFields = ctx.addressBookFields.filter(function(x) { return !ctx.ignoredFields.includes(x); });
 	}
 
 	/**

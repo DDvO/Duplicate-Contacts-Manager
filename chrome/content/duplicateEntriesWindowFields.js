@@ -7,14 +7,14 @@
 var DuplicateEntriesWindowFields = (function() {
 	"use strict";
 
-	var addressBookFields = [
-		'PhotoURI', 'PhotoType', 'PhotoName',
-		'NickName', '__Names', 'FirstName', 'PhoneticFirstName', 'LastName', 'PhoneticLastName',
-		'SpouseName', 'FamilyName', 'DisplayName', '_PhoneticName', 'PreferDisplayName',
-		'_AimScreenName', '_GoogleTalk', 'CardType', 'Category', 'AllowRemoteContent',
-		'PreferMailFormat', '__MailListNames', '__Emails', 'DefaultEmail',
-		'PrimaryEmail', 'SecondEmail',
-		'__PhoneNumbers', 'CellularNumber', 'CellularNumberType', 'HomePhone', 'HomePhoneType',
+var addressBookFields = [
+	'PhotoURI', 'PhotoType', 'PhotoName',
+	'NickName', '__Names', /* matchable */ 'FirstName', 'PhoneticFirstName', 'LastName', 'PhoneticLastName',
+	'SpouseName', 'FamilyName', 'DisplayName', '_PhoneticName', 'PreferDisplayName',
+	'_AimScreenName', '_GoogleTalk', 'CardType', 'Category', 'AllowRemoteContent',
+	'PreferMailFormat', '__MailListNames', /* virtual set */ '__Emails', /* matchable, virtual set */ 'DefaultEmail',
+	'PrimaryEmail', 'SecondEmail',
+	'__PhoneNumbers', /* matchable, virtual set */ 'CellularNumber', 'CellularNumberType', 'HomePhone', 'HomePhoneType',
 		'WorkPhone', 'WorkPhoneType', 'FaxNumber', 'FaxNumberType', 'PagerNumber', 'PagerNumberType',
 		'DefaultAddress',
 		'HomeAddress', 'HomeAddress2', 'HomeCity', 'HomeState', 'HomeZipCode', 'HomeCountry',
@@ -83,7 +83,9 @@ var DuplicateEntriesWindowFields = (function() {
 	 */
 	function charWeight(str, property) {
 		var pat = isPhoneNumber(property) ? /[ 0-9]/g : /[ a-z]/g;
-		return str.replace(pat, '').length;
+		var result = str.replace(pat, '').length;
+		// this.debug("isPhoneNumber("+property+") = "+isPhoneNumber(property)+" charWeight("+str+") = "+result);
+		return result;
 	}
 
 	return {

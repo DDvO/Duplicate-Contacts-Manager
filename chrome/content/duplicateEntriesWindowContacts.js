@@ -52,6 +52,7 @@ var DuplicateEntriesWindowContacts = (function() {
 	 * Returns all contact cards from an address book. For each card, context.enrichCardForComparison(card, mailLists)
 	 * is called so the caller can attach virtual properties (e.g. __NonEmptyFields, __MailListNames).
 	 * TB128: Now async, uses addressBooks API and vCard format.
+	 * Returns arrays with all vCards and mailing lists within given address book directory.
 	 * @param {string} addressBookId - Address book ID
 	 * @param {object} context - Must have enrichCardForComparison(card, mailLists), parseVCard, generateVCard
 	 * @returns {Promise<{ cards: Array, totalBefore: number }>} - cards array and total count
