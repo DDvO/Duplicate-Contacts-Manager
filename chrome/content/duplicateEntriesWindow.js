@@ -326,13 +326,15 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 				return;
 			}
 			try {
-				await DuplicateEntriesWindowContacts.deleteCard(abId, card);
-				if (abId == this.abId1)
-					this.totalCardsDeleted1++;
-				else
-					this.totalCardsDeleted2++;
-				if (auto)
-					this.totalCardsDeletedAuto++;
+				var deleted = await DuplicateEntriesWindowContacts.deleteCard(abId, card);
+				if (deleted) {
+					if (abId == this.abId1)
+						this.totalCardsDeleted1++;
+					else
+						this.totalCardsDeleted2++;
+					if (auto)
+						this.totalCardsDeletedAuto++;
+				}
 			} catch (e) {
 				alert("Internal error: cannot remove card '"+(card.DisplayName || card._id)+"': "+e);
 			}

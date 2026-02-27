@@ -12,3 +12,6 @@ Thumbs.db
 
 # Reference files (not to be included in builds)
 duplicateEntriesWindowOriginal.js
+backup-original-bugfix.patch
+port-handle-double-delete.diff.txt
+test-data/

@@ -4,8 +4,8 @@
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 
 $SourceDir = "$PSScriptRoot"
-$OutXpi = "$SourceDir\duplicateContactsManager-2.2.1.xpi"
-$TempZip = "$env:TEMP\dcm-2.2.1.zip"
+$OutXpi = "$SourceDir\duplicateContactsManager-2.2.2.xpi"
+$TempZip = "$env:TEMP\dcm-2.2.2.zip"
 
 # Prepare temp dir with only needed files
 $tmp = "$env:TEMP\dcm-xpi"

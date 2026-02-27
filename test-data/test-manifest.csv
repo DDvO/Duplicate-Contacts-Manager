@@ -1,0 +1,216 @@
+Category,Group,ContactID_Book1,ContactID_Book2,ShouldMatch,ExpectedAction,Book1_Before,Book2_Before,Book1_After,Book2_After,TestNotes
+EXACT,001,EXACT-001-A,EXACT-001-B,YES,Delete B,1,1,1,0,Identical all fields
+EXACT,002,EXACT-002-A,EXACT-002-B,YES,Delete B,1,1,1,0,Identical all fields
+EXACT,003,EXACT-003-A,EXACT-003-B,YES,Delete B,1,1,1,0,Identical all fields
+EXACT,004,EXACT-004-A,EXACT-004-B,YES,Delete B,1,1,1,0,Identical all fields
+EXACT,005,EXACT-005-A,EXACT-005-B,YES,Delete B,1,1,1,0,Identical all fields
+EXACT,006,EXACT-006-A,EXACT-006-B,YES,Delete B,1,1,1,0,Identical all fields
+EXACT,007,EXACT-007-A,EXACT-007-B,YES,Delete B,1,1,1,0,Identical all fields
+EXACT,008,EXACT-008-A,EXACT-008-B,YES,Delete B,1,1,1,0,Identical all fields
+EXACT,009,EXACT-009-A,EXACT-009-B,YES,Delete B,1,1,1,0,Identical all fields
+EXACT,010,EXACT-010-A,EXACT-010-B,YES,Delete B,1,1,1,0,Identical all fields
+EXACT,011,EXACT-011-A,EXACT-011-B,YES,Delete B,1,1,1,0,Identical all fields
+EXACT,012,EXACT-012-A,EXACT-012-B,YES,Delete B,1,1,1,0,Identical all fields
+EXACT,013,EXACT-013-A,EXACT-013-B,YES,Delete B,1,1,1,0,Identical all fields
+EXACT,014,EXACT-014-A,EXACT-014-B,YES,Delete B,1,1,1,0,Identical all fields
+EXACT,015,EXACT-015-A,EXACT-015-B,YES,Delete B,1,1,1,0,Identical all fields
+EXACT,016,EXACT-016-A,EXACT-016-B,YES,Delete B,1,1,1,0,Identical all fields
+EXACT,017,EXACT-017-A,EXACT-017-B,YES,Delete B,1,1,1,0,Identical all fields
+EXACT,018,EXACT-018-A,EXACT-018-B,YES,Delete B,1,1,1,0,Identical all fields
+EXACT,019,EXACT-019-A,EXACT-019-B,YES,Delete B,1,1,1,0,Identical all fields
+EXACT,020,EXACT-020-A,EXACT-020-B,YES,Delete B,1,1,1,0,Identical all fields
+EXACT,021,EXACT-021-A,EXACT-021-B,YES,Delete B,1,1,1,0,Identical all fields
+EXACT,022,EXACT-022-A,EXACT-022-B,YES,Delete B,1,1,1,0,Identical all fields
+EXACT,023,EXACT-023-A,EXACT-023-B,YES,Delete B,1,1,1,0,Identical all fields
+EXACT,024,EXACT-024-A,EXACT-024-B,YES,Delete B,1,1,1,0,Identical all fields
+EXACT,025,EXACT-025-A,EXACT-025-B,YES,Delete B,1,1,1,0,Identical all fields
+EXACT,026,EXACT-026-A,EXACT-026-B,YES,Delete B,1,1,1,0,Identical all fields
+EXACT,027,EXACT-027-A,EXACT-027-B,YES,Delete B,1,1,1,0,Identical all fields
+EXACT,028,EXACT-028-A,EXACT-028-B,YES,Delete B,1,1,1,0,Identical all fields
+EXACT,029,EXACT-029-A,EXACT-029-B,YES,Delete B,1,1,1,0,Identical all fields
+EXACT,030,EXACT-030-A,EXACT-030-B,YES,Delete B,1,1,1,0,Identical all fields
+EXACT,031,EXACT-031-A,EXACT-031-B,YES,Delete B,1,1,1,0,Identical all fields
+EXACT,032,EXACT-032-A,EXACT-032-B,YES,Delete B,1,1,1,0,Identical all fields
+EXACT,033,EXACT-033-A,EXACT-033-B,YES,Delete B,1,1,1,0,Identical all fields
+EXACT,034,EXACT-034-A,EXACT-034-B,YES,Delete B,1,1,1,0,Identical all fields
+EXACT,035,EXACT-035-A,EXACT-035-B,YES,Delete B,1,1,1,0,Identical all fields
+EXACT,036,EXACT-036-A,EXACT-036-B,YES,Delete B,1,1,1,0,Identical all fields
+EXACT,037,EXACT-037-A,EXACT-037-B,YES,Delete B,1,1,1,0,Identical all fields
+EXACT,038,EXACT-038-A,EXACT-038-B,YES,Delete B,1,1,1,0,Identical all fields
+EXACT,039,EXACT-039-A,EXACT-039-B,YES,Delete B,1,1,1,0,Identical all fields
+EXACT,040,EXACT-040-A,EXACT-040-B,YES,Delete B,1,1,1,0,Identical all fields
+EXACT,041,EXACT-041-A,EXACT-041-B,YES,Delete B,1,1,1,0,Identical all fields
+EXACT,042,EXACT-042-A,EXACT-042-B,YES,Delete B,1,1,1,0,Identical all fields
+EXACT,043,EXACT-043-A,EXACT-043-B,YES,Delete B,1,1,1,0,Identical all fields
+EXACT,044,EXACT-044-A,EXACT-044-B,YES,Delete B,1,1,1,0,Identical all fields
+EXACT,045,EXACT-045-A,EXACT-045-B,YES,Delete B,1,1,1,0,Identical all fields
+EXACT,046,EXACT-046-A,EXACT-046-B,YES,Delete B,1,1,1,0,Identical all fields
+EXACT,047,EXACT-047-A,EXACT-047-B,YES,Delete B,1,1,1,0,Identical all fields
+EXACT,048,EXACT-048-A,EXACT-048-B,YES,Delete B,1,1,1,0,Identical all fields
+EXACT,049,EXACT-049-A,EXACT-049-B,YES,Delete B,1,1,1,0,Identical all fields
+EXACT,050,EXACT-050-A,EXACT-050-B,YES,Delete B,1,1,1,0,Identical all fields
+NEAR-GMAIL,001,NEAR-GMAIL-A-001,NEAR-GMAIL-B-001,YES,Delete B,1,1,1,0,@gmail.com vs @googlemail.com
+NEAR-GMAIL,002,NEAR-GMAIL-A-002,NEAR-GMAIL-B-002,YES,Delete B,1,1,1,0,@gmail.com vs @googlemail.com
+NEAR-GMAIL,003,NEAR-GMAIL-A-003,NEAR-GMAIL-B-003,YES,Delete B,1,1,1,0,@gmail.com vs @googlemail.com
+NEAR-GMAIL,004,NEAR-GMAIL-A-004,NEAR-GMAIL-B-004,YES,Delete B,1,1,1,0,@gmail.com vs @googlemail.com
+NEAR-GMAIL,005,NEAR-GMAIL-A-005,NEAR-GMAIL-B-005,YES,Delete B,1,1,1,0,@gmail.com vs @googlemail.com
+NEAR-GMAIL,006,NEAR-GMAIL-A-006,NEAR-GMAIL-B-006,YES,Delete B,1,1,1,0,@gmail.com vs @googlemail.com
+NEAR-GMAIL,007,NEAR-GMAIL-A-007,NEAR-GMAIL-B-007,YES,Delete B,1,1,1,0,@gmail.com vs @googlemail.com
+NEAR-GMAIL,008,NEAR-GMAIL-A-008,NEAR-GMAIL-B-008,YES,Delete B,1,1,1,0,@gmail.com vs @googlemail.com
+NEAR-GMAIL,009,NEAR-GMAIL-A-009,NEAR-GMAIL-B-009,YES,Delete B,1,1,1,0,@gmail.com vs @googlemail.com
+NEAR-GMAIL,010,NEAR-GMAIL-A-010,NEAR-GMAIL-B-010,YES,Delete B,1,1,1,0,@gmail.com vs @googlemail.com
+NEAR-PHONE,001,NEAR-PHONE-A-001,NEAR-PHONE-B-001,YES,Delete B,1,1,1,0,+1-555-1001 vs 5551001
+NEAR-PHONE,002,NEAR-PHONE-A-002,NEAR-PHONE-B-002,YES,Delete B,1,1,1,0,(555) 1002 vs 555.1002
+NEAR-PHONE,003,NEAR-PHONE-A-003,NEAR-PHONE-B-003,YES,Delete B,1,1,1,0,+1 555 1003 vs 5551003
+NEAR-PHONE,004,NEAR-PHONE-A-004,NEAR-PHONE-B-004,YES,Delete B,1,1,1,0,555-1004 vs 555.1004
+NEAR-PHONE,005,NEAR-PHONE-A-005,NEAR-PHONE-B-005,YES,Delete B,1,1,1,0,(555)1005 vs 5551005
+NEAR-PHONE,006,NEAR-PHONE-A-006,NEAR-PHONE-B-006,YES,Delete B,1,1,1,0,+1-555-1006 vs (555) 1006
+NEAR-PHONE,007,NEAR-PHONE-A-007,NEAR-PHONE-B-007,YES,Delete B,1,1,1,0,555 1007 vs 555-1007
+NEAR-PHONE,008,NEAR-PHONE-A-008,NEAR-PHONE-B-008,YES,Delete B,1,1,1,0,+15551008 vs 555.1008
+NEAR-PHONE,009,NEAR-PHONE-A-009,NEAR-PHONE-B-009,YES,Delete B,1,1,1,0,(555) 1009 vs 5551009
+NEAR-PHONE,010,NEAR-PHONE-A-010,NEAR-PHONE-B-010,YES,Delete B,1,1,1,0,555-1010 vs (555) 1010
+NEAR-NAME,001,NEAR-NAME-A-001,NEAR-NAME-B-001,YES,Delete B,1,1,1,0,John Doe vs Doe John
+NEAR-NAME,002,NEAR-NAME-A-002,NEAR-NAME-B-002,YES,Delete B,1,1,1,0,Jane Smith vs Smith Jane
+NEAR-NAME,003,NEAR-NAME-A-003,NEAR-NAME-B-003,YES,Delete B,1,1,1,0,Robert Johnson vs Johnson Robert
+NEAR-NAME,004,NEAR-NAME-A-004,NEAR-NAME-B-004,YES,Delete B,1,1,1,0,Mary Williams vs Williams Mary
+NEAR-NAME,005,NEAR-NAME-A-005,NEAR-NAME-B-005,YES,Delete B,1,1,1,0,James Brown vs Brown James
+NEAR-NAME,006,NEAR-NAME-A-006,NEAR-NAME-B-006,YES,Delete B,1,1,1,0,Jennifer Davis vs Davis Jennifer
+NEAR-NAME,007,NEAR-NAME-A-007,NEAR-NAME-B-007,YES,Delete B,1,1,1,0,Michael Miller vs Miller Michael
+NEAR-NAME,008,NEAR-NAME-A-008,NEAR-NAME-B-008,YES,Delete B,1,1,1,0,Sarah Wilson vs Wilson Sarah
+NEAR-NAME,009,NEAR-NAME-A-009,NEAR-NAME-B-009,YES,Delete B,1,1,1,0,David Moore vs Moore David
+NEAR-NAME,010,NEAR-NAME-A-010,NEAR-NAME-B-010,YES,Delete B,1,1,1,0,Linda Taylor vs Taylor Linda
+NEAR-CASE,001,NEAR-CASE-A-001,NEAR-CASE-B-001,YES,Delete B,1,1,1,0,JOHN DOE vs john doe
+NEAR-CASE,002,NEAR-CASE-A-002,NEAR-CASE-B-002,YES,Delete B,1,1,1,0,JANE SMITH vs jane smith
+NEAR-CASE,003,NEAR-CASE-A-003,NEAR-CASE-B-003,YES,Delete B,1,1,1,0,ROBERT JOHNSON vs robert johnson
+NEAR-CASE,004,NEAR-CASE-A-004,NEAR-CASE-B-004,YES,Delete B,1,1,1,0,MARY WILLIAMS vs mary williams
+NEAR-CASE,005,NEAR-CASE-A-005,NEAR-CASE-B-005,YES,Delete B,1,1,1,0,JAMES BROWN vs james brown
+NEAR-CASE,006,NEAR-CASE-A-006,NEAR-CASE-B-006,YES,Delete B,1,1,1,0,JENNIFER DAVIS vs jennifer davis
+NEAR-CASE,007,NEAR-CASE-A-007,NEAR-CASE-B-007,YES,Delete B,1,1,1,0,MICHAEL MILLER vs michael miller
+NEAR-CASE,008,NEAR-CASE-A-008,NEAR-CASE-B-008,YES,Delete B,1,1,1,0,SARAH WILSON vs sarah wilson
+NEAR-CASE,009,NEAR-CASE-A-009,NEAR-CASE-B-009,YES,Delete B,1,1,1,0,DAVID MOORE vs david moore
+NEAR-CASE,010,NEAR-CASE-A-010,NEAR-CASE-B-010,YES,Delete B,1,1,1,0,LINDA TAYLOR vs linda taylor
+NEAR-SPACE,001,NEAR-SPACE-A-001,NEAR-SPACE-B-001,YES,Delete B,1,1,1,0,John  Doe (double space)
+NEAR-SPACE,002,NEAR-SPACE-A-002,NEAR-SPACE-B-002,YES,Delete B,1,1,1,0,Jane   Smith (triple space)
+NEAR-SPACE,003,NEAR-SPACE-A-003,NEAR-SPACE-B-003,YES,Delete B,1,1,1,0,Leading/trailing spaces
+NEAR-SPACE,004,NEAR-SPACE-A-004,NEAR-SPACE-B-004,YES,Delete B,1,1,1,0,Multiple spaces in email
+NEAR-SPACE,005,NEAR-SPACE-A-005,NEAR-SPACE-B-005,YES,Delete B,1,1,1,0,Tab vs space
+NEAR-SPACE,006,NEAR-SPACE-A-006,NEAR-SPACE-B-006,YES,Delete B,1,1,1,0,Name with extra spaces
+NEAR-SPACE,007,NEAR-SPACE-A-007,NEAR-SPACE-B-007,YES,Delete B,1,1,1,0,Email with spaces
+NEAR-SPACE,008,NEAR-SPACE-A-008,NEAR-SPACE-B-008,YES,Delete B,1,1,1,0,Phone with extra spaces
+NEAR-SPACE,009,NEAR-SPACE-A-009,NEAR-SPACE-B-009,YES,Delete B,1,1,1,0,Display name spacing
+NEAR-SPACE,010,NEAR-SPACE-A-010,NEAR-SPACE-B-010,YES,Delete B,1,1,1,0,Multiple field spacing
+NEAR-ACCENT,001,NEAR-ACCENT-A-001,NEAR-ACCENT-B-001,YES,Delete B,1,1,1,0,René vs Rene
+NEAR-ACCENT,002,NEAR-ACCENT-A-002,NEAR-ACCENT-B-002,YES,Delete B,1,1,1,0,François vs Francois
+NEAR-ACCENT,003,NEAR-ACCENT-A-003,NEAR-ACCENT-B-003,YES,Delete B,1,1,1,0,José vs Jose
+NEAR-ACCENT,004,NEAR-ACCENT-A-004,NEAR-ACCENT-B-004,YES,Delete B,1,1,1,0,Müller vs Muller
+NEAR-ACCENT,005,NEAR-ACCENT-A-005,NEAR-ACCENT-B-005,YES,Delete B,1,1,1,0,Björk vs Bjork
+NEAR-ACCENT,006,NEAR-ACCENT-A-006,NEAR-ACCENT-B-006,YES,Delete B,1,1,1,0,Zoë vs Zoe
+NEAR-ACCENT,007,NEAR-ACCENT-A-007,NEAR-ACCENT-B-007,YES,Delete B,1,1,1,0,André vs Andre
+NEAR-ACCENT,008,NEAR-ACCENT-A-008,NEAR-ACCENT-B-008,YES,Delete B,1,1,1,0,Søren vs Soren
+NEAR-ACCENT,009,NEAR-ACCENT-A-009,NEAR-ACCENT-B-009,YES,Delete B,1,1,1,0,Günther vs Gunther
+NEAR-ACCENT,010,NEAR-ACCENT-A-010,NEAR-ACCENT-B-010,YES,Delete B,1,1,1,0,Gérard vs Gerard
+NEAR-NOREPLY,001,NEAR-NOREPLY-A-001,NEAR-NOREPLY-B-001,YES,Delete B,1,1,1,0,test@example.com vs noreply@example.com
+NEAR-NOREPLY,002,NEAR-NOREPLY-A-002,NEAR-NOREPLY-B-002,YES,Delete B,1,1,1,0,info@company.com vs no-reply@company.com
+NEAR-NOREPLY,003,NEAR-NOREPLY-A-003,NEAR-NOREPLY-B-003,YES,Delete B,1,1,1,0,contact@domain.com vs noreply@domain.com
+NEAR-NOREPLY,004,NEAR-NOREPLY-A-004,NEAR-NOREPLY-B-004,YES,Delete B,1,1,1,0,support@site.com vs do-not-reply@site.com
+NEAR-NOREPLY,005,NEAR-NOREPLY-A-005,NEAR-NOREPLY-B-005,YES,Delete B,1,1,1,0,admin@org.com vs no.reply@org.com
+NODUP-COMMON,001,NODUP-COMMON-A-001,NODUP-COMMON-B-001,NO,Keep both,1,1,1,1,John Smith different emails
+NODUP-COMMON,002,NODUP-COMMON-A-002,NODUP-COMMON-B-002,NO,Keep both,1,1,1,1,Jane Doe different emails
+NODUP-COMMON,003,NODUP-COMMON-A-003,NODUP-COMMON-B-003,NO,Keep both,1,1,1,1,Robert Johnson different emails
+NODUP-COMMON,004,NODUP-COMMON-A-004,NODUP-COMMON-B-004,NO,Keep both,1,1,1,1,Mary Williams different emails
+NODUP-COMMON,005,NODUP-COMMON-A-005,NODUP-COMMON-B-005,NO,Keep both,1,1,1,1,James Brown different emails
+NODUP-COMMON,006,NODUP-COMMON-A-006,NODUP-COMMON-B-006,NO,Keep both,1,1,1,1,Jennifer Davis different emails
+NODUP-COMMON,007,NODUP-COMMON-A-007,NODUP-COMMON-B-007,NO,Keep both,1,1,1,1,Michael Miller different emails
+NODUP-COMMON,008,NODUP-COMMON-A-008,NODUP-COMMON-B-008,NO,Keep both,1,1,1,1,Sarah Wilson different emails
+NODUP-COMMON,009,NODUP-COMMON-A-009,NODUP-COMMON-B-009,NO,Keep both,1,1,1,1,David Moore different emails
+NODUP-COMMON,010,NODUP-COMMON-A-010,NODUP-COMMON-B-010,NO,Keep both,1,1,1,1,Linda Taylor different emails
+NODUP-COMMON,011,NODUP-COMMON-A-011,NODUP-COMMON-B-011,NO,Keep both,1,1,1,1,Christopher Anderson different emails
+NODUP-COMMON,012,NODUP-COMMON-A-012,NODUP-COMMON-B-012,NO,Keep both,1,1,1,1,Patricia Thomas different emails
+NODUP-COMMON,013,NODUP-COMMON-A-013,NODUP-COMMON-B-013,NO,Keep both,1,1,1,1,Daniel Jackson different emails
+NODUP-COMMON,014,NODUP-COMMON-A-014,NODUP-COMMON-B-014,NO,Keep both,1,1,1,1,Nancy White different emails
+NODUP-COMMON,015,NODUP-COMMON-A-015,NODUP-COMMON-B-015,NO,Keep both,1,1,1,1,Matthew Harris different emails
+NODUP-COMMON,016,NODUP-COMMON-A-016,NODUP-COMMON-B-016,NO,Keep both,1,1,1,1,Karen Martin different emails
+NODUP-COMMON,017,NODUP-COMMON-A-017,NODUP-COMMON-B-017,NO,Keep both,1,1,1,1,Anthony Thompson different emails
+NODUP-COMMON,018,NODUP-COMMON-A-018,NODUP-COMMON-B-018,NO,Keep both,1,1,1,1,Betty Garcia different emails
+NODUP-COMMON,019,NODUP-COMMON-A-019,NODUP-COMMON-B-019,NO,Keep both,1,1,1,1,Mark Martinez different emails
+NODUP-COMMON,020,NODUP-COMMON-A-020,NODUP-COMMON-B-020,NO,Keep both,1,1,1,1,Sandra Robinson different emails
+NODUP-COMMON,021,NODUP-COMMON-A-021,NODUP-COMMON-B-021,NO,Keep both,1,1,1,1,Steven Clark different emails
+NODUP-COMMON,022,NODUP-COMMON-A-022,NODUP-COMMON-B-022,NO,Keep both,1,1,1,1,Dorothy Rodriguez different emails
+NODUP-COMMON,023,NODUP-COMMON-A-023,NODUP-COMMON-B-023,NO,Keep both,1,1,1,1,Paul Lewis different emails
+NODUP-COMMON,024,NODUP-COMMON-A-024,NODUP-COMMON-B-024,NO,Keep both,1,1,1,1,Lisa Lee different emails
+NODUP-COMMON,025,NODUP-COMMON-A-025,NODUP-COMMON-B-025,NO,Keep both,1,1,1,1,Andrew Walker different emails
+NODUP-SIMILAR,001,NODUP-SIMILAR-A-001,NODUP-SIMILAR-B-001,NO,Keep both,1,1,1,1,Similar but different
+NODUP-SIMILAR,002,NODUP-SIMILAR-A-002,NODUP-SIMILAR-B-002,NO,Keep both,1,1,1,1,Similar but different
+NODUP-SIMILAR,003,NODUP-SIMILAR-A-003,NODUP-SIMILAR-B-003,NO,Keep both,1,1,1,1,Similar but different
+NODUP-SIMILAR,004,NODUP-SIMILAR-A-004,NODUP-SIMILAR-B-004,NO,Keep both,1,1,1,1,Similar but different
+NODUP-SIMILAR,005,NODUP-SIMILAR-A-005,NODUP-SIMILAR-B-005,NO,Keep both,1,1,1,1,Similar but different
+NODUP-SIMILAR,006,NODUP-SIMILAR-A-006,NODUP-SIMILAR-B-006,NO,Keep both,1,1,1,1,Similar but different
+NODUP-SIMILAR,007,NODUP-SIMILAR-A-007,NODUP-SIMILAR-B-007,NO,Keep both,1,1,1,1,Similar but different
+NODUP-SIMILAR,008,NODUP-SIMILAR-A-008,NODUP-SIMILAR-B-008,NO,Keep both,1,1,1,1,Similar but different
+NODUP-SIMILAR,009,NODUP-SIMILAR-A-009,NODUP-SIMILAR-B-009,NO,Keep both,1,1,1,1,Similar but different
+NODUP-SIMILAR,010,NODUP-SIMILAR-A-010,NODUP-SIMILAR-B-010,NO,Keep both,1,1,1,1,Similar but different
+NODUP-SIMILAR,011,NODUP-SIMILAR-A-011,NODUP-SIMILAR-B-011,NO,Keep both,1,1,1,1,Similar but different
+NODUP-SIMILAR,012,NODUP-SIMILAR-A-012,NODUP-SIMILAR-B-012,NO,Keep both,1,1,1,1,Similar but different
+NODUP-SIMILAR,013,NODUP-SIMILAR-A-013,NODUP-SIMILAR-B-013,NO,Keep both,1,1,1,1,Similar but different
+NODUP-SIMILAR,014,NODUP-SIMILAR-A-014,NODUP-SIMILAR-B-014,NO,Keep both,1,1,1,1,Similar but different
+NODUP-SIMILAR,015,NODUP-SIMILAR-A-015,NODUP-SIMILAR-B-015,NO,Keep both,1,1,1,1,Similar but different
+NODUP-SIMILAR,016,NODUP-SIMILAR-A-016,NODUP-SIMILAR-B-016,NO,Keep both,1,1,1,1,Similar but different
+NODUP-SIMILAR,017,NODUP-SIMILAR-A-017,NODUP-SIMILAR-B-017,NO,Keep both,1,1,1,1,Similar but different
+NODUP-SIMILAR,018,NODUP-SIMILAR-A-018,NODUP-SIMILAR-B-018,NO,Keep both,1,1,1,1,Similar but different
+NODUP-SIMILAR,019,NODUP-SIMILAR-A-019,NODUP-SIMILAR-B-019,NO,Keep both,1,1,1,1,Similar but different
+NODUP-SIMILAR,020,NODUP-SIMILAR-A-020,NODUP-SIMILAR-B-020,NO,Keep both,1,1,1,1,Similar but different
+NODUP-SIMILAR,021,NODUP-SIMILAR-A-021,NODUP-SIMILAR-B-021,NO,Keep both,1,1,1,1,Similar but different
+NODUP-SIMILAR,022,NODUP-SIMILAR-A-022,NODUP-SIMILAR-B-022,NO,Keep both,1,1,1,1,Similar but different
+NODUP-SIMILAR,023,NODUP-SIMILAR-A-023,NODUP-SIMILAR-B-023,NO,Keep both,1,1,1,1,Similar but different
+NODUP-SIMILAR,024,NODUP-SIMILAR-A-024,NODUP-SIMILAR-B-024,NO,Keep both,1,1,1,1,Similar but different
+NODUP-SIMILAR,025,NODUP-SIMILAR-A-025,NODUP-SIMILAR-B-025,NO,Keep both,1,1,1,1,Similar but different
+SHARED,001,SHARED-001,SHARED-001,YES,Delete duplicate,1,1,1,0,Same UID both books - Bug test
+SHARED,002,SHARED-002,SHARED-002,YES,Delete duplicate,1,1,1,0,Same UID both books - Bug test
+SHARED,003,SHARED-003,SHARED-003,YES,Delete duplicate,1,1,1,0,Same UID both books - Bug test
+SHARED,004,SHARED-004,SHARED-004,YES,Delete duplicate,1,1,1,0,Same UID both books - Bug test
+SHARED,005,SHARED-005,SHARED-005,YES,Delete duplicate,1,1,1,0,Same UID both books - Bug test
+SHARED,006,SHARED-006,SHARED-006,YES,Delete duplicate,1,1,1,0,Same UID both books - Bug test
+SHARED,007,SHARED-007,SHARED-007,YES,Delete duplicate,1,1,1,0,Same UID both books - Bug test
+SHARED,008,SHARED-008,SHARED-008,YES,Delete duplicate,1,1,1,0,Same UID both books - Bug test
+SHARED,009,SHARED-009,SHARED-009,YES,Delete duplicate,1,1,1,0,Same UID both books - Bug test
+SHARED,010,SHARED-010,SHARED-010,YES,Delete duplicate,1,1,1,0,Same UID both books - Bug test
+SHARED,011,SHARED-011,SHARED-011,YES,Delete duplicate,1,1,1,0,Same UID both books - Bug test
+SHARED,012,SHARED-012,SHARED-012,YES,Delete duplicate,1,1,1,0,Same UID both books - Bug test
+SHARED,013,SHARED-013,SHARED-013,YES,Delete duplicate,1,1,1,0,Same UID both books - Bug test
+SHARED,014,SHARED-014,SHARED-014,YES,Delete duplicate,1,1,1,0,Same UID both books - Bug test
+SHARED,015,SHARED-015,SHARED-015,YES,Delete duplicate,1,1,1,0,Same UID both books - Bug test
+SHARED,016,SHARED-016,SHARED-016,YES,Delete duplicate,1,1,1,0,Same UID both books - Bug test
+SHARED,017,SHARED-017,SHARED-017,YES,Delete duplicate,1,1,1,0,Same UID both books - Bug test
+SHARED,018,SHARED-018,SHARED-018,YES,Delete duplicate,1,1,1,0,Same UID both books - Bug test
+SHARED,019,SHARED-019,SHARED-019,YES,Delete duplicate,1,1,1,0,Same UID both books - Bug test
+SHARED,020,SHARED-020,SHARED-020,YES,Delete duplicate,1,1,1,0,Same UID both books - Bug test
+SHARED,021,SHARED-021,SHARED-021,YES,Delete duplicate,1,1,1,0,Same UID both books - Bug test
+SHARED,022,SHARED-022,SHARED-022,YES,Delete duplicate,1,1,1,0,Same UID both books - Bug test
+SHARED,023,SHARED-023,SHARED-023,YES,Delete duplicate,1,1,1,0,Same UID both books - Bug test
+SHARED,024,SHARED-024,SHARED-024,YES,Delete duplicate,1,1,1,0,Same UID both books - Bug test
+SHARED,025,SHARED-025,SHARED-025,YES,Delete duplicate,1,1,1,0,Same UID both books - Bug test
+SHARED,026,SHARED-026,SHARED-026,YES,Delete duplicate,1,1,1,0,Same UID both books - Bug test
+SHARED,027,SHARED-027,SHARED-027,YES,Delete duplicate,1,1,1,0,Same UID both books - Bug test
+SHARED,028,SHARED-028,SHARED-028,YES,Delete duplicate,1,1,1,0,Same UID both books - Bug test
+SHARED,029,SHARED-029,SHARED-029,YES,Delete duplicate,1,1,1,0,Same UID both books - Bug test
+SHARED,030,SHARED-030,SHARED-030,YES,Delete duplicate,1,1,1,0,Same UID both books - Bug test
+SHARED,031,SHARED-031,SHARED-031,YES,Delete duplicate,1,1,1,0,Same UID both books - Bug test
+SHARED,032,SHARED-032,SHARED-032,YES,Delete duplicate,1,1,1,0,Same UID both books - Bug test
+SHARED,033,SHARED-033,SHARED-033,YES,Delete duplicate,1,1,1,0,Same UID both books - Bug test
+SHARED,034,SHARED-034,SHARED-034,YES,Delete duplicate,1,1,1,0,Same UID both books - Bug test
+SHARED,035,SHARED-035,SHARED-035,YES,Delete duplicate,1,1,1,0,Same UID both books - Bug test
+SHARED,036,SHARED-036,SHARED-036,YES,Delete duplicate,1,1,1,0,Same UID both books - Bug test
+SHARED,037,SHARED-037,SHARED-037,YES,Delete duplicate,1,1,1,0,Same UID both books - Bug test
+SHARED,038,SHARED-038,SHARED-038,YES,Delete duplicate,1,1,1,0,Same UID both books - Bug test
+SHARED,039,SHARED-039,SHARED-039,YES,Delete duplicate,1,1,1,0,Same UID both books - Bug test
+SHARED,040,SHARED-040,SHARED-040,YES,Delete duplicate,1,1,1,0,Same UID both books - Bug test
+SHARED,041,SHARED-041,SHARED-041,YES,Delete duplicate,1,1,1,0,Same UID both books - Bug test
+SHARED,042,SHARED-042,SHARED-042,YES,Delete duplicate,1,1,1,0,Same UID both books - Bug test
+SHARED,043,SHARED-043,SHARED-043,YES,Delete duplicate,1,1,1,0,Same UID both books - Bug test
+SHARED,044,SHARED-044,SHARED-044,YES,Delete duplicate,1,1,1,0,Same UID both books - Bug test
+SHARED,045,SHARED-045,SHARED-045,YES,Delete duplicate,1,1,1,0,Same UID both books - Bug test
+SHARED,046,SHARED-046,SHARED-046,YES,Delete duplicate,1,1,1,0,Same UID both books - Bug test
+SHARED,047,SHARED-047,SHARED-047,YES,Delete duplicate,1,1,1,0,Same UID both books - Bug test
+SHARED,048,SHARED-048,SHARED-048,YES,Delete duplicate,1,1,1,0,Same UID both books - Bug test
+SHARED,049,SHARED-049,SHARED-049,YES,Delete duplicate,1,1,1,0,Same UID both books - Bug test
+SHARED,050,SHARED-050,SHARED-050,YES,Delete duplicate,1,1,1,0,Same UID both books - Bug test

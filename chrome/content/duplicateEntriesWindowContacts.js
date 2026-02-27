@@ -205,9 +205,14 @@ var DuplicateEntriesWindowContacts = (function() {
 			// API: delete(id) — contact id only (unique within profile)
 			await addressBooksAPI.contacts.delete(card._id);
 		} catch (error) {
-			console.error("Error deleting card:", error);
+			// If card not found, it might be already deleted - this is recoverable
+			if (error.message && error.message.includes('could not be found')) {
+				// console.warn("Card not found during deletion (may be already deleted):", (card.DisplayName || card._id));
+				return false; // succeed, but do not update count
+			}
 			throw error;
 		}
+		return true;
 	}
 
 	return {

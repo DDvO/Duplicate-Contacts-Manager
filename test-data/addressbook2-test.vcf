@@ -1,0 +1,585 @@
+BEGIN:VCARD
+VERSION:3.0
+FN:EXACT-001-B
+N:EXACT-001-B;;;;
+EMAIL;TYPE=INTERNET:exact001@example.com
+TEL;TYPE=WORK:555-0001
+NOTE:[TEST] EXACT duplicate pair 1, variant B. SHOULD BE DELETED (matches EXACT-001-A).
+UID:exact-001-uid-b
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:EXACT-002-B
+N:EXACT-002-B;;;;
+EMAIL;TYPE=INTERNET:exact002@example.com
+TEL;TYPE=WORK:555-0002
+NOTE:[TEST] EXACT duplicate pair 2, variant B. SHOULD BE DELETED (matches EXACT-002-A).
+UID:exact-002-uid-b
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:NEAR-GMAIL-B-001
+N:NEAR-GMAIL-B-001;;;;
+EMAIL;TYPE=INTERNET:neargmail001@googlemail.com
+TEL;TYPE=WORK:555-2001
+NOTE:[TEST] NEAR duplicate (Googlemail). SHOULD BE DELETED (matches NEAR-GMAIL-A-001).
+UID:near-gmail-001-b
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:NEAR-GMAIL-B-002
+N:NEAR-GMAIL-B-002;;;;
+EMAIL;TYPE=INTERNET:neargmail002@googlemail.com
+TEL;TYPE=WORK:555-2002
+NOTE:[TEST] NEAR duplicate (Googlemail). SHOULD BE DELETED (matches NEAR-GMAIL-A-002).
+UID:near-gmail-002-b
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:NEAR-PHONE-B-001
+N:NEAR-PHONE-B-001;;;;
+EMAIL;TYPE=INTERNET:nearphone001@example.com
+TEL;TYPE=WORK:5551001
+NOTE:[TEST] NEAR duplicate (Phone format). SHOULD BE DELETED (matches NEAR-PHONE-A-001).
+UID:near-phone-001-b
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:NEAR-PHONE-B-002
+N:NEAR-PHONE-B-002;;;;
+EMAIL;TYPE=INTERNET:nearphone002@example.com
+TEL;TYPE=WORK:555.1002
+NOTE:[TEST] NEAR duplicate (Phone format). SHOULD BE DELETED (matches NEAR-PHONE-A-002).
+UID:near-phone-002-b
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:Doe, John
+N:Doe;John;;;
+EMAIL;TYPE=INTERNET:nearname001@example.com
+TEL;TYPE=WORK:555-3001
+NOTE:[TEST] NEAR duplicate (Name order). SHOULD BE DELETED (matches NEAR-NAME-A-001).
+UID:near-name-001-b
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:Smith, Jane
+N:Smith;Jane;;;
+EMAIL;TYPE=INTERNET:nearname002@example.com
+TEL;TYPE=WORK:555-3002
+NOTE:[TEST] NEAR duplicate (Name order). SHOULD BE DELETED (matches NEAR-NAME-A-002).
+UID:near-name-002-b
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:robert johnson
+N:robert johnson;;;;
+EMAIL;TYPE=INTERNET:nearcase001@example.com
+TEL;TYPE=WORK:555-4001
+NOTE:[TEST] NEAR duplicate (Case). SHOULD BE DELETED (matches NEAR-CASE-A-001).
+UID:near-case-001-b
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:mary williams
+N:mary williams;;;;
+EMAIL;TYPE=INTERNET:nearcase002@example.com
+TEL;TYPE=WORK:555-4002
+NOTE:[TEST] NEAR duplicate (Case). SHOULD BE DELETED (matches NEAR-CASE-A-002).
+UID:near-case-002-b
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:NEAR-SPACE-B-001  
+N:NEAR-SPACE-B-001  ;;;;
+EMAIL;TYPE=INTERNET:nearspace001@example.com
+TEL;TYPE=WORK:555-5001
+NOTE:[TEST] NEAR duplicate (Whitespace). Tests trailing space removal. SHOULD BE DELETED (matches NEAR-SPACE-A-001).
+UID:near-space-001-b
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:NEAR-SPACE-B-002  
+N:NEAR-SPACE-B-002  ;;;;
+EMAIL;TYPE=INTERNET:nearspace002@example.com
+TEL;TYPE=WORK:555-5002
+NOTE:[TEST] NEAR duplicate (Whitespace). Tests trailing space removal. SHOULD BE DELETED (matches NEAR-SPACE-A-002).
+UID:near-space-002-b
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:Rene Dubois
+N:Dubois;Rene;;;
+EMAIL;TYPE=INTERNET:nearaccent001@example.com
+TEL;TYPE=WORK:555-6001
+NOTE:[TEST] NEAR duplicate (No accent). SHOULD BE DELETED (matches NEAR-ACCENT-A-001).
+UID:near-accent-001-b
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:Jose Garcia
+N:Garcia;Jose;;;
+EMAIL;TYPE=INTERNET:nearaccent002@example.com
+TEL;TYPE=WORK:555-6002
+NOTE:[TEST] NEAR duplicate (No accent). SHOULD BE DELETED (matches NEAR-ACCENT-A-002).
+UID:near-accent-002-b
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:NEAR-NOREPLY-B-001
+N:NEAR-NOREPLY-B-001;;;;
+EMAIL;TYPE=INTERNET:noreply@example.com
+TEL;TYPE=WORK:555-7001
+NOTE:[TEST] NEAR duplicate (No-reply email). SHOULD BE DELETED (matches NEAR-NOREPLY-A-001).
+UID:near-noreply-001-b
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:NEAR-NOREPLY-B-002
+N:NEAR-NOREPLY-B-002;;;;
+EMAIL;TYPE=INTERNET:no-reply@company.com
+TEL;TYPE=WORK:555-7002
+NOTE:[TEST] NEAR duplicate (No-reply email). SHOULD BE DELETED (matches NEAR-NOREPLY-A-002).
+UID:near-noreply-002-b
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:Michael Anderson
+N:Anderson;Michael;;;
+EMAIL;TYPE=INTERNET:michael.anderson.companyB@example.com
+TEL;TYPE=WORK:555-8101
+NOTE:[TEST] NAME-ONLY-MATCH - Same name, different email. WILL BE DELETED (name matches, OR logic). Pair 1.
+UID:name-only-001-b
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:Sarah Martinez
+N:Martinez;Sarah;;;
+EMAIL;TYPE=INTERNET:sarah.martinez.companyB@example.com
+TEL;TYPE=WORK:555-8102
+NOTE:[TEST] NAME-ONLY-MATCH - Same name, different email. WILL BE DELETED (name matches, OR logic). Pair 2.
+UID:name-only-002-b
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:AUTO-POOR-001-B
+N:Person;Complete;;;
+EMAIL;TYPE=INTERNET:rich001@example.com
+NOTE:[TEST] AUTO-POOR - POORER card (minimal fields). Should be AUTO-DELETED (AUTO-RICH-001 has more info).
+UID:auto-001-shared
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:AUTO-POOR-002-B
+N:Contact;Full;;;
+EMAIL;TYPE=INTERNET:rich002@example.com
+TEL;TYPE=WORK:555-9002
+NOTE:[TEST] AUTO-POOR - POORER card (basic fields only). Should be AUTO-DELETED (AUTO-RICH-002 has more info).
+UID:auto-002-shared
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:AUTO-POOR-003-B
+N:Entry;Detailed;;;
+EMAIL;TYPE=INTERNET:rich003@example.com
+NOTE:[TEST] AUTO-POOR - POORER card (minimal). Should be AUTO-DELETED (AUTO-RICH-003 has much more info).
+UID:auto-003-shared
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:Kevin King
+N:King;Kevin;;;
+EMAIL;TYPE=INTERNET:kevin.king@email.com
+TEL;TYPE=WORK:555-9201
+NOTE:[TEST] TRUE-NODUP - Completely different. Should NOT be deleted (no match with TRUE-NODUP-A-001).
+UID:true-nodup-001-b
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:Laura Lopez
+N:Lopez;Laura;;;
+EMAIL;TYPE=INTERNET:laura.lopez@email.com
+TEL;TYPE=WORK:555-9202
+NOTE:[TEST] TRUE-NODUP - Completely different. Should NOT be deleted (no match with TRUE-NODUP-A-002).
+UID:true-nodup-002-b
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:Mark Miller
+N:Miller;Mark;;;
+EMAIL;TYPE=INTERNET:mark.miller@email.com
+TEL;TYPE=WORK:555-9203
+NOTE:[TEST] TRUE-NODUP - Completely different. Should NOT be deleted (no match with TRUE-NODUP-A-003).
+UID:true-nodup-003-b
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:Nina Nelson
+N:Nelson;Nina;;;
+EMAIL;TYPE=INTERNET:nina.nelson@email.com
+TEL;TYPE=WORK:555-9204
+NOTE:[TEST] TRUE-NODUP - Completely different. Should NOT be deleted (no match with TRUE-NODUP-A-004).
+UID:true-nodup-004-b
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:Oscar Olson
+N:Olson;Oscar;;;
+EMAIL;TYPE=INTERNET:oscar.olson@email.com
+TEL;TYPE=WORK:555-9205
+NOTE:[TEST] TRUE-NODUP - Completely different. Should NOT be deleted (no match with TRUE-NODUP-A-005).
+UID:true-nodup-005-b
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:Paula Parker
+N:Parker;Paula;;;
+EMAIL;TYPE=INTERNET:paula.parker@email.com
+TEL;TYPE=WORK:555-9206
+NOTE:[TEST] TRUE-NODUP - Completely different. Should NOT be deleted (no match with TRUE-NODUP-A-006).
+UID:true-nodup-006-b
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:Quinn Quinn
+N:Quinn;Quinn;;;
+EMAIL;TYPE=INTERNET:quinn.quinn@email.com
+TEL;TYPE=WORK:555-9207
+NOTE:[TEST] TRUE-NODUP - Completely different. Should NOT be deleted (no match with TRUE-NODUP-A-007).
+UID:true-nodup-007-b
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:Rachel Roberts
+N:Roberts;Rachel;;;
+EMAIL;TYPE=INTERNET:rachel.roberts@email.com
+TEL;TYPE=WORK:555-9208
+NOTE:[TEST] TRUE-NODUP - Completely different. Should NOT be deleted (no match with TRUE-NODUP-A-008).
+UID:true-nodup-008-b
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:Steve Stevens
+N:Stevens;Steve;;;
+EMAIL;TYPE=INTERNET:steve.stevens@email.com
+TEL;TYPE=WORK:555-9209
+NOTE:[TEST] TRUE-NODUP - Completely different. Should NOT be deleted (no match with TRUE-NODUP-A-009).
+UID:true-nodup-009-b
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:Tina Turner
+N:Turner;Tina;;;
+EMAIL;TYPE=INTERNET:tina.turner@email.com
+TEL;TYPE=WORK:555-9210
+NOTE:[TEST] TRUE-NODUP - Completely different. Should NOT be deleted (no match with TRUE-NODUP-A-010).
+UID:true-nodup-010-b
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:UNIQUE-021
+N:UNIQUE-021;;;;
+EMAIL;TYPE=INTERNET:unique021@example.com
+TEL;TYPE=WORK:555-10021
+NOTE:[TEST] UNIQUE - No duplicate exists in other book.
+UID:unique-021
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:UNIQUE-022
+N:UNIQUE-022;;;;
+EMAIL;TYPE=INTERNET:unique022@example.com
+TEL;TYPE=WORK:555-10022
+NOTE:[TEST] UNIQUE - No duplicate exists in other book.
+UID:unique-022
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:UNIQUE-023
+N:UNIQUE-023;;;;
+EMAIL;TYPE=INTERNET:unique023@example.com
+TEL;TYPE=WORK:555-10023
+NOTE:[TEST] UNIQUE - No duplicate exists in other book.
+UID:unique-023
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:UNIQUE-024
+N:UNIQUE-024;;;;
+EMAIL;TYPE=INTERNET:unique024@example.com
+TEL;TYPE=WORK:555-10024
+NOTE:[TEST] UNIQUE - No duplicate exists in other book.
+UID:unique-024
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:UNIQUE-025
+N:UNIQUE-025;;;;
+EMAIL;TYPE=INTERNET:unique025@example.com
+TEL;TYPE=WORK:555-10025
+NOTE:[TEST] UNIQUE - No duplicate exists in other book.
+UID:unique-025
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:UNIQUE-026
+N:UNIQUE-026;;;;
+EMAIL;TYPE=INTERNET:unique026@example.com
+TEL;TYPE=WORK:555-10026
+NOTE:[TEST] UNIQUE - No duplicate exists in other book.
+UID:unique-026
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:UNIQUE-027
+N:UNIQUE-027;;;;
+EMAIL;TYPE=INTERNET:unique027@example.com
+TEL;TYPE=WORK:555-10027
+NOTE:[TEST] UNIQUE - No duplicate exists in other book.
+UID:unique-027
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:UNIQUE-028
+N:UNIQUE-028;;;;
+EMAIL;TYPE=INTERNET:unique028@example.com
+TEL;TYPE=WORK:555-10028
+NOTE:[TEST] UNIQUE - No duplicate exists in other book.
+UID:unique-028
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:UNIQUE-029
+N:UNIQUE-029;;;;
+EMAIL;TYPE=INTERNET:unique029@example.com
+TEL;TYPE=WORK:555-10029
+NOTE:[TEST] UNIQUE - No duplicate exists in other book.
+UID:unique-029
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:UNIQUE-030
+N:UNIQUE-030;;;;
+EMAIL;TYPE=INTERNET:unique030@example.com
+TEL;TYPE=WORK:555-10030
+NOTE:[TEST] UNIQUE - No duplicate exists in other book.
+UID:unique-030
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:UNIQUE-031
+N:UNIQUE-031;;;;
+EMAIL;TYPE=INTERNET:unique031@example.com
+TEL;TYPE=WORK:555-10031
+NOTE:[TEST] UNIQUE - No duplicate exists in other book.
+UID:unique-031
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:UNIQUE-032
+N:UNIQUE-032;;;;
+EMAIL;TYPE=INTERNET:unique032@example.com
+TEL;TYPE=WORK:555-10032
+NOTE:[TEST] UNIQUE - No duplicate exists in other book.
+UID:unique-032
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:UNIQUE-033
+N:UNIQUE-033;;;;
+EMAIL;TYPE=INTERNET:unique033@example.com
+TEL;TYPE=WORK:555-10033
+NOTE:[TEST] UNIQUE - No duplicate exists in other book.
+UID:unique-033
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:UNIQUE-034
+N:UNIQUE-034;;;;
+EMAIL;TYPE=INTERNET:unique034@example.com
+TEL;TYPE=WORK:555-10034
+NOTE:[TEST] UNIQUE - No duplicate exists in other book.
+UID:unique-034
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:UNIQUE-035
+N:UNIQUE-035;;;;
+EMAIL;TYPE=INTERNET:unique035@example.com
+TEL;TYPE=WORK:555-10035
+NOTE:[TEST] UNIQUE - No duplicate exists in other book.
+UID:unique-035
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:UNIQUE-036
+N:UNIQUE-036;;;;
+EMAIL;TYPE=INTERNET:unique036@example.com
+TEL;TYPE=WORK:555-10036
+NOTE:[TEST] UNIQUE - No duplicate exists in other book.
+UID:unique-036
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:UNIQUE-037
+N:UNIQUE-037;;;;
+EMAIL;TYPE=INTERNET:unique037@example.com
+TEL;TYPE=WORK:555-10037
+NOTE:[TEST] UNIQUE - No duplicate exists in other book.
+UID:unique-037
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:UNIQUE-038
+N:UNIQUE-038;;;;
+EMAIL;TYPE=INTERNET:unique038@example.com
+TEL;TYPE=WORK:555-10038
+NOTE:[TEST] UNIQUE - No duplicate exists in other book.
+UID:unique-038
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:UNIQUE-039
+N:UNIQUE-039;;;;
+EMAIL;TYPE=INTERNET:unique039@example.com
+TEL;TYPE=WORK:555-10039
+NOTE:[TEST] UNIQUE - No duplicate exists in other book.
+UID:unique-039
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:UNIQUE-040
+N:UNIQUE-040;;;;
+EMAIL;TYPE=INTERNET:unique040@example.com
+TEL;TYPE=WORK:555-10040
+NOTE:[TEST] UNIQUE - No duplicate exists in other book.
+UID:unique-040
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:UNIQUE-041
+N:UNIQUE-041;;;;
+EMAIL;TYPE=INTERNET:unique041@example.com
+TEL;TYPE=WORK:555-10041
+NOTE:[TEST] UNIQUE - No duplicate exists in other book.
+UID:unique-041
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:UNIQUE-042
+N:UNIQUE-042;;;;
+EMAIL;TYPE=INTERNET:unique042@example.com
+TEL;TYPE=WORK:555-10042
+NOTE:[TEST] UNIQUE - No duplicate exists in other book.
+UID:unique-042
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:UNIQUE-043
+N:UNIQUE-043;;;;
+EMAIL;TYPE=INTERNET:unique043@example.com
+TEL;TYPE=WORK:555-10043
+NOTE:[TEST] UNIQUE - No duplicate exists in other book.
+UID:unique-043
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:UNIQUE-044
+N:UNIQUE-044;;;;
+EMAIL;TYPE=INTERNET:unique044@example.com
+TEL;TYPE=WORK:555-10044
+NOTE:[TEST] UNIQUE - No duplicate exists in other book.
+UID:unique-044
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:UNIQUE-045
+N:UNIQUE-045;;;;
+EMAIL;TYPE=INTERNET:unique045@example.com
+TEL;TYPE=WORK:555-10045
+NOTE:[TEST] UNIQUE - No duplicate exists in other book.
+UID:unique-045
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:UNIQUE-046
+N:UNIQUE-046;;;;
+EMAIL;TYPE=INTERNET:unique046@example.com
+TEL;TYPE=WORK:555-10046
+NOTE:[TEST] UNIQUE - No duplicate exists in other book.
+UID:unique-046
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:UNIQUE-047
+N:UNIQUE-047;;;;
+EMAIL;TYPE=INTERNET:unique047@example.com
+TEL;TYPE=WORK:555-10047
+NOTE:[TEST] UNIQUE - No duplicate exists in other book.
+UID:unique-047
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:UNIQUE-048
+N:UNIQUE-048;;;;
+EMAIL;TYPE=INTERNET:unique048@example.com
+TEL;TYPE=WORK:555-10048
+NOTE:[TEST] UNIQUE - No duplicate exists in other book.
+UID:unique-048
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:UNIQUE-049
+N:UNIQUE-049;;;;
+EMAIL;TYPE=INTERNET:unique049@example.com
+TEL;TYPE=WORK:555-10049
+NOTE:[TEST] UNIQUE - No duplicate exists in other book.
+UID:unique-049
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:UNIQUE-050
+N:UNIQUE-050;;;;
+EMAIL;TYPE=INTERNET:unique050@example.com
+TEL;TYPE=WORK:555-10050
+NOTE:[TEST] UNIQUE - No duplicate exists in other book.
+UID:unique-050
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:EDGE-NOPHONE-001-B
+N:EDGE-NOPHONE-001-B;;;;
+EMAIL;TYPE=INTERNET:edgenophoneB001@example.com
+NOTE:[TEST] EDGE - No phone number (different from book 1).
+UID:edge-nophone-001-b
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:EDGE-NOPHONE-002-B
+N:EDGE-NOPHONE-002-B;;;;
+EMAIL;TYPE=INTERNET:edgenophoneB002@example.com
+NOTE:[TEST] EDGE - No phone number (different from book 1).
+UID:edge-nophone-002-b
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:EDGE-NAMEONLY-001-B
+N:EDGE-NAMEONLY-001-B;;;;
+NOTE:[TEST] EDGE - Name only (different from book 1).
+UID:edge-nameonly-001-b
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:EDGE-NAMEONLY-002-B
+N:EDGE-NAMEONLY-002-B;;;;
+NOTE:[TEST] EDGE - Name only (different from book 1).
+UID:edge-nameonly-002-b
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:EDGE-MINIMAL-B
+N:EDGE-MINIMAL-B;;;;
+EMAIL;TYPE=INTERNET:edgeminimalB@example.com
+NOTE:[TEST] EDGE - Minimal data (different from book 1).
+UID:edge-minimal-b
+END:VCARD
