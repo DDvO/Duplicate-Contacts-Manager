@@ -271,30 +271,30 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			this.searchNextDuplicate();
 		},
 
-	updateAbCard: async function(abId, book, index, side) {
-		var card = this.vcards[book][index];
-		if (!card) {
-			console.error("updateAbCard: Card not found at book", book, "index", index);
-			return;
-		}
+		updateAbCard: async function(abId, book, index, side) {
+			var card = this.vcards[book][index];
+			if (!card) {
+				console.error("updateAbCard: Card not found at book", book, "index", index);
+				return;
+			}
 
-		// see what's been modified
-		var updateFields = this.getCardFieldValues(side);
-		var entryModified = false;
-		for(let property in updateFields) {
-			const defaultValue = this.defaultValue(property); /* cannot be a set here */
-			var currentValue = card.getProperty(property, defaultValue);
-			if (currentValue != updateFields[property]) {
-				// not using this.getProperty here to give a chance to update wrongly empty field
-				try {
-					card.setProperty(property, updateFields[property]);
-					entryModified = true;
-				} catch (e) {
-					alert("Internal error: cannot set field '"+property+"' of "+(card.DisplayName || card._id)+": "+e);
+			// see what's been modified
+			var updateFields = this.getCardFieldValues(side);
+			var entryModified = false;
+			for(let property in updateFields) {
+				const defaultValue = this.defaultValue(property); /* cannot be a set here */
+				var currentValue = card.getProperty(property, defaultValue);
+				if (currentValue != updateFields[property]) {
+					// not using this.getProperty here to give a chance to update wrongly empty field
+					try {
+						card.setProperty(property, updateFields[property]);
+						entryModified = true;
+					} catch (e) {
+						alert("Internal error: cannot set field '"+property+"' of "+(card.DisplayName || card._id)+": "+e);
+					}
 				}
 			}
-		}
-		if (entryModified) {
+			if (entryModified) {
 				this.vcardsSimplified[book][index] = null; // request reconstruction by getSimplifiedCard
 				try {
 					await DuplicateEntriesWindowContacts.saveCard(abId, card);

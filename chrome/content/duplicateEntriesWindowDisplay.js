@@ -9,7 +9,7 @@
 // createSelectionList, sideKept, setContactLeftRight.
 // Load after duplicateEntriesWindowUI.js, before duplicateEntriesWindow.js.
 
-	var DuplicateEntriesWindowDisplay = (function() {
+var DuplicateEntriesWindowDisplay = (function() {
 	"use strict";
 
 	function pushIfNew(elem, array) { /* well, this 'function' has a side effect on array */
@@ -53,8 +53,8 @@ https://stackoverflow.com/questions/948358/adding-custom-functions-into-array-pr
 				equ = '⊆';
 			else
 		equ = '';
-	}
-	return [both_empty, equ];
+		}
+		return [both_empty, equ];
 	}
 
 	/**
