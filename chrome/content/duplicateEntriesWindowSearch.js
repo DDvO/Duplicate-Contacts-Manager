@@ -54,21 +54,21 @@ var DuplicateEntriesWindowSearch = (function() {
 				return false;
 			}
 			
-		++(ctx.position2);
-		// Same book: never compare a card with itself (position2 must be > position1)
-		// if same book, make sure it's possible to have ...,position1, position2.
-		if (ctx.abId1 == ctx.abId2 && ctx.position2 <= ctx.position1) {
-			ctx.position2 = ctx.position1 + 1;
-		}
-		if (ctx.position2 >= ctx.vcards[ctx.BOOK_2].length) {
-			do {
-				ctx.position1++;
-				if (ctx.updateProgress) ctx.updateProgress();
-				if (ctx.position1 + (ctx.abId1 == ctx.abId2 ? 1 : 0) >= ctx.vcards[ctx.BOOK_1].length)
-					return false;
-			} while (ctx.position1 < ctx.vcards[ctx.BOOK_1].length && !ctx.vcards[ctx.BOOK_1][ctx.position1]);
-			// if same book, we start searching the pair with the position after.
-			ctx.position2 = (ctx.abId1 == ctx.abId2 ? ctx.position1 + 1 : 0);
+			++(ctx.position2);
+			// Same book: never compare a card with itself (position2 must be > position1)
+			// if same book, make sure it's possible to have ...,position1, position2.
+			if (ctx.abId1 == ctx.abId2 && ctx.position2 <= ctx.position1) {
+				ctx.position2 = ctx.position1 + 1;
+			}
+			if (ctx.position2 >= ctx.vcards[ctx.BOOK_2].length) {
+				do {
+					ctx.position1++;
+					if (ctx.updateProgress) ctx.updateProgress();
+					if (ctx.position1 + (ctx.abId1 == ctx.abId2 ? 1 : 0) >= ctx.vcards[ctx.BOOK_1].length)
+						return false;
+				} while (ctx.position1 < ctx.vcards[ctx.BOOK_1].length && !ctx.vcards[ctx.BOOK_1][ctx.position1]);
+				// if same book, we start searching the pair with the position after.
+				ctx.position2 = (ctx.abId1 == ctx.abId2 ? ctx.position1 + 1 : 0);
 			}
 		} while (ctx.position2 < ctx.vcards[ctx.BOOK_2].length && !ctx.vcards[ctx.BOOK_2][ctx.position2]);
 		

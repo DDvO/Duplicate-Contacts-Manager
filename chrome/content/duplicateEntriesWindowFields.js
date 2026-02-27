@@ -7,14 +7,14 @@
 var DuplicateEntriesWindowFields = (function() {
 	"use strict";
 
-var addressBookFields = [
-	'PhotoURI', 'PhotoType', 'PhotoName',
-	'NickName', '__Names', /* matchable */ 'FirstName', 'PhoneticFirstName', 'LastName', 'PhoneticLastName',
-	'SpouseName', 'FamilyName', 'DisplayName', '_PhoneticName', 'PreferDisplayName',
-	'_AimScreenName', '_GoogleTalk', 'CardType', 'Category', 'AllowRemoteContent',
-	'PreferMailFormat', '__MailListNames', /* virtual set */ '__Emails', /* matchable, virtual set */ 'DefaultEmail',
-	'PrimaryEmail', 'SecondEmail',
-	'__PhoneNumbers', /* matchable, virtual set */ 'CellularNumber', 'CellularNumberType', 'HomePhone', 'HomePhoneType',
+	var addressBookFields = [
+		'PhotoURI', 'PhotoType', 'PhotoName',
+		'NickName', '__Names', /* matchable */ 'FirstName', 'PhoneticFirstName', 'LastName', 'PhoneticLastName',
+		'SpouseName', 'FamilyName', 'DisplayName', '_PhoneticName', 'PreferDisplayName',
+		'_AimScreenName', '_GoogleTalk', 'CardType', 'Category', 'AllowRemoteContent',
+		'PreferMailFormat', '__MailListNames', /* virtual set */ '__Emails', /* matchable, virtual set */ 'DefaultEmail',
+		'PrimaryEmail', 'SecondEmail',
+		'__PhoneNumbers', /* matchable, virtual set */ 'CellularNumber', 'CellularNumberType', 'HomePhone', 'HomePhoneType',
 		'WorkPhone', 'WorkPhoneType', 'FaxNumber', 'FaxNumberType', 'PagerNumber', 'PagerNumberType',
 		'DefaultAddress',
 		'HomeAddress', 'HomeAddress2', 'HomeCity', 'HomeState', 'HomeZipCode', 'HomeCountry',
