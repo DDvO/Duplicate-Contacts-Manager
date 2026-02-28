@@ -16,25 +16,16 @@ New-Item -ItemType Directory $tmp | Out-Null
 Copy-Item $SourceDir\manifest.json, $SourceDir\background.js, $SourceDir\window.html $tmp
 Copy-Item $SourceDir\chrome, $SourceDir\_locales, $SourceDir\skin $tmp -Recurse
 
-# Custom encoder: replace backslash with forward slash in entry names
-$EncoderSrc = @"
-public class ZipPathEncoder : System.Text.UTF8Encoding {
-    public ZipPathEncoder() : base(true) { }
-    public override byte[] GetBytes(string s) {
-        return base.GetBytes(s.Replace("\\", "/"));
-    }
-}
-"@
-Add-Type -TypeDefinition $EncoderSrc -PassThru | Out-Null
-
-# Create zip with forward-slash paths
+# Create zip with forward-slash paths (required for WebExtension)
+Add-Type -AssemblyName System.IO.Compression
 Remove-Item $TempZip -Force -ErrorAction SilentlyContinue
-[System.IO.Compression.ZipFile]::CreateFromDirectory(
-    $tmp, $TempZip,
-    [System.IO.Compression.CompressionLevel]::Optimal,
-    $false,
-    [ZipPathEncoder]::new()
-)
+$zip = [System.IO.Compression.ZipFile]::Open($TempZip, 1)
+$tmpLen = $tmp.Length + 1
+Get-ChildItem -Path $tmp -Recurse -File | ForEach-Object {
+    $entryName = $_.FullName.Substring($tmpLen).Replace("\", "/")
+    [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($zip, $_.FullName, $entryName, [System.IO.Compression.CompressionLevel]::Optimal) | Out-Null
+}
+$zip.Dispose()
 
 # Rename to xpi
 Remove-Item $OutXpi -Force -ErrorAction SilentlyContinue
