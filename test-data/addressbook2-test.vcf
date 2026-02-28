@@ -162,27 +162,27 @@ UID:name-only-002-b
 END:VCARD
 BEGIN:VCARD
 VERSION:3.0
-FN:AUTO-POOR-001-B
-N:Person;Complete;;;
+FN:Auto Test Person 001
+N:Person;Auto Test;;;
 EMAIL;TYPE=INTERNET:rich001@example.com
-NOTE:[TEST] AUTO-POOR - POORER card (minimal fields). Should be AUTO-DELETED (AUTO-RICH-001 has more info).
+NOTE:[TEST] Auto-delete pair 001. Rich has extra fields. Poor is subset.
 UID:auto-001-shared
 END:VCARD
 BEGIN:VCARD
 VERSION:3.0
-FN:AUTO-POOR-002-B
-N:Contact;Full;;;
+FN:Auto Test Contact 002
+N:Contact;Auto Test;;;
 EMAIL;TYPE=INTERNET:rich002@example.com
 TEL;TYPE=WORK:555-9002
-NOTE:[TEST] AUTO-POOR - POORER card (basic fields only). Should be AUTO-DELETED (AUTO-RICH-002 has more info).
+NOTE:[TEST] Auto-delete pair 002. Rich has extra fields. Poor is subset.
 UID:auto-002-shared
 END:VCARD
 BEGIN:VCARD
 VERSION:3.0
-FN:AUTO-POOR-003-B
-N:Entry;Detailed;;;
+FN:Auto Test Entry 003
+N:Entry;Auto Test;;;
 EMAIL;TYPE=INTERNET:rich003@example.com
-NOTE:[TEST] AUTO-POOR - POORER card (minimal). Should be AUTO-DELETED (AUTO-RICH-003 has much more info).
+NOTE:[TEST] Auto-delete pair 003. Rich has extra fields. Poor is subset.
 UID:auto-003-shared
 END:VCARD
 BEGIN:VCARD

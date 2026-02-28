@@ -17,28 +17,28 @@
 
 All should match `"John Doe"` (clean).
 
-### 2. Added AUTO-RICH/POOR Tests (3 new pairs)
+### 2. AUTO-RICH/POOR Tests (3 pairs) - True Superset/Subset
 
-**Purpose:** Test automatic deletion based on card "richness" (number of fields).
+**Purpose:** Test automatic deletion when one card is a true superset of the other (all shared fields identical or poor has empty/subset values).
 
 #### Test Cases:
 
-**Pair 1: AUTO-RICH-001 vs AUTO-POOR-001-B**
-- **Rich (Book 1):** Has 6+ extra fields (secondary email, cell phone, address, org, title, URL)
-- **Poor (Book 2):** Only has name and email, missing phone
-- **Expected:** AUTO-POOR-001-B automatically deleted (rich version kept)
+**Pair 1: Auto Test Person 001**
+- **Rich (Book 1):** Has 6+ extra fields (secondary email, cell phone, address, org, title, URL). Identical DisplayName and Notes to poor.
+- **Poor (Book 2):** Same DisplayName, same Notes, same email. No phone, no extra fields.
+- **Expected:** Poor copy auto-deleted (rich version kept)
 
-**Pair 2: AUTO-RICH-002 vs AUTO-POOR-002-B**
+**Pair 2: Auto Test Contact 002**
 - **Rich (Book 1):** Has 5+ extra fields (work email, home phone, work address, org, nickname)
-- **Poor (Book 2):** Only basic fields (name, email, phone)
-- **Expected:** AUTO-POOR-002-B automatically deleted
+- **Poor (Book 2):** Same DisplayName, same Notes, same email and phone. No extra fields.
+- **Expected:** Poor copy auto-deleted
 
-**Pair 3: AUTO-RICH-003 vs AUTO-POOR-003-B**
+**Pair 3: Auto Test Entry 003**
 - **Rich (Book 1):** Has 6+ extra fields (cell, fax, org, title, URL, address)
-- **Poor (Book 2):** Only name and email, missing phone
-- **Expected:** AUTO-POOR-003-B automatically deleted
+- **Poor (Book 2):** Same DisplayName, same Notes, same email. No phone, no extra fields.
+- **Expected:** Poor copy auto-deleted
 
-**Key:** All three use **same UID** (`auto-001-shared`, etc.) to ensure they match.
+**Key:** Both cards in each pair have identical DisplayName and Notes. Rich has extra fields; poor is a true subset. All use same UID for matching.
 
 ---
 
@@ -73,8 +73,8 @@ When running duplicate detection with **auto-delete enabled**:
    - No prompts for AUTO-RICH/POOR pairs (handled automatically)
 
 3. **Spot check in Book 2 after test:**
-   - Search `AUTO-POOR` → 0 results (all deleted automatically)
-   - Search `AUTO-RICH` in Book 1 → 3 results (all kept)
+   - Search `Auto Test` → 0 results (all 3 poor copies deleted automatically)
+   - Search `Auto Test` in Book 1 → 3 results (all kept)
 
 4. **Compare card richness:**
    - Export and compare the AUTO-RICH cards in Book 1
@@ -90,7 +90,7 @@ The duplicate detector considers a card "richer" if it has:
 - Additional data (organization, title, address, URLs, notes)
 
 **Auto-deletion logic:**
-- If Card A has significantly more info than Card B
+- If Card A is a true superset of Card B (B's fields are empty/identical/subset of A's)
 - AND they're duplicates (match)
 - AND auto-delete is enabled
 - THEN: Delete Card B automatically (keep the richer Card A)
@@ -112,9 +112,9 @@ The duplicate detector considers a card "richer" if it has:
 - [ ] NEAR-SPACE-B-002 deleted (trailing spaces normalized)
 
 ### Auto-Deletion Test:
-- [ ] AUTO-POOR-001-B auto-deleted (no manual prompt)
-- [ ] AUTO-POOR-002-B auto-deleted (no manual prompt)
-- [ ] AUTO-POOR-003-B auto-deleted (no manual prompt)
+- [ ] Auto Test Person 001 (Book 2) auto-deleted (no manual prompt)
+- [ ] Auto Test Contact 002 (Book 2) auto-deleted (no manual prompt)
+- [ ] Auto Test Entry 003 (Book 2) auto-deleted (no manual prompt)
 - [ ] `totalCardsDeletedAuto` ≥ 3
 
 ### Overall:

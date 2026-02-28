@@ -131,11 +131,11 @@ def generate_book1():
         uid = f"name-only-{i:03d}-a"
         vcards.append(create_vcard(fn, [parts[1], parts[0]], email, tel, notes, uid))
     
-    # AUTO-RICH - RICHER variants (3 pairs) - These have MORE fields, should be kept
+    # AUTO-RICH - RICHER variants (3 pairs) - True supersets, poor is subset with identical DisplayName/Notes
     rich_contacts = [
         {
-            "fn": "AUTO-RICH-001 Complete Person",
-            "n": ["Person", "Complete"],
+            "fn": "Auto Test Person 001",
+            "n": ["Person", "Auto Test"],
             "email": "rich001@example.com",
             "tel": "555-9001",
             "extra": {
@@ -146,12 +146,12 @@ def generate_book1():
                 "TITLE": "Senior Engineer",
                 "URL": "https://example.com/rich001"
             },
-            "notes": "[TEST] AUTO-RICH - RICHER card with 6+ extra fields. Should BE KEPT (poorer AUTO-POOR-001-B deleted).",
+            "notes": "[TEST] Auto-delete pair 001. Rich has extra fields. Poor is subset.",
             "uid": "auto-001-shared"
         },
         {
-            "fn": "AUTO-RICH-002 Full Contact",
-            "n": ["Contact", "Full"],
+            "fn": "Auto Test Contact 002",
+            "n": ["Contact", "Auto Test"],
             "email": "rich002@example.com",
             "tel": "555-9002",
             "extra": {
@@ -161,12 +161,12 @@ def generate_book1():
                 "ORG": "Business Corp",
                 "NICKNAME": "FullGuy"
             },
-            "notes": "[TEST] AUTO-RICH - RICHER card with 5+ extra fields. Should BE KEPT (poorer AUTO-POOR-002-B deleted).",
+            "notes": "[TEST] Auto-delete pair 002. Rich has extra fields. Poor is subset.",
             "uid": "auto-002-shared"
         },
         {
-            "fn": "AUTO-RICH-003 Detailed Entry",
-            "n": ["Entry", "Detailed"],
+            "fn": "Auto Test Entry 003",
+            "n": ["Entry", "Auto Test"],
             "email": "rich003@example.com",
             "tel": "555-9003",
             "extra": {
@@ -177,7 +177,7 @@ def generate_book1():
                 "URL": "https://example.com/rich003",
                 "ADR;TYPE=HOME": ";;789 Oak St;Hometown;State;11111;USA"
             },
-            "notes": "[TEST] AUTO-RICH - RICHER card with 6+ extra fields. Should BE KEPT (poorer AUTO-POOR-003-B deleted).",
+            "notes": "[TEST] Auto-delete pair 003. Rich has extra fields. Poor is subset.",
             "uid": "auto-003-shared"
         }
     ]
@@ -346,33 +346,33 @@ def generate_book2():
         uid = f"name-only-{i:03d}-b"
         vcards.append(create_vcard(fn, [parts[1], parts[0]], email, tel, notes, uid))
     
-    # AUTO-POOR - POORER variants (3 pairs) - Minimal fields, should be AUTO-DELETED
+    # AUTO-POOR - POORER variants (3 pairs) - True subsets: identical DisplayName/Notes, fewer fields
     poor_contacts = [
         {
-            "fn": "AUTO-POOR-001-B",
-            "n": ["Person", "Complete"],
-            "email": "rich001@example.com",  # Same as rich version
-            "tel": "",  # Missing phone
-            "extra": None,  # No extra fields
-            "notes": "[TEST] AUTO-POOR - POORER card (minimal fields). Should be AUTO-DELETED (AUTO-RICH-001 has more info).",
-            "uid": "auto-001-shared"  # Same UID
+            "fn": "Auto Test Person 001",
+            "n": ["Person", "Auto Test"],
+            "email": "rich001@example.com",
+            "tel": "",
+            "extra": None,
+            "notes": "[TEST] Auto-delete pair 001. Rich has extra fields. Poor is subset.",
+            "uid": "auto-001-shared"
         },
         {
-            "fn": "AUTO-POOR-002-B",
-            "n": ["Contact", "Full"],
+            "fn": "Auto Test Contact 002",
+            "n": ["Contact", "Auto Test"],
             "email": "rich002@example.com",
-            "tel": "555-9002",  # Same phone
-            "extra": None,  # No extra fields (rich has 5)
-            "notes": "[TEST] AUTO-POOR - POORER card (basic fields only). Should be AUTO-DELETED (AUTO-RICH-002 has more info).",
+            "tel": "555-9002",
+            "extra": None,
+            "notes": "[TEST] Auto-delete pair 002. Rich has extra fields. Poor is subset.",
             "uid": "auto-002-shared"
         },
         {
-            "fn": "AUTO-POOR-003-B",
-            "n": ["Entry", "Detailed"],
+            "fn": "Auto Test Entry 003",
+            "n": ["Entry", "Auto Test"],
             "email": "rich003@example.com",
-            "tel": "",  # Missing phone (rich has 2 phones)
-            "extra": None,  # No extra fields (rich has 6)
-            "notes": "[TEST] AUTO-POOR - POORER card (minimal). Should be AUTO-DELETED (AUTO-RICH-003 has much more info).",
+            "tel": "",
+            "extra": None,
+            "notes": "[TEST] Auto-delete pair 003. Rich has extra fields. Poor is subset.",
             "uid": "auto-003-shared"
         }
     ]
@@ -474,10 +474,10 @@ if __name__ == "__main__":
     print(f"  - 2 NEAR-NOREPLY")
     print(f"  - 2 NAME-ONLY-MATCH (name matches, different email - WILL match due to OR logic)")
     print(f"  - 3 AUTO-RICH/POOR pairs (richness-based auto-deletion)")
-    print(f"\nExpected AUTO-DELETIONS: 3 contacts")
-    print(f"  - AUTO-POOR-001-B (minimal, rich version has 6+ extra fields)")
-    print(f"  - AUTO-POOR-002-B (basic, rich version has 5+ extra fields)")
-    print(f"  - AUTO-POOR-003-B (minimal, rich version has 6+ extra fields)")
+    print(f"\nExpected AUTO-DELETIONS: 3 contacts (poor copies, true subsets)")
+    print(f"  - Auto Test Person 001 (Book 2 copy - subset of Book 1)")
+    print(f"  - Auto Test Contact 002 (Book 2 copy - subset of Book 1)")
+    print(f"  - Auto Test Entry 003 (Book 2 copy - subset of Book 1)")
     print(f"\nExpected non-matches:")
     print(f"  - 10 TRUE-NODUP pairs (completely different)")
     print(f"  - 50 UNIQUE contacts (no counterpart)")

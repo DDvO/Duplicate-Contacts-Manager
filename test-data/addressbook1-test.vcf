@@ -162,8 +162,8 @@ UID:name-only-002-a
 END:VCARD
 BEGIN:VCARD
 VERSION:3.0
-FN:AUTO-RICH-001 Complete Person
-N:Person;Complete;;;
+FN:Auto Test Person 001
+N:Person;Auto Test;;;
 EMAIL;TYPE=INTERNET:rich001@example.com
 TEL;TYPE=WORK:555-9001
 EMAIL;TYPE=INTERNET:rich001.secondary@example.com
@@ -172,13 +172,13 @@ ADR;TYPE=HOME:;;123 Main St;Hometown;State;12345;USA
 ORG:Tech Company Inc
 TITLE:Senior Engineer
 URL:https://example.com/rich001
-NOTE:[TEST] AUTO-RICH - RICHER card with 6+ extra fields. Should BE KEPT (poorer AUTO-POOR-001-B deleted).
+NOTE:[TEST] Auto-delete pair 001. Rich has extra fields. Poor is subset.
 UID:auto-001-shared
 END:VCARD
 BEGIN:VCARD
 VERSION:3.0
-FN:AUTO-RICH-002 Full Contact
-N:Contact;Full;;;
+FN:Auto Test Contact 002
+N:Contact;Auto Test;;;
 EMAIL;TYPE=INTERNET:rich002@example.com
 TEL;TYPE=WORK:555-9002
 EMAIL;TYPE=INTERNET:rich002.work@example.com
@@ -186,13 +186,13 @@ TEL;TYPE=HOME:555-9002-HOME
 ADR;TYPE=WORK:;;456 Business Ave;Worktown;ST;67890;USA
 ORG:Business Corp
 NICKNAME:FullGuy
-NOTE:[TEST] AUTO-RICH - RICHER card with 5+ extra fields. Should BE KEPT (poorer AUTO-POOR-002-B deleted).
+NOTE:[TEST] Auto-delete pair 002. Rich has extra fields. Poor is subset.
 UID:auto-002-shared
 END:VCARD
 BEGIN:VCARD
 VERSION:3.0
-FN:AUTO-RICH-003 Detailed Entry
-N:Entry;Detailed;;;
+FN:Auto Test Entry 003
+N:Entry;Auto Test;;;
 EMAIL;TYPE=INTERNET:rich003@example.com
 TEL;TYPE=WORK:555-9003
 TEL;TYPE=CELL:555-9003-CELL
@@ -201,7 +201,7 @@ ORG:Enterprise Ltd
 TITLE:Manager
 URL:https://example.com/rich003
 ADR;TYPE=HOME:;;789 Oak St;Hometown;State;11111;USA
-NOTE:[TEST] AUTO-RICH - RICHER card with 6+ extra fields. Should BE KEPT (poorer AUTO-POOR-003-B deleted).
+NOTE:[TEST] Auto-delete pair 003. Rich has extra fields. Poor is subset.
 UID:auto-003-shared
 END:VCARD
 BEGIN:VCARD
