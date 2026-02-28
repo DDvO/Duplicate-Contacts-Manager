@@ -63,8 +63,8 @@ async function openDuplicateManagerWindow() {
     const window = await windowsAPI.create({
       url: runtimeAPI.getURL("window.html"),
       type: "popup",
-      width: 900,
-      height: 700,
+      width: 960,
+      height: 850,
       allowScriptsToClose: true
     });
   } catch (error) {

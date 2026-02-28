@@ -47,11 +47,8 @@
 }
 
 #handleDuplicates-window {
-/*	min-height: 320px; */
-	height: 600px; /* initially */
-/*	max-height: 900px; */
-/*	min-width: 480px; */
-	width: 800px; /* initially */
+	height: 850px;
+	width: 950px;
 }
 #handleDuplicates-window #explanation, #handleDuplicates-window #AttributesTable, #handleDuplicates-window #endinfo {
 /*	display: contents; *//* must not be used for #AttributesTable */
