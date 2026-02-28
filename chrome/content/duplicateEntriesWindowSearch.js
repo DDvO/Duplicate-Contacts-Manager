@@ -241,11 +241,21 @@ var DuplicateEntriesWindowSearch = (function() {
 					if (comparison != -2 && ctx.autoremoveDups &&
 				    !(ctx.abId1 != ctx.abId2 && ctx.preserveFirst && preference < 0)) {
 					if (ctx.deleteAbCard) {
-						if (preference < 0)
-							ctx.deleteAbCard(ctx.abId1, ctx.BOOK_1, ctx.position1, true);
-						else
-							ctx.deleteAbCard(ctx.abId2, ctx.BOOK_2, ctx.position2, true);
-						}
+						var deletePromise = (preference < 0)
+							? ctx.deleteAbCard(ctx.abId1, ctx.BOOK_1, ctx.position1, true)
+							: ctx.deleteAbCard(ctx.abId2, ctx.BOOK_2, ctx.position2, true);
+						deletePromise.then(function() {
+							if (typeof DuplicateEntriesWindowSearch !== 'undefined' && DuplicateEntriesWindowSearch.runIntervalAction) {
+								setTimeout(function() { DuplicateEntriesWindowSearch.runIntervalAction(ctx); }, 13);
+							}
+						}).catch(function() {
+							// deleteAbCard already shows alert on error; re-schedule to continue search
+							if (typeof DuplicateEntriesWindowSearch !== 'undefined' && DuplicateEntriesWindowSearch.runIntervalAction) {
+								setTimeout(function() { DuplicateEntriesWindowSearch.runIntervalAction(ctx); }, 13);
+							}
+						});
+						return;
+					}
 				} else {
 					// Found duplicate or unmatchable pair - append to queue
 					if (ctx.deferInteractive && !ctx.nowHandling) {
