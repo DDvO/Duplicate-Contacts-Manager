@@ -14,4 +14,3 @@ Thumbs.db
 duplicateEntriesWindowOriginal.js
 backup-original-bugfix.patch
 port-handle-double-delete.diff.txt
-test-data/

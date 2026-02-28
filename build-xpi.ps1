@@ -4,8 +4,10 @@
 Add-Type -AssemblyName System.IO.Compression.FileSystem
 
 $SourceDir = "$PSScriptRoot"
-$OutXpi = "$SourceDir\duplicateContactsManager-2.2.2.xpi"
-$TempZip = "$env:TEMP\dcm-2.2.2.zip"
+$manifest = Get-Content "$SourceDir\manifest.json" -Raw | ConvertFrom-Json
+$Version = $manifest.version
+$OutXpi = "$SourceDir\duplicateContactsManager-$Version.xpi"
+$TempZip = "$env:TEMP\dcm-$Version.zip"
 
 # Prepare temp dir with only needed files
 $tmp = "$env:TEMP\dcm-xpi"

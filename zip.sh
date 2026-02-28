@@ -3,7 +3,7 @@
 # Per https://developer.thunderbird.net/add-ons/hello-world-add-on
 # Use build-xpi.ps1 on Windows (PowerShell) for correct path separators
 
-VERSION=2.2.2
+VERSION=$(grep '"version"' manifest.json | sed 's/.*"version": *"\([^"]*\)".*/\1/')
 OUT="duplicateContactsManager-${VERSION}.xpi"
 
 zip -r "$OUT" \
