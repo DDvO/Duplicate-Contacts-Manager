@@ -65,11 +65,11 @@ var DuplicateEntriesWindowContacts = (function() {
 
 		try {
 			console.log("Getting contacts from address book:", addressBookId);
-			
+
 			// Get all contacts from the address book
 			const contacts = await addressBooksAPI.contacts.list(addressBookId);
 			console.log("Found", contacts.length, "contacts");
-			
+
 			var abCards = [];
 			var mailLists = [];
 			var processedCount = 0;
@@ -78,7 +78,7 @@ var DuplicateEntriesWindowContacts = (function() {
 			for (var i = 0; i < contacts.length; i++) {
 				try {
 					var contact = contacts[i];
-					
+
 					// Check if it's a mailing list
 					if (contact.type === 'mailingList') {
 						// Get mailing list details
@@ -97,39 +97,39 @@ var DuplicateEntriesWindowContacts = (function() {
 						} catch (e) {
 							console.warn("Error getting mailing list details:", e);
 						}
-				} else {
-					// Regular contact: prefer parsing vCard so N (FirstName/LastName) and all fields are correct
-					var cardProps = {};
-					if (contact.vCard && context && context.parseVCard) {
-						cardProps = context.parseVCard(contact.vCard);
-					} else if (contact.properties) {
-						cardProps = contact.properties;
 					} else {
-						cardProps = {};
-					}
-
-					// Add internal tracking properties
-					cardProps._id = contact.id;
-					cardProps._addressBookId = addressBookId;
-					if (contact.vCard) {
-						cardProps._vCard = contact.vCard;
-					}
-					
-					// Add helper methods for property access (similar to nsIAbCard API)
-					cardProps.getProperty = function(property, defaultValue) {
-						var value = this.hasOwnProperty(property) ? this[property] : defaultValue;
-						if (value === null || value === undefined) {
-							value = defaultValue;
+						// Regular contact: prefer parsing vCard so N (FirstName/LastName) and all fields are correct
+						var cardProps = {};
+						if (contact.vCard && context && context.parseVCard) {
+							cardProps = context.parseVCard(contact.vCard);
+						} else if (contact.properties) {
+							cardProps = contact.properties;
+						} else {
+							cardProps = {};
 						}
-						return value;
-					};
-					cardProps.setProperty = function(property, value) {
-						this[property] = value;
-					};
-					
-					abCards.push(cardProps);
-					processedCount++;
-				}
+
+						// Add internal tracking properties
+						cardProps._id = contact.id;
+						cardProps._addressBookId = addressBookId;
+						if (contact.vCard) {
+							cardProps._vCard = contact.vCard;
+						}
+
+						// Add helper methods for property access (similar to nsIAbCard API)
+						cardProps.getProperty = function(property, defaultValue) {
+							var value = this.hasOwnProperty(property) ? this[property] : defaultValue;
+							if (value === null || value === undefined) {
+								value = defaultValue;
+							}
+							return value;
+						};
+						cardProps.setProperty = function(property, value) {
+							this[property] = value;
+						};
+
+						abCards.push(cardProps);
+						processedCount++;
+					}
 				} catch (e) {
 					console.warn("Error processing contact at index", i, ":", e);
 				}

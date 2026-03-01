@@ -100,9 +100,9 @@ https://stackoverflow.com/questions/948358/adding-custom-functions-into-array-pr
 
 		for (var i = 0; i < props.length; i++) {
 			var property = props[i];
-			if (!context.consideredFields.includes(property) ||  /* do not compare ignored fields */
-				context.isNumerical(property) ||  /* ignore PopularityIndex, LastModifiedDate and other integers */
-				context.metaProperties.includes(property) ||  /* ignore meta properties */
+			if (!context.consideredFields.includes(property) || /* do not compare ignored fields */
+				context.isNumerical(property) || /* ignore PopularityIndex, LastModifiedDate and other integers */
+				context.metaProperties.includes(property) || /* ignore meta properties */
 				context.isEmail(property) || context.isPhoneNumber(property))
 				continue;
 			var defaultValue = context.isSet(property) ? new Set() : context.defaultValue(property);

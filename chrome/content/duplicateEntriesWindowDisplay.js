@@ -17,14 +17,14 @@ var DuplicateEntriesWindowDisplay = (function() {
 			array.push(elem);
 		return array;
 	}
-/*
-T.prototype.pushIfNew = function(elem) {
-	if (!this.includes(elem))
-		this.push(elem);
-where T = Array would be an elegant extension of the built-in JS type Array. Yet in TB this not allowed for security and compatibility reasons.
-It also would have the weird effect of adding an extra enumerable value to each array, as described here:
-https://stackoverflow.com/questions/948358/adding-custom-functions-into-array-prototype
-*/
+	/*
+	T.prototype.pushIfNew = function(elem) {
+		if (!this.includes(elem))
+			this.push(elem);
+	where T = Array would be an elegant extension of the built-in JS type Array. Yet in TB this not allowed for security and compatibility reasons.
+	It also would have the weird effect of adding an extra enumerable value to each array, as described here:
+	https://stackoverflow.com/questions/948358/adding-custom-functions-into-array-prototype
+	*/
 
 	/**
 	 * Returns [both_empty, equ] for set comparison display (⊇ ⊆ ≅).
@@ -35,7 +35,7 @@ https://stackoverflow.com/questions/948358/adding-custom-functions-into-array-pr
 	 * @returns {[boolean, string]} [both_empty, equ] where equ is '≅', '⊇', '⊆', or ''
 	 */
 	function setRelation(card1, card2, property) {
-		const defaultValue_Set = new Set();  /* should not really be needed here */
+		const defaultValue_Set = new Set(); /* should not really be needed here */
 		// TB128: Cards are plain objects, access properties directly
 		let value1 = card1.hasOwnProperty(property) ? card1[property] : defaultValue_Set;
 		let value2 = card2.hasOwnProperty(property) ? card2[property] : defaultValue_Set;
@@ -52,7 +52,7 @@ https://stackoverflow.com/questions/948358/adding-custom-functions-into-array-pr
 			if (value2.isSuperset(value1))
 				equ = '⊆';
 			else
-		equ = '';
+				equ = '';
 		}
 		return [both_empty, equ];
 	}
@@ -95,40 +95,38 @@ https://stackoverflow.com/questions/948358/adding-custom-functions-into-array-pr
 			identical = leftValue == rightValue;
 			both_empty = leftValue == defaultValue && rightValue == defaultValue;
 			// all but first email address/phone number
-			if        (ctx.isEmail(property)) {
+			if (ctx.isEmail(property)) {
 				[both_empty, equ] = setRelation(card1, card2, '__Emails');
 			} else if (ctx.isPhoneNumber(property)) {
 				[both_empty, equ] = setRelation(card1, card2, '__PhoneNumbers');
 			} else if (!identical) {
 				const value1 = ctx.getAbstractedTransformedProperty(card1, property);
 				const value2 = ctx.getAbstractedTransformedProperty(card2, property);
-				if      (value1 == value2)
+				if (value1 == value2)
 					equ = '≅';
 				else if (value1 == defaultValue)
 					equ = '⋦';
 				else if (value2 == defaultValue)
 					equ = '⋧';
 				else if (ctx.isText(property)) {
-					if      (value2.includes(value1))
+					if (value2.includes(value1))
 						equ = '<';
 					else if (value1.includes(value2))
 						equ = '>';
 					else
 						equ = '';
-				}
-				else if (ctx.isNumerical(property)) {
+				} else if (ctx.isNumerical(property)) {
 					// TB128: Access properties directly
 					const val1 = card1.hasOwnProperty(property) ? card1[property] : 0;
 					const val2 = card2.hasOwnProperty(property) ? card2[property] : 0;
 					const comparison = val1 - val2;
-					if      (comparison < 0)
+					if (comparison < 0)
 						equ = '<';
 					else if (comparison > 0)
 						equ = '>';
 					else
 						equ = '≡';
-				}
-				else
+				} else
 					equ = '';
 			}
 		}
@@ -141,8 +139,8 @@ https://stackoverflow.com/questions/948358/adding-custom-functions-into-array-pr
 			equ = '';
 		// sets displayed over multiple lines lead to multiple lines with same symbol
 		if (equ != '' &&
-		    (property == 'SecondEmail' ||
-		     property != 'CellularNumber' && ctx.isPhoneNumber(property)))
+			(property == 'SecondEmail' ||
+				property != 'CellularNumber' && ctx.isPhoneNumber(property)))
 			equ = '⋮';
 		descEqu.textContent = equ;
 
@@ -159,14 +157,14 @@ https://stackoverflow.com/questions/948358/adding-custom-functions-into-array-pr
 			var labels;
 			if (property == 'PreferMailFormat') {
 				labels = [ctx.getString('unknown_label'),
-					  ctx.getString('plaintext_label'),
-					  ctx.getString('html_label')];
+					ctx.getString('plaintext_label'),
+					ctx.getString('html_label')];
 			} else {
 				labels = [ctx.getString('false_label'),
-					  ctx.getString('true_label')];
+					ctx.getString('true_label')];
 			}
 			var values = [0, 1, 2];
-			cell1valuebox = ctx.createSelectionList(null, labels, values,  leftValue);
+			cell1valuebox = ctx.createSelectionList(null, labels, values, leftValue);
 			cell2valuebox = ctx.createSelectionList(null, labels, values, rightValue);
 		} else {
 			function make_valuebox(value) {
@@ -198,7 +196,7 @@ https://stackoverflow.com/questions/948358/adding-custom-functions-into-array-pr
 				}
 				return valuebox;
 			}
-			cell1valuebox = make_valuebox( leftValue);
+			cell1valuebox = make_valuebox(leftValue);
 			cell2valuebox = make_valuebox(rightValue);
 		}
 
@@ -206,13 +204,13 @@ https://stackoverflow.com/questions/948358/adding-custom-functions-into-array-pr
 		cell1valuebox.style.flex = '2';
 		cell2valuebox.style.flex = '2';
 		/* valuebox id is like 'left_FieldName' / 'right_FieldName' for getCardFieldValues */
-		cell1valuebox.setAttribute('id',  'left_'+property);
-		cell2valuebox.setAttribute('id', 'right_'+property);
+		cell1valuebox.setAttribute('id', 'left_' + property);
+		cell2valuebox.setAttribute('id', 'right_' + property);
 
 		cell1.appendChild(cell1valuebox);
-		cell1.setAttribute('id', 'cell_left_' +property);
+		cell1.setAttribute('id', 'cell_left_' + property);
 		cell2.appendChild(cell2valuebox);
-		cell2.setAttribute('id', 'cell_right_'+property);
+		cell2.setAttribute('id', 'cell_right_' + property);
 
 		row.appendChild(cell1);
 		row.appendChild(cellEqu);
@@ -250,7 +248,7 @@ https://stackoverflow.com/questions/948358/adding-custom-functions-into-array-pr
 	 * @param {boolean} phonesmatch - Whether phone numbers match
 	 */
 	function displayCardData(ctx, card1, card2, comparison, preference,
-			namesmatch, mailsmatch, phonesmatch) {
+		namesmatch, mailsmatch, phonesmatch) {
 		DuplicateEntriesWindowDisplay.purgeAttributesTable(ctx);
 		ctx.displayedFields = [];
 		ctx.editableFields = [];
@@ -270,8 +268,8 @@ https://stackoverflow.com/questions/948358/adding-custom-functions-into-array-pr
 			// TB128: cardsEqu is a <td> element, use textContent instead of value
 			// &cong; yields syntax error; &#8773; verbatim
 			cardsEqu.textContent = comparison == -2 ? '' :
-			                       comparison == 0 ? '≅' :
-			                       comparison <  0 ? '⋦' : '⋧';
+				comparison == 0 ? '≅' :
+				comparison < 0 ? '⋦' : '⋧';
 		}
 
 		// this.debug("popularityIndex: "+card1.getProperty('PopularityIndex', 0)+ " lastModifiedDate: " +card1.getProperty('LastModifiedDate', 0));
@@ -282,9 +280,9 @@ https://stackoverflow.com/questions/948358/adding-custom-functions-into-array-pr
 		const dn1 = ctx.getAbstractedTransformedProperty(card1, 'DisplayName');
 		const dn2 = ctx.getAbstractedTransformedProperty(card2, 'DisplayName');
 		// if combination of first and last name is different from display name, show nickname field such that it can be filled in
-		const displayNickName = (dn1 != '' && dn1 != ctx.getAbstractedTransformedProperty(card1,'FirstName')+" "+
+		const displayNickName = (dn1 != '' && dn1 != ctx.getAbstractedTransformedProperty(card1, 'FirstName') + " " +
 			ctx.getAbstractedTransformedProperty(card1, 'LastName'))
-			|| (dn2 != '' && dn2 != ctx.getAbstractedTransformedProperty(card2,'FirstName')+" "+
+                        || (dn2 != '' && dn2 != ctx.getAbstractedTransformedProperty(card2,'FirstName')+" "+
 			ctx.getAbstractedTransformedProperty(card2, 'LastName'))
 			|| (dn1 != dn2);
 
@@ -317,8 +315,8 @@ https://stackoverflow.com/questions/948358/adding-custom-functions-into-array-pr
 				cellEqu.className = 'equivalence';
 				cellEqu.appendChild(descEqu);
 				if (namesmatch && property == '__Names' ||
-				    mailsmatch && property == '__Emails' ||
-				    phonesmatch && property == '__PhoneNumbers')
+					mailsmatch && property == '__Emails' ||
+					phonesmatch && property == '__PhoneNumbers')
 					descEqu.textContent = '≃';
 				row.appendChild(cell1);
 				row.appendChild(cellEqu);
@@ -338,7 +336,7 @@ https://stackoverflow.com/questions/948358/adding-custom-functions-into-array-pr
 				     || (property=='SecondEmail' && displaySecondMail)
 				     || (property=='NickName'    && displayNickName)
 				     || property.match(displayAlways)
-				   ))
+					))
 					displayCardField(ctx, card1, card2, defaultValue, leftValue, rightValue, property, row);
 			}
 		}

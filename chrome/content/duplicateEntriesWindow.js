@@ -83,7 +83,7 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			// TB128: Get address books using WebExtension API
 			var Contacts = DuplicateEntriesWindowContacts;
 			var addressBooks = await Contacts.getAddressBooks();
-			
+
 			if (!addressBooks || addressBooks.length === 0) {
 				this.disable('startbutton');
 				if (this.statustext) {
@@ -156,7 +156,7 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			const ablist = document.getElementById('addressbooklists');
 			const ab1 = ablist ? ablist.firstChild : null;
 			const ab2 = ab1 ? ab1.nextSibling : null;
-			
+
 			// TB128: Get address book IDs from selection lists
 			if (ab1 && ab1.selectedIndex >= 0) {
 				this.abId1 = ab1.options[ab1.selectedIndex].value;
@@ -164,7 +164,7 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			if (ab2 && ab2.selectedIndex >= 0) {
 				this.abId2 = ab2.options[ab2.selectedIndex].value;
 			}
-			
+
 			// Get address book names for display
 			var Contacts = DuplicateEntriesWindowContacts;
 			var ab1_obj = await Contacts.getAddressBook(this.abId1);
@@ -178,11 +178,11 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 
 			DuplicateEntriesWindowPrefs.readPrefsFromDOM(this);
 			if (this.natTrunkPrefix != "" && !this.natTrunkPrefix.match(/^[0-9]{1,2}$/))
-				alert("National phone number trunk prefix '"+this.natTrunkPrefix+"' should contain one or two digits");
+				alert("National phone number trunk prefix '" + this.natTrunkPrefix + "' should contain one or two digits");
 			if (this.intCallPrefix != "" && !this.intCallPrefix.match(/^[0-9]{2,4}$/))
-				alert("International call prefix '"+this.intCallPrefix+"' should contain two to four digits");
+				alert("International call prefix '" + this.intCallPrefix + "' should contain two to four digits");
 			if (this.countryCallingCode != "" && !this.countryCallingCode.match(/^(\+|[0-9])[0-9]{1,6}$/))
-				alert("Default country calling code '"+this.countryCallingCode+"' should contain a leading '+' or digit followed by one to six digits");
+				alert("Default country calling code '" + this.countryCallingCode + "' should contain a leading '+' or digit followed by one to six digits");
 			await DuplicateEntriesWindowPrefs.savePrefs(this);
 
 			this.purgeAttributesTable();
@@ -195,8 +195,8 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			var ab2Label = document.getElementById('statusAddressBook2_label');
 			if (ab1Label) ab1Label.textContent = this.abDir1Name;
 			if (ab2Label) ab2Label.textContent = this.abDir2Name;
-			this.updateDeletedInfo('statusAddressBook1_size' , this.BOOK_1, 0);
-			this.updateDeletedInfo('statusAddressBook2_size' , this.BOOK_2, 0);
+			this.updateDeletedInfo('statusAddressBook1_size', this.BOOK_1, 0);
+			this.updateDeletedInfo('statusAddressBook2_size', this.BOOK_2, 0);
 
 			// re-initialization needed in case of restart:
 			if (ablist) {
@@ -245,7 +245,7 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			this.updateProgress();
 			// starting the search via setTimeout allows redrawing the progress info
 			var self = this;
-			setTimeout(function() { 
+			setTimeout(function() {
 				if (typeof DuplicateEntriesWindowSearch !== 'undefined') {
 					DuplicateEntriesWindowSearch.runIntervalAction(self);
 				} else {
@@ -281,7 +281,7 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			// see what's been modified
 			var updateFields = this.getCardFieldValues(side);
 			var entryModified = false;
-			for(let property in updateFields) {
+			for (let property in updateFields) {
 				const defaultValue = this.defaultValue(property); /* cannot be a set here */
 				var currentValue = card.getProperty(property, defaultValue);
 				if (currentValue != updateFields[property]) {
@@ -290,7 +290,7 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 						card.setProperty(property, updateFields[property]);
 						entryModified = true;
 					} catch (e) {
-						alert("Internal error: cannot set field '"+property+"' of "+(card.DisplayName || card._id)+": "+e);
+						alert("Internal error: cannot set field '" + property + "' of " + (card.DisplayName || card._id) + ": " + e);
 					}
 				}
 			}
@@ -300,7 +300,7 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 					await DuplicateEntriesWindowContacts.saveCard(abId, card);
 					this.totalCardsChanged++;
 				} catch (e) {
-					alert("Internal error: cannot update card '"+(card.DisplayName || card._id)+"': "+e);
+					alert("Internal error: cannot update card '" + (card.DisplayName || card._id) + "': " + e);
 				}
 			}
 		},
@@ -310,7 +310,7 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 		 * TB128: Now async
 		 */
 		keepAndSearchNextDuplicate: async function() {
-			await this.updateAbCard(this.abId1, this.BOOK_1, this.position1, 'left' );
+			await this.updateAbCard(this.abId1, this.BOOK_1, this.position1, 'left');
 			await this.updateAbCard(this.abId2, this.BOOK_2, this.position2, 'right');
 			this.searchNextDuplicate();
 		},
@@ -336,7 +336,7 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 						this.totalCardsDeletedAuto++;
 				}
 			} catch (e) {
-				alert("Internal error: cannot remove card '"+(card.DisplayName || card._id)+"': "+e);
+				alert("Internal error: cannot remove card '" + (card.DisplayName || card._id) + "': " + e);
 			}
 			this.vcards[book][index] = null; // set empty element, but leave element number as is
 		},
@@ -390,7 +390,7 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 		 * and editing. Editable fields will be listed in this.editableFields.
 		 */
 		displayCardData: function(card1, card2, comparison, preference,
-			                  namesmatch, mailsmatch, phonesmatch) {
+			namesmatch, mailsmatch, phonesmatch) {
 			DuplicateEntriesWindowDisplay.displayCardData(this, card1, card2, comparison, preference,
 				namesmatch, mailsmatch, phonesmatch);
 		},

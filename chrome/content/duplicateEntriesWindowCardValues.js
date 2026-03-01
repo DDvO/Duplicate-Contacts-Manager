@@ -44,9 +44,9 @@ var DuplicateEntriesWindowCardValues = (function() {
 			}
 			return isNaN(d.getTime()) ? "" : d.toLocaleString();
 		}
-	if (property == 'PhotoURI' && value == 'chrome://messenger/skin/addressbook/icons/contact-generic.png')
-		return defaultValue;
-	return value + "";
+		if (property == 'PhotoURI' && value == 'chrome://messenger/skin/addressbook/icons/contact-generic.png')
+			return defaultValue;
+		return value + "";
 	}
 
 	function getPrunedProperty(ctx, card, property) {
@@ -86,7 +86,7 @@ var DuplicateEntriesWindowCardValues = (function() {
 			fn = getPrunedProperty(ctx, card, 'FirstName');
 			ln = getPrunedProperty(ctx, card, 'LastName');
 			if (/,\s*$/.test(fn)) {
-				ln = fn.replace(/,\s*$/,"");
+				ln = fn.replace(/,\s*$/, "");
 				fn = getProperty(ctx, card, 'LastName');
 			} else {
 				if ((p = fn.match(/^([^,]+),\s+(.+)$/))) {

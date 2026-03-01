@@ -175,6 +175,7 @@ var DuplicateEntriesWindowMatching = (function() {
 				name1.includes(" " + name2 + " ") ||
 				name1.endsWith(" " + name2));
 		}
+
 		function subEq(name1, name2) {
 			return (name1 == name2) || subEq1(name1, name2) || subEq1(name2, name1);
 		}

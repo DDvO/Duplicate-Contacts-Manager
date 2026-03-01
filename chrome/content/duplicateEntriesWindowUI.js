@@ -19,6 +19,7 @@ var DuplicateEntriesWindowUI = (function() {
 		elem.disabled = false;
 		elem.className = '';
 	}
+
 	function disable(id) {
 		var elem = document.getElementById(id);
 		if (!elem) return;
@@ -26,6 +27,7 @@ var DuplicateEntriesWindowUI = (function() {
 		elem.disabled = true;
 		elem.className = 'disabled';
 	}
+
 	function show(id) {
 		var elem = document.getElementById(id);
 		if (!elem) return;
@@ -45,16 +47,19 @@ var DuplicateEntriesWindowUI = (function() {
 		// Override CSS display:contents with flex to ensure visibility
 		elem.style.display = 'flex';
 	}
+
 	function hide(id) {
 		var elem = document.getElementById(id);
 		if (!elem) return;
 		elem.style.display = 'none';
 	}
+
 	function make_visible(id) {
 		var elem = document.getElementById(id);
 		if (!elem) return;
 		elem.style.visibility = 'visible';
 	}
+
 	function make_invisible(id) {
 		var elem = document.getElementById(id);
 		if (!elem) return;
@@ -267,7 +272,7 @@ var DuplicateEntriesWindowUI = (function() {
 			var num2 = ctx.vcards[ctx.BOOK_2].length;
 			// TB128: Use abId1/abId2 instead of abDir1/abDir2
 			max = ctx.abId1 == ctx.abId2 ? (num1 * (num1 - 1) / 2) : (num1 * num2);
-			if (pos > max)  /* happens at end */
+			if (pos > max) /* happens at end */
 				pos = max;
 		} else {
 			current = 'parity';

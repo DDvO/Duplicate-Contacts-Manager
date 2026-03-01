@@ -6,7 +6,7 @@
 document.addEventListener('DOMContentLoaded', function() {
 	// Use messenger namespace (Thunderbird preferred) or fallback to browser
 	const i18nAPI = (typeof messenger !== 'undefined' && messenger.i18n) ? messenger.i18n : browser.i18n;
-	
+
 	// Apply i18n to all elements with data-i18n attribute
 	document.querySelectorAll('[data-i18n]').forEach(el => {
 		const key = el.getAttribute('data-i18n');
@@ -29,12 +29,12 @@ document.addEventListener('DOMContentLoaded', function() {
 			}
 		}
 	});
-	
+
 	// Set title
 	if (i18nAPI) {
 		document.title = i18nAPI.getMessage('handleDuplicates.windowtitle') || document.title;
 	}
-	
+
 	// Initialize window when scripts are loaded
 	if (typeof DuplicateEntriesWindow !== 'undefined') {
 		DuplicateEntriesWindow.init();
@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			}
 		});
 	}
-	
+
 	const skipButton = document.getElementById('skipnextbutton');
 	if (skipButton) {
 		skipButton.addEventListener('click', function() {
@@ -74,7 +74,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			}
 		});
 	}
-	
+
 	const keepButton = document.getElementById('keepnextbutton');
 	if (keepButton) {
 		keepButton.addEventListener('click', function() {
@@ -83,7 +83,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			}
 		});
 	}
-	
+
 	const applyButton = document.getElementById('applynextbutton');
 	if (applyButton) {
 		applyButton.addEventListener('click', function() {
@@ -92,7 +92,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			}
 		});
 	}
-	
+
 	const stopButton = document.getElementById('stopbutton');
 	if (stopButton) {
 		stopButton.addEventListener('click', function() {
@@ -101,14 +101,14 @@ document.addEventListener('DOMContentLoaded', function() {
 			}
 		});
 	}
-	
+
 	const quitButton = document.getElementById('quitbutton');
 	if (quitButton) {
 		quitButton.addEventListener('click', function() {
 			window.close();
 		});
 	}
-	
+
 	// Radio button handlers for keep left/right
 	const keepLeft = document.getElementById('keepLeft');
 	const keepRight = document.getElementById('keepRight');
