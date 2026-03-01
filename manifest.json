@@ -3,7 +3,7 @@
   "name": "duplicateContactsManager",
   "description": "Duplicate Contacts Manager for Thunderbird",
   "version": "2.2.2",
-  "author": "Marian Steinbach, David von Oheimb, et al.",
+  "author": "Marian Steinbach, David von Oheimb, Stefano Morpurgo, et al.",
   "homepage_url": "https://addons.mozilla.org/thunderbird/addon/2505",
   "default_locale": "en",
   "browser_specific_settings": {
