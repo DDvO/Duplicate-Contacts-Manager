@@ -7,6 +7,7 @@ const menusAPI = (typeof messenger !== 'undefined' && messenger.menus) ? messeng
 const runtimeAPI = (typeof messenger !== 'undefined' && messenger.runtime) ? messenger.runtime : browser.runtime;
 const windowsAPI = (typeof messenger !== 'undefined' && messenger.windows) ? messenger.windows : browser.windows;
 const i18nAPI = (typeof messenger !== 'undefined' && messenger.i18n) ? messenger.i18n : browser.i18n;
+const actionAPI = (typeof messenger !== 'undefined' && messenger.action) ? messenger.action : browser.action;
 
 // Create menu items when extension loads
 runtimeAPI.onStartup.addListener(() => {
@@ -50,6 +51,12 @@ if (menusAPI && menusAPI.onClicked) {
     if (info.menuItemId === "duplicate-contacts-manager-tools") {
       openDuplicateManagerWindow();
     }
+  });
+}
+
+if (actionAPI && actionAPI.onClicked) {
+  actionAPI.onClicked.addListener(() => {
+    openDuplicateManagerWindow();
   });
 }
 
