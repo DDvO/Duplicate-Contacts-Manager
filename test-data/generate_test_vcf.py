@@ -36,6 +36,238 @@ def create_vcard(fn, n_parts, email, tel, notes, uid):
     """Simple wrapper for basic vcards"""
     return create_vcard_advanced(fn, n_parts, email, tel, notes, uid, None)
 
+
+def phase12_book1_mv3_vcfs():
+    """
+    Phase 1–2 regression contacts for Book 1 (unique; no duplicate in Book 2).
+
+    Phase 1: MV3 vCard-only loading — structured N, multiple EMAIL lines parsed into
+    PrimaryEmail / SecondEmail (third EMAIL ignored by parser, by design).
+
+    Phase 2: REV (compact UTC + 8-digit date), BDAY split into BirthYear/Month/Day,
+    inverse-consistent with generateVCard / formatRevForVCard.
+    """
+    return (
+        """BEGIN:VCARD
+VERSION:3.0
+FN:PHASE12-REV-001
+N:Rev001;Phase12;;;
+EMAIL;TYPE=INTERNET:phase12.rev001@example.com
+TEL;TYPE=WORK:555-12001
+REV:20230215T120000Z
+NOTE:[TEST] Phase2 REV compact UTC. Verify Last Modified after load; round-trip save.
+UID:phase12-rev-001-a
+END:VCARD
+"""
+        """BEGIN:VCARD
+VERSION:3.0
+FN:PHASE12-REV-002
+N:Rev002;Phase12;;;
+EMAIL;TYPE=INTERNET:phase12.rev002@example.com
+TEL;TYPE=WORK:555-12002
+REV:20230101
+NOTE:[TEST] Phase2 REV 8-digit date. parseLastModifiedDateForDisplay + formatRev round-trip.
+UID:phase12-rev-002-a
+END:VCARD
+"""
+        """BEGIN:VCARD
+VERSION:3.0
+FN:PHASE12-BDAY-001
+N:Birthday;Phase12;;;
+EMAIL;TYPE=INTERNET:phase12.bday001@example.com
+TEL;TYPE=WORK:555-12003
+BDAY:1990-05-15
+NOTE:[TEST] Phase2 BDAY line -> BirthYear/BirthMonth/BirthDay (mapVCardPropertyToTB BirthDay).
+UID:phase12-bday-001-a
+END:VCARD
+"""
+        """BEGIN:VCARD
+VERSION:3.0
+FN:PHASE12-MAIL2-001
+N:MailTwo;Phase12;;;
+EMAIL;TYPE=INTERNET:phase12.mail2.primary@example.com
+EMAIL;TYPE=INTERNET:phase12.mail2.secondary@example.com
+TEL;TYPE=WORK:555-12004
+NOTE:[TEST] Phase1/2 two EMAIL lines -> PrimaryEmail + SecondEmail order matches generateVCard.
+UID:phase12-mail2-001-a
+END:VCARD
+"""
+        """BEGIN:VCARD
+VERSION:3.0
+FN:PHASE12-MAIL3-001
+N:MailThree;Phase12;;;
+EMAIL;TYPE=INTERNET:phase12.mail3.first@example.com
+EMAIL;TYPE=INTERNET:phase12.mail3.second@example.com
+EMAIL;TYPE=INTERNET:phase12.mail3.third@example.com
+TEL;TYPE=WORK:555-12005
+NOTE:[TEST] Phase1 third EMAIL ignored by parser (Primary+Second only). Intentional.
+UID:phase12-mail3-001-a
+END:VCARD
+"""
+        """BEGIN:VCARD
+VERSION:3.0
+FN:Phase12 N Middle
+N:Structured;Phase12;Middle;;;
+EMAIL;TYPE=INTERNET:phase12.nstruct@example.com
+TEL;TYPE=WORK:555-12006
+NOTE:[TEST] Phase1 structured N (Last;First;Middle). FN separate from N.
+UID:phase12-nstruct-001-a
+END:VCARD
+"""
+    )
+
+
+def phase12_book2_mv3_vcfs():
+    """
+    Phase 1–2 regression contacts for Book 2 (unique; different emails/FN from Book 1).
+
+    Use for manual compare / open contact: no duplicate pair with Book 1 PHASE12-*.
+    """
+    return (
+        """BEGIN:VCARD
+VERSION:3.0
+FN:PHASE12-REV-101
+N:Rev101;Phase12b;;;
+EMAIL;TYPE=INTERNET:phase12.rev101@example.org
+TEL;TYPE=WORK:555-22001
+REV:20240620T153045Z
+NOTE:[TEST] Phase2 REV compact (book2). Independent from Book1 PHASE12-REV-001.
+UID:phase12-rev-101-b
+END:VCARD
+"""
+        """BEGIN:VCARD
+VERSION:3.0
+FN:PHASE12-REV-102
+N:Rev102;Phase12b;;;
+EMAIL;TYPE=INTERNET:phase12.rev102@example.org
+TEL;TYPE=WORK:555-22002
+REV:20241225
+NOTE:[TEST] Phase2 REV 8-digit date (book2).
+UID:phase12-rev-102-b
+END:VCARD
+"""
+        """BEGIN:VCARD
+VERSION:3.0
+FN:PHASE12-BDAY-101
+N:Birthday;Phase12b;;;
+EMAIL;TYPE=INTERNET:phase12.bday101@example.org
+TEL;TYPE=WORK:555-22003
+BDAY:1985-11-23
+NOTE:[TEST] Phase2 BDAY (book2).
+UID:phase12-bday-101-b
+END:VCARD
+"""
+        """BEGIN:VCARD
+VERSION:3.0
+FN:PHASE12-MAIL2-101
+N:MailTwo;Phase12b;;;
+EMAIL;TYPE=INTERNET:phase12.mail2a@example.org
+EMAIL;TYPE=INTERNET:phase12.mail2b@example.org
+TEL;TYPE=WORK:555-22004
+NOTE:[TEST] Phase1/2 two EMAIL lines (book2).
+UID:phase12-mail2-101-b
+END:VCARD
+"""
+        """BEGIN:VCARD
+VERSION:3.0
+FN:PHASE12-MAIL3-101
+N:MailThree;Phase12b;;;
+EMAIL;TYPE=INTERNET:phase12.m3a@example.org
+EMAIL;TYPE=INTERNET:phase12.m3b@example.org
+EMAIL;TYPE=INTERNET:phase12.m3c@example.org
+TEL;TYPE=WORK:555-22005
+NOTE:[TEST] Phase1 third EMAIL ignored (book2).
+UID:phase12-mail3-101-b
+END:VCARD
+"""
+        """BEGIN:VCARD
+VERSION:3.0
+FN:Phase12b N Middle
+N:Structured;Phase12b;Middle;;;
+EMAIL;TYPE=INTERNET:phase12.nstruct@example.org
+TEL;TYPE=WORK:555-22006
+NOTE:[TEST] Phase1 structured N (book2).
+UID:phase12-nstruct-101-b
+END:VCARD
+"""
+    )
+
+
+def dupview_duplicate_pairs_book1():
+    """
+    A variants for duplicate pairs that intentionally match Book 2 B cards (same PrimaryEmail).
+
+    Use these when stepping through duplicates: comparison table should show BDAY, BirthYear/Month/Day,
+    two EMAIL lines, structured N, Last Modified (REV), and related fields.
+    Search by FN prefix DUPVIEW- in the duplicate flow or by email dupview.full@ / dupview.triple@.
+    """
+    return (
+        """BEGIN:VCARD
+VERSION:3.0
+FN:DUPVIEW-FULL-A
+N:Full;Dup;Viewer;;;
+EMAIL;TYPE=INTERNET:dupview.full@example.com
+EMAIL;TYPE=INTERNET:dupview.full.alt@example.com
+TEL;TYPE=WORK:555-87101
+BDAY:1988-03-14
+REV:20200115T120000Z
+NOTE:[TEST] DUPVIEW duplicate pair A — BDAY + 2 EMAIL + N + REV. Same primary email as DUPVIEW-FULL-B.
+UID:dupview-full-a
+END:VCARD
+"""
+        """BEGIN:VCARD
+VERSION:3.0
+FN:DUPVIEW-TRIPLE-A
+N:Triple;Dup;Viewer;;;
+EMAIL;TYPE=INTERNET:dupview.triple@example.com
+EMAIL;TYPE=INTERNET:dupview.triple.second@example.com
+EMAIL;TYPE=INTERNET:dupview.triple.third@example.com
+TEL;TYPE=WORK:555-87102
+BDAY:1992-11-07
+REV:20220601T090000Z
+NOTE:[TEST] DUPVIEW duplicate pair A — three EMAIL lines (parser keeps Primary+Second; third ignored for matching). Matches DUPVIEW-TRIPLE-B.
+UID:dupview-triple-a
+END:VCARD
+"""
+    )
+
+
+def dupview_duplicate_pairs_book2():
+    """
+    B variants: same PrimaryEmail (and same second email where applicable) as Book 1 DUPVIEW-*-A cards.
+    SHOULD BE DELETED as duplicates when comparing Book 1 vs Book 2 (same as other B variants).
+    """
+    return (
+        """BEGIN:VCARD
+VERSION:3.0
+FN:DUPVIEW-FULL-B
+N:Full;Dup;Viewer;;;
+EMAIL;TYPE=INTERNET:dupview.full@example.com
+EMAIL;TYPE=INTERNET:dupview.full.alt@example.com
+TEL;TYPE=WORK:555-87101
+BDAY:1988-03-14
+REV:20200115T120000Z
+NOTE:[TEST] DUPVIEW duplicate pair B — SHOULD match DUPVIEW-FULL-A (same emails). Delete B when keeping A.
+UID:dupview-full-b
+END:VCARD
+"""
+        """BEGIN:VCARD
+VERSION:3.0
+FN:DUPVIEW-TRIPLE-B
+N:Triple;Dup;Viewer;;;
+EMAIL;TYPE=INTERNET:dupview.triple@example.com
+EMAIL;TYPE=INTERNET:dupview.triple.second@example.com
+EMAIL;TYPE=INTERNET:dupview.triple.third@example.com
+TEL;TYPE=WORK:555-87102
+BDAY:1992-11-07
+REV:20220601T090000Z
+NOTE:[TEST] DUPVIEW duplicate pair B — three EMAIL lines. Matches DUPVIEW-TRIPLE-A.
+UID:dupview-triple-b
+END:VCARD
+"""
+    )
+
+
 def generate_book1():
     """Generate addressbook1-test.vcf"""
     vcards = []
@@ -248,7 +480,13 @@ def generate_book1():
     notes = "[TEST] EDGE - Minimal data."
     uid = "edge-minimal-a"
     vcards.append(create_vcard(fn, [fn, ""], email, tel, notes, uid))
-    
+
+    # DUPVIEW: duplicate pairs (same PrimaryEmail as Book 2) — BDAY, multi-EMAIL, N, REV in comparison UI
+    vcards.append(dupview_duplicate_pairs_book1())
+
+    # Phase 1–2: MV3 vCard parse (N, multi-EMAIL), REV/BDAY (see README Phase 1–2 section)
+    vcards.append(phase12_book1_mv3_vcfs())
+
     return "".join(vcards)
 
 def generate_book2():
@@ -440,7 +678,13 @@ def generate_book2():
     notes = "[TEST] EDGE - Minimal data (different from book 1)."
     uid = "edge-minimal-b"
     vcards.append(create_vcard(fn, [fn, ""], email, tel, notes, uid))
-    
+
+    # DUPVIEW: B variants (match dupview_duplicate_pairs_book1)
+    vcards.append(dupview_duplicate_pairs_book2())
+
+    # Phase 1–2: independent contacts in Book 2 (no duplicate of Book 1 PHASE12-*)
+    vcards.append(phase12_book2_mv3_vcfs())
+
     return "".join(vcards)
 
 if __name__ == "__main__":
@@ -463,7 +707,9 @@ if __name__ == "__main__":
     
     print(f"\nTest files generated successfully!")
     print(f"Total contacts: {count1 + count2} ({count1} in book1, {count2} in book2)")
-    print(f"\nExpected matches: 21 pairs (18 + 3 AUTO)")
+    print(f"  Includes {6} PHASE12 contacts per book (Phase 1–2 MV3 / vCardUtils regression).")
+    print(f"  Includes 2 DUPVIEW duplicate pairs per book (BDAY / multi-EMAIL / REV / N — for comparison UI).")
+    print(f"\nExpected matches: 23 pairs (20 + 3 AUTO)")
     print(f"  - 2 EXACT")
     print(f"  - 2 NEAR-GMAIL")
     print(f"  - 2 NEAR-PHONE")
@@ -473,6 +719,7 @@ if __name__ == "__main__":
     print(f"  - 2 NEAR-ACCENT")
     print(f"  - 2 NEAR-NOREPLY")
     print(f"  - 2 NAME-ONLY-MATCH (name matches, different email - WILL match due to OR logic)")
+    print(f"  - 2 DUPVIEW (BDAY + 2 EMAIL + REV + N, and triple EMAIL)")
     print(f"  - 3 AUTO-RICH/POOR pairs (richness-based auto-deletion)")
     print(f"\nExpected AUTO-DELETIONS: 3 contacts (poor copies, true subsets)")
     print(f"  - Auto Test Person 001 (Book 2 copy - subset of Book 1)")
@@ -482,5 +729,5 @@ if __name__ == "__main__":
     print(f"  - 10 TRUE-NODUP pairs (completely different)")
     print(f"  - 50 UNIQUE contacts (no counterpart)")
     print(f"  - 10 EDGE cases (various)")
-    print(f"\nExpected total deletions from Book 2: 21 contacts")
-    print(f"Book 2 after test: {count2 - 21} contacts remaining")
+    print(f"\nExpected total deletions from Book 2: 23 contacts")
+    print(f"Book 2 after test: {count2 - 23} contacts remaining")

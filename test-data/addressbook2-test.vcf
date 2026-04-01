@@ -583,3 +583,88 @@ EMAIL;TYPE=INTERNET:edgeminimalB@example.com
 NOTE:[TEST] EDGE - Minimal data (different from book 1).
 UID:edge-minimal-b
 END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:DUPVIEW-FULL-B
+N:Full;Dup;Viewer;;;
+EMAIL;TYPE=INTERNET:dupview.full@example.com
+EMAIL;TYPE=INTERNET:dupview.full.alt@example.com
+TEL;TYPE=WORK:555-87101
+BDAY:1988-03-14
+REV:20200115T120000Z
+NOTE:[TEST] DUPVIEW duplicate pair B — SHOULD match DUPVIEW-FULL-A (same emails). Delete B when keeping A.
+UID:dupview-full-b
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:DUPVIEW-TRIPLE-B
+N:Triple;Dup;Viewer;;;
+EMAIL;TYPE=INTERNET:dupview.triple@example.com
+EMAIL;TYPE=INTERNET:dupview.triple.second@example.com
+EMAIL;TYPE=INTERNET:dupview.triple.third@example.com
+TEL;TYPE=WORK:555-87102
+BDAY:1992-11-07
+REV:20220601T090000Z
+NOTE:[TEST] DUPVIEW duplicate pair B — three EMAIL lines. Matches DUPVIEW-TRIPLE-A.
+UID:dupview-triple-b
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:PHASE12-REV-101
+N:Rev101;Phase12b;;;
+EMAIL;TYPE=INTERNET:phase12.rev101@example.org
+TEL;TYPE=WORK:555-22001
+REV:20240620T153045Z
+NOTE:[TEST] Phase2 REV compact (book2). Independent from Book1 PHASE12-REV-001.
+UID:phase12-rev-101-b
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:PHASE12-REV-102
+N:Rev102;Phase12b;;;
+EMAIL;TYPE=INTERNET:phase12.rev102@example.org
+TEL;TYPE=WORK:555-22002
+REV:20241225
+NOTE:[TEST] Phase2 REV 8-digit date (book2).
+UID:phase12-rev-102-b
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:PHASE12-BDAY-101
+N:Birthday;Phase12b;;;
+EMAIL;TYPE=INTERNET:phase12.bday101@example.org
+TEL;TYPE=WORK:555-22003
+BDAY:1985-11-23
+NOTE:[TEST] Phase2 BDAY (book2).
+UID:phase12-bday-101-b
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:PHASE12-MAIL2-101
+N:MailTwo;Phase12b;;;
+EMAIL;TYPE=INTERNET:phase12.mail2a@example.org
+EMAIL;TYPE=INTERNET:phase12.mail2b@example.org
+TEL;TYPE=WORK:555-22004
+NOTE:[TEST] Phase1/2 two EMAIL lines (book2).
+UID:phase12-mail2-101-b
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:PHASE12-MAIL3-101
+N:MailThree;Phase12b;;;
+EMAIL;TYPE=INTERNET:phase12.m3a@example.org
+EMAIL;TYPE=INTERNET:phase12.m3b@example.org
+EMAIL;TYPE=INTERNET:phase12.m3c@example.org
+TEL;TYPE=WORK:555-22005
+NOTE:[TEST] Phase1 third EMAIL ignored (book2).
+UID:phase12-mail3-101-b
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:Phase12b N Middle
+N:Structured;Phase12b;Middle;;;
+EMAIL;TYPE=INTERNET:phase12.nstruct@example.org
+TEL;TYPE=WORK:555-22006
+NOTE:[TEST] Phase1 structured N (book2).
+UID:phase12-nstruct-101-b
+END:VCARD

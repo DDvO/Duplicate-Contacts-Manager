@@ -4,10 +4,10 @@
 
 - [ ] Created new Thunderbird address book named "Test Book 1"
 - [ ] Imported `addressbook1-test.vcf` into Test Book 1
-- [ ] Verified count in Test Book 1: **Should show ~300 contacts**
+- [ ] Verified count in Test Book 1: **Should show 64 contacts** (run `python generate_test_vcf.py` if counts differ)
 - [ ] Created new Thunderbird address book named "Test Book 2"
 - [ ] Imported `addressbook2-test.vcf` into Test Book 2
-- [ ] Verified count in Test Book 2: **Should show ~400 contacts**
+- [ ] Verified count in Test Book 2: **Should show 74 contacts**
 
 ## Running the Test
 
@@ -22,9 +22,9 @@
 
 ### Contact Counts
 
-- [ ] **Test Book 1**: Still has ~300 contacts (unchanged)
-- [ ] **Test Book 2**: Has ~235 contacts (165 deleted)
-- [ ] **Total deletion count**: 165 contacts deleted
+- [ ] **Test Book 1**: Still has **64** contacts (unchanged)
+- [ ] **Test Book 2**: Has **51** contacts (**23** deleted)
+- [ ] **Total deletion count**: **23** contacts deleted from Book 2
 
 ### Category Verification in Test Book 2
 
@@ -48,6 +48,26 @@ Search for each category prefix in Test Book 2 and verify counts:
 - [ ] Search `EDGE-` → ~35 results
 
 ### Spot Checks - Specific Contacts
+
+### DUPVIEW duplicate pairs (comparison table)
+
+When the duplicate finder reaches a **DUPVIEW-FULL** or **DUPVIEW-TRIPLE** pair (same primary email as the other book), the side-by-side table should show populated rows for **birthday / date parts**, **Second email**, **Last Modified**, and **names** — re-import the regenerated VCFs if you do not see `dupview.full@` / `dupview.triple@` contacts.
+
+- [ ] At least one duplicate step shows **DUPVIEW-FULL-A** vs **DUPVIEW-FULL-B** (or TRIPLE-A vs TRIPLE-B)
+
+### Phase 1–2 (MV3 vCard) spot checks
+
+After import (before or after duplicate run), open these **Book 1** contacts and confirm fields load from vCard:
+
+- [ ] `PHASE12-REV-001` — Last Modified shows a sensible date (REV compact UTC)
+- [ ] `PHASE12-BDAY-001` — Birthday / date fields populated from `BDAY:1990-05-15`
+- [ ] `PHASE12-MAIL2-001` — Two email addresses (primary + second)
+- [ ] `PHASE12-MAIL3-001` — At most two emails stored (third ignored; see NOTE on card)
+- [ ] `Phase12 N Middle` — Structured name (Last / First / Middle) matches **N:** line
+
+Optional round-trip: edit a field, save, reopen — vCard should remain consistent (REV/EMAIL order).
+
+**After duplicate run**, all six **Book 2** `Phase12` contacts should still exist (search substring `Phase12` → 6).
 
 **In Test Book 2, search for these - should NOT be found:**
 - [ ] `EXACT-001-B` → Not found ✓
@@ -85,18 +105,14 @@ Search for each category prefix in Test Book 2 and verify counts:
 **False positives prevented:**
 - [ ] Confirm `john.smith.companyA@example.com` did NOT match `john.smith.companyB@example.com`
 
-### Bug Reproduction Test
+### Bug Reproduction Test (SHARED / CardDAV)
 
-The SHARED contacts were the critical test for the v2.2.2 bug fix:
+If your imported VCF includes **SHARED-** contacts (not in the default `generate_test_vcf.py` output as of Phase 1–2):
 
-- [ ] All 50 SHARED-xxx contacts were deleted successfully
-- [ ] **No errors** like "Error: contact with id=xxx could not be found" occurred
+- [ ] SHARED duplicates delete without **"contact with id=… could not be found"**
 - [ ] Process completed cleanly without alerts
 
-**What was being tested:**
-- SHARED contacts have identical UIDs in both books
-- Old code (v2.2.1): Would use wrong address book ID → "not found" error
-- Fixed code (v2.2.2): Uses card's actual `_addressBookId` → deletes correctly
+**What was being tested:** same logical contact in two books → delete uses correct `_addressBookId` (v2.2.2+).
 
 ## Export for Detailed Analysis (Optional)
 
@@ -113,14 +129,12 @@ Fill in after test:
 
 | Metric | Expected | Actual | Status |
 |--------|----------|--------|--------|
-| Book 1 Count | 300 | | |
-| Book 2 Count | 235 | | |
-| Total Deleted | 165 | | |
+| Book 1 Count | 64 | | |
+| Book 2 Count | 51 | | |
+| Total Deleted (from Book 2) | 23 | | |
+| Phase12 remaining (Book 2, search `Phase12`) | 6 | | |
 | EXACT-B remaining | 0 | | |
 | NEAR-B remaining | 0 | | |
-| SHARED remaining | 0 | | |
-| NODUP-B remaining | 50 | | |
-| UNIQUE remaining | 150 | | |
 | Errors occurred | 0 | | |
 
 ## Test Result

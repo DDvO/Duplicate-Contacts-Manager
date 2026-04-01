@@ -512,3 +512,88 @@ EMAIL;TYPE=INTERNET:edgeminimal@example.com
 NOTE:[TEST] EDGE - Minimal data.
 UID:edge-minimal-a
 END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:DUPVIEW-FULL-A
+N:Full;Dup;Viewer;;;
+EMAIL;TYPE=INTERNET:dupview.full@example.com
+EMAIL;TYPE=INTERNET:dupview.full.alt@example.com
+TEL;TYPE=WORK:555-87101
+BDAY:1988-03-14
+REV:20200115T120000Z
+NOTE:[TEST] DUPVIEW duplicate pair A — BDAY + 2 EMAIL + N + REV. Same primary email as DUPVIEW-FULL-B.
+UID:dupview-full-a
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:DUPVIEW-TRIPLE-A
+N:Triple;Dup;Viewer;;;
+EMAIL;TYPE=INTERNET:dupview.triple@example.com
+EMAIL;TYPE=INTERNET:dupview.triple.second@example.com
+EMAIL;TYPE=INTERNET:dupview.triple.third@example.com
+TEL;TYPE=WORK:555-87102
+BDAY:1992-11-07
+REV:20220601T090000Z
+NOTE:[TEST] DUPVIEW duplicate pair A — three EMAIL lines (parser keeps Primary+Second; third ignored for matching). Matches DUPVIEW-TRIPLE-B.
+UID:dupview-triple-a
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:PHASE12-REV-001
+N:Rev001;Phase12;;;
+EMAIL;TYPE=INTERNET:phase12.rev001@example.com
+TEL;TYPE=WORK:555-12001
+REV:20230215T120000Z
+NOTE:[TEST] Phase2 REV compact UTC. Verify Last Modified after load; round-trip save.
+UID:phase12-rev-001-a
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:PHASE12-REV-002
+N:Rev002;Phase12;;;
+EMAIL;TYPE=INTERNET:phase12.rev002@example.com
+TEL;TYPE=WORK:555-12002
+REV:20230101
+NOTE:[TEST] Phase2 REV 8-digit date. parseLastModifiedDateForDisplay + formatRev round-trip.
+UID:phase12-rev-002-a
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:PHASE12-BDAY-001
+N:Birthday;Phase12;;;
+EMAIL;TYPE=INTERNET:phase12.bday001@example.com
+TEL;TYPE=WORK:555-12003
+BDAY:1990-05-15
+NOTE:[TEST] Phase2 BDAY line -> BirthYear/BirthMonth/BirthDay (mapVCardPropertyToTB BirthDay).
+UID:phase12-bday-001-a
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:PHASE12-MAIL2-001
+N:MailTwo;Phase12;;;
+EMAIL;TYPE=INTERNET:phase12.mail2.primary@example.com
+EMAIL;TYPE=INTERNET:phase12.mail2.secondary@example.com
+TEL;TYPE=WORK:555-12004
+NOTE:[TEST] Phase1/2 two EMAIL lines -> PrimaryEmail + SecondEmail order matches generateVCard.
+UID:phase12-mail2-001-a
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:PHASE12-MAIL3-001
+N:MailThree;Phase12;;;
+EMAIL;TYPE=INTERNET:phase12.mail3.first@example.com
+EMAIL;TYPE=INTERNET:phase12.mail3.second@example.com
+EMAIL;TYPE=INTERNET:phase12.mail3.third@example.com
+TEL;TYPE=WORK:555-12005
+NOTE:[TEST] Phase1 third EMAIL ignored by parser (Primary+Second only). Intentional.
+UID:phase12-mail3-001-a
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:Phase12 N Middle
+N:Structured;Phase12;Middle;;;
+EMAIL;TYPE=INTERNET:phase12.nstruct@example.com
+TEL;TYPE=WORK:555-12006
+NOTE:[TEST] Phase1 structured N (Last;First;Middle). FN separate from N.
+UID:phase12-nstruct-001-a
+END:VCARD

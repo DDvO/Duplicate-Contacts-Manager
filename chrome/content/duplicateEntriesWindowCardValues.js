@@ -3,6 +3,7 @@
 //
 // Card value pipeline: get display or comparison value from a card (getProperty, getPrunedProperty,
 // getTransformedProperty, getAbstractedTransformedProperty, getSimplifiedCard, completeFirstLastDisplayName, propertySet).
+// LastModifiedDate display parsing is delegated to VCardUtils.parseLastModifiedDateForDisplay (Phase 2, inverse with REV in vCardUtils).
 // ctx must have: defaultValue, isSelection, isSet, isFirstLastDisplayName, isEmail, getNormalizationConfig,
 // ignoredFields, vcards, vcardsSimplified (for getSimplifiedCard).
 // Load after duplicateEntriesWindowMatching.js, before duplicateEntriesWindow.js.
@@ -26,23 +27,8 @@ var DuplicateEntriesWindowCardValues = (function() {
 		if (ctx.isSet(property))
 			return value.toString();
 		if (property == 'LastModifiedDate') {
-			if (value == "0" || value === "" || value == null || value === undefined)
-				return "";
-			var d;
-			var num = parseInt(value, 10);
-			if (!isNaN(num) && String(num) === String(value).trim()) {
-				d = new Date(num < 1e12 ? num * 1000 : num); // Unix seconds vs milliseconds
-			} else {
-				// vCard REV compact format "20230215T120000Z" - insert hyphens for Date parsing
-				var s = String(value).trim();
-				if (/^\d{8}T\d{6}Z?$/i.test(s)) {
-					s = s.substr(0, 4) + '-' + s.substr(4, 2) + '-' + s.substr(6, 2) + 'T' + s.substr(9, 2) + ':' + s.substr(11, 2) + ':' + s.substr(13, 2) + (s.charAt(15) === 'Z' ? 'Z' : '');
-				} else if (/^\d{8}$/.test(s)) {
-					s = s.substr(0, 4) + '-' + s.substr(4, 2) + '-' + s.substr(6, 2);
-				}
-				d = new Date(s);
-			}
-			return isNaN(d.getTime()) ? "" : d.toLocaleString();
+			var d = VCardUtils.parseLastModifiedDateForDisplay(value);
+			return d ? d.toLocaleString() : "";
 		}
 		if (property == 'PhotoURI' && value == 'chrome://messenger/skin/addressbook/icons/contact-generic.png')
 			return defaultValue;

@@ -1,5 +1,7 @@
 // vCardUtils.js - vCard parsing and generation utilities for TB128
 // Converts between vCard strings (used by WebExtension API) and JavaScript objects (used by business logic)
+// Phase 2: REV/date and EMAIL ordering helpers keep parse/generate inverse-consistent; display formatting
+// for LastModifiedDate is shared with duplicateEntriesWindowCardValues via parseLastModifiedDateForDisplay.
 
 var VCardUtils = (function() {
 	"use strict";
@@ -199,9 +201,10 @@ var VCardUtils = (function() {
 
 	/**
 	 * Applies a single parsed vCard property to props (internal use in parseVCard).
-	 * Handles N -> FirstName/LastName, multiple emails, TEL, ADR, BDAY, etc.
+	 * Handles N -> FirstName/LastName; multiple EMAIL; REV -> LastModifiedDate; TEL; ADR;
+	 * BirthDay (BDAY line); etc.
 	 * @param {Object} props - Properties object
-	 * @param {string} property - Property name (e.g. 'N', 'PrimaryEmail')
+	 * @param {string} property - Thunderbird property name (e.g. 'N', 'PrimaryEmail', 'LastModifiedDate')
 	 * @param {string} value - Property value
 	 */
 	function applyParsedProperty(props, property, value) {
@@ -218,12 +221,16 @@ var VCardUtils = (function() {
 				props['MiddleName'] = parts[2];
 			}
 		} else if (property === 'PrimaryEmail') {
-			// Handle multiple emails
+			// Multiple EMAIL properties in one vCard: first line -> PrimaryEmail, second -> SecondEmail
+			// (must match appendEmailLinesToVCard order in generateVCard)
 			if (!props['PrimaryEmail']) {
 				props['PrimaryEmail'] = value;
 			} else if (!props['SecondEmail']) {
 				props['SecondEmail'] = value;
 			}
+			// Third and further EMAIL lines are ignored (same as previous behavior)
+		} else if (property === 'LastModifiedDate') {
+			props['LastModifiedDate'] = parseRevToStoredRevValue(value);
 		} else if (property === 'TEL') {
 			// TEL without type - default to CellularNumber
 			if (!props['CellularNumber']) {
@@ -241,8 +248,9 @@ var VCardUtils = (function() {
 				props[baseProp + 'ZipCode'] = parts[7] || '';
 				props[baseProp + 'Country'] = parts[8] || '';
 			}
-		} else if (property === 'BDAY') {
-			// Parse birthday: YYYY-MM-DD or YYYYMMDD
+		} else if (property === 'BirthDay') {
+			// BDAY vCard line is mapped to property name BirthDay (see mapVCardPropertyToTB)
+			// Parse birthday: YYYY-MM-DD or YYYYMMDD into BirthYear / BirthMonth / day-of-month
 			var dateMatch = value.match(/^(\d{4})-?(\d{2})-?(\d{2})/);
 			if (dateMatch) {
 				props['BirthYear'] = dateMatch[1];
@@ -250,6 +258,7 @@ var VCardUtils = (function() {
 				props['BirthDay'] = dateMatch[3];
 			}
 		} else {
+			// Includes UID, Notes, unmapped vCard props, etc. (REV/LastModifiedDate handled above)
 			props[property] = value;
 		}
 	}
@@ -277,13 +286,8 @@ var VCardUtils = (function() {
 		var middleName = props['MiddleName'] || '';
 		lines.push('N:' + escapeVCardValue(familyName) + ';' + escapeVCardValue(givenName) + ';' + escapeVCardValue(middleName) + ';;');
 
-		// Emails
-		if (props['PrimaryEmail']) {
-			lines.push('EMAIL;TYPE=INTERNET:' + escapeVCardValue(props['PrimaryEmail']));
-		}
-		if (props['SecondEmail']) {
-			lines.push('EMAIL;TYPE=INTERNET:' + escapeVCardValue(props['SecondEmail']));
-		}
+		// Emails (order must match applyParsedProperty for multiple EMAIL properties)
+		appendEmailLinesToVCard(lines, props);
 
 		// Phone numbers
 		if (props['CellularNumber']) {
@@ -339,8 +343,12 @@ var VCardUtils = (function() {
 		if (props['UID']) {
 			lines.push('UID:' + escapeVCardValue(props['UID']));
 		}
+		// REV: uses formatRevForVCard so epoch / compact / ISO-like values round-trip with parseRevToStoredRevValue
 		if (props['LastModifiedDate']) {
-			lines.push('REV:' + escapeVCardValue(props['LastModifiedDate']));
+			var revVal = formatRevForVCard(props['LastModifiedDate']);
+			if (revVal !== '') {
+				lines.push('REV:' + revVal);
+			}
 		}
 
 		lines.push('END:VCARD');
@@ -361,6 +369,83 @@ var VCardUtils = (function() {
 			.replace(/;/g, '\\;')
 			.replace(/,/g, '\\,')
 			.replace(/\n/g, '\\n');
+	}
+
+	/**
+	 * Normalizes a raw REV line value from a vCard into the string stored as LastModifiedDate.
+	 * Trimming only; preserves exporter-specific forms where possible so parse is lossless for display logic.
+	 * @param {string} raw - Unescaped REV value from the vCard line
+	 * @returns {string}
+	 */
+	function parseRevToStoredRevValue(raw) {
+		if (raw == null || raw === undefined) {
+			return '';
+		}
+		return String(raw).trim();
+	}
+
+	/**
+	 * Interprets LastModifiedDate / REV storage for UI (same rules as the former inline logic in
+	 * DuplicateEntriesWindowCardValues.getProperty). Returns null if empty or unparseable.
+	 * @param {*} value - Raw property value (epoch string, REV compact, ISO fragment, etc.)
+	 * @returns {Date|null}
+	 */
+	function parseLastModifiedDateForDisplay(value) {
+		if (value == "0" || value === "" || value == null || value === undefined) {
+			return null;
+		}
+		var num = parseInt(value, 10);
+		if (!isNaN(num) && String(num) === String(value).trim()) {
+			return new Date(num < 1e12 ? num * 1000 : num);
+		}
+		var s = String(value).trim();
+		// vCard REV compact format "20230215T120000Z" — insert hyphens for Date parsing
+		if (/^\d{8}T\d{6}Z?$/i.test(s)) {
+			s = s.substr(0, 4) + '-' + s.substr(4, 2) + '-' + s.substr(6, 2) + 'T' + s.substr(9, 2) + ':' + s.substr(11, 2) + ':' + s.substr(13, 2) + (s.charAt(15) === 'Z' ? 'Z' : '');
+		} else if (/^\d{8}$/.test(s)) {
+			s = s.substr(0, 4) + '-' + s.substr(4, 2) + '-' + s.substr(6, 2);
+		}
+		var d = new Date(s);
+		return isNaN(d.getTime()) ? null : d;
+	}
+
+	/**
+	 * Builds the value for a REV: property line from LastModifiedDate storage.
+	 * When the stored value parses as a date (epoch, compact REV, ISO-like), emits vCard-friendly
+	 * compact UTC (YYYYMMDDTHHMMSSZ) so round-trip with parseRevToStoredRevValue stays stable.
+	 * Otherwise uses escapeVCardValue for opaque strings.
+	 * @param {*} lastModifiedDate - Value from props['LastModifiedDate']
+	 * @returns {string} Content after "REV:" (empty means omit REV line in generateVCard)
+	 */
+	function formatRevForVCard(lastModifiedDate) {
+		if (lastModifiedDate == null || lastModifiedDate === undefined || lastModifiedDate === '') {
+			return '';
+		}
+		var s = String(lastModifiedDate).trim();
+		if (s === '' || s === '0') {
+			return '';
+		}
+		var d = parseLastModifiedDateForDisplay(s);
+		if (d) {
+			var iso = d.toISOString();
+			return iso.replace(/[-:]/g, '').replace(/\.\d{3}Z$/, 'Z');
+		}
+		return escapeVCardValue(s);
+	}
+
+	/**
+	 * Appends EMAIL;TYPE=INTERNET lines in document order: PrimaryEmail, then SecondEmail.
+	 * Matches applyParsedProperty: first EMAIL in the vCard becomes PrimaryEmail, second becomes SecondEmail.
+	 * @param {string[]} lines - vCard line buffer (mutated)
+	 * @param {Object} props - Thunderbird-shaped contact properties
+	 */
+	function appendEmailLinesToVCard(lines, props) {
+		if (props['PrimaryEmail']) {
+			lines.push('EMAIL;TYPE=INTERNET:' + escapeVCardValue(props['PrimaryEmail']));
+		}
+		if (props['SecondEmail']) {
+			lines.push('EMAIL;TYPE=INTERNET:' + escapeVCardValue(props['SecondEmail']));
+		}
 	}
 
 	/**
@@ -463,6 +548,7 @@ var VCardUtils = (function() {
 		getProperty: getProperty,
 		setProperty: setProperty,
 		escapeVCardValue: escapeVCardValue,
+		parseLastModifiedDateForDisplay: parseLastModifiedDateForDisplay,
 		createContactCardFromApiContact: createContactCardFromApiContact,
 		extractPrimaryEmailFromContact: extractPrimaryEmailFromContact,
 		extractDisplayNameFromContact: extractDisplayNameFromContact
