@@ -80,7 +80,8 @@ https://stackoverflow.com/questions/948358/adding-custom-functions-into-array-pr
 	 * @param {Object} c2 - Card 2 (plain object)
 	 * @param {object} context - Must have: consideredFields, metaProperties,
 	 *   isNumerical(property), isEmail(property), isPhoneNumber(property), isSet(property), isText(property),
-	 *   defaultValue(property), getAbstractedTransformedProperty(card, property), nonequivalentProperties (array)
+	 *   defaultValue(property), getAbstractedTransformedProperty(card, property), nonequivalentProperties (array).
+	 *   Pair values per property come from DuplicateEntriesWindowCardValues.getComparisonValuesForProperty (same as display).
 	 * @returns {[number, number]} [comparison, preference] where
 	 *   comparison = 1 if second card has less information
 	 *   comparison = 0 if cards are equivalent
@@ -96,7 +97,6 @@ https://stackoverflow.com/questions/948358/adding-custom-functions-into-array-pr
 		var c2_less_complete = true;
 		var props = propertyUnion(c1, c2);
 		var diffProps = context.nonequivalentProperties;
-		// TODO: combine these comparisons with those in displayCardField
 
 		for (var i = 0; i < props.length; i++) {
 			var property = props[i];
@@ -105,18 +105,10 @@ https://stackoverflow.com/questions/948358/adding-custom-functions-into-array-pr
 				context.metaProperties.includes(property) || /* ignore meta properties */
 				context.isEmail(property) || context.isPhoneNumber(property))
 				continue;
-			var defaultValue = context.isSet(property) ? new Set() : context.defaultValue(property);
-			var value1, value2;
-			if (context.isSet(property)) {
-				// TB128: Access properties directly
-				value1 = c1.hasOwnProperty(property) ? c1[property] : defaultValue;
-				value2 = c2.hasOwnProperty(property) ? c2[property] : defaultValue;
-				if (value1 === null || value1 === undefined) value1 = defaultValue;
-				if (value2 === null || value2 === undefined) value2 = defaultValue;
-			} else {
-				value1 = context.getAbstractedTransformedProperty(c1, property);
-				value2 = context.getAbstractedTransformedProperty(c2, property);
-			}
+			var cmp = DuplicateEntriesWindowCardValues.getComparisonValuesForProperty(context, c1, c2, property);
+			var value1 = cmp.value1;
+			var value2 = cmp.value2;
+			var defaultValue = cmp.defaultValue;
 			// this.debug("compareCards: "+property+" = "+value1+" vs. "+value2);
 			if (value1 != value2) {
 				// Build diffProp map: property -> 1 (c1 preferred) or 2 (c2 preferred) or 0 (incomparable)

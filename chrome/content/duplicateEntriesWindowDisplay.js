@@ -5,6 +5,7 @@
 // purgeAttributesTable, getCardFieldValues.
 // ctx must have: attributesTableRows, displayedFields, editableFields, consideredFields,
 // nonequivalentProperties, matchablesList, getString, getProperty, getAbstractedTransformedProperty,
+// (Equivalence symbols for non-set fields use DuplicateEntriesWindowCardValues.getComparisonValuesForProperty — same as compareCards.)
 // defaultValue, isSet, isEmail, isPhoneNumber, isText, isNumerical, isSelection,
 // createSelectionList, sideKept, setContactLeftRight.
 // Load after duplicateEntriesWindowUI.js, before duplicateEntriesWindow.js.
@@ -100,8 +101,9 @@ var DuplicateEntriesWindowDisplay = (function() {
 			} else if (ctx.isPhoneNumber(property)) {
 				[both_empty, equ] = setRelation(card1, card2, '__PhoneNumbers');
 			} else if (!identical) {
-				const value1 = ctx.getAbstractedTransformedProperty(card1, property);
-				const value2 = ctx.getAbstractedTransformedProperty(card2, property);
+				const cmp = DuplicateEntriesWindowCardValues.getComparisonValuesForProperty(ctx, card1, card2, property);
+				const value1 = cmp.value1;
+				const value2 = cmp.value2;
 				if (value1 == value2)
 					equ = '≅';
 				else if (value1 == defaultValue)

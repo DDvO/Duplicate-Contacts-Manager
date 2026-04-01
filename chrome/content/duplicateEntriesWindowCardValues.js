@@ -3,6 +3,7 @@
 //
 // Card value pipeline: get display or comparison value from a card (getProperty, getPrunedProperty,
 // getTransformedProperty, getAbstractedTransformedProperty, getSimplifiedCard, completeFirstLastDisplayName, propertySet).
+// getComparisonValuesForProperty pairs two cards for the same field — shared by compareCards and displayCardField (Phase 3).
 // LastModifiedDate display parsing is delegated to VCardUtils.parseLastModifiedDateForDisplay (Phase 2, inverse with REV in vCardUtils).
 // ctx must have: defaultValue, isSelection, isSet, isFirstLastDisplayName, isEmail, getNormalizationConfig,
 // ignoredFields, vcards, vcardsSimplified (for getSimplifiedCard).
@@ -88,6 +89,37 @@ var DuplicateEntriesWindowCardValues = (function() {
 
 	function getAbstractedTransformedProperty(ctx, card, property) {
 		return DuplicateEntriesWindowMatching.abstract(getTransformedProperty(ctx, card, property), property, ctx.getNormalizationConfig());
+	}
+
+	/**
+	 * Values used when comparing two cards for one property: same source as compareCards and
+	 * displayCardField (equivalence column). Set properties use raw Sets on the cards; others use
+	 * getAbstractedTransformedProperty on each side and defaultValue from ctx.defaultValue(property).
+	 * @param {object} ctx - Window context (must provide isSet, defaultValue, getAbstractedTransformedProperty)
+	 * @param {Object} card1
+	 * @param {Object} card2
+	 * @param {string} property
+	 * @returns {{ value1: *, value2: *, defaultValue: *, isSet: boolean }}
+	 */
+	function getComparisonValuesForProperty(ctx, card1, card2, property) {
+		if (ctx.isSet(property)) {
+			var defaultValue_Set = new Set();
+			var value1 = card1.hasOwnProperty(property) ? card1[property] : defaultValue_Set;
+			var value2 = card2.hasOwnProperty(property) ? card2[property] : defaultValue_Set;
+			if (value1 === null || value1 === undefined) {
+				value1 = defaultValue_Set;
+			}
+			if (value2 === null || value2 === undefined) {
+				value2 = defaultValue_Set;
+			}
+			return { value1: value1, value2: value2, defaultValue: defaultValue_Set, isSet: true };
+		}
+		return {
+			value1: ctx.getAbstractedTransformedProperty(card1, property),
+			value2: ctx.getAbstractedTransformedProperty(card2, property),
+			defaultValue: ctx.defaultValue(property),
+			isSet: false
+		};
 	}
 
 	/**
@@ -228,6 +260,7 @@ var DuplicateEntriesWindowCardValues = (function() {
 		getPrunedProperty: getPrunedProperty,
 		getTransformedProperty: getTransformedProperty,
 		getAbstractedTransformedProperty: getAbstractedTransformedProperty,
+		getComparisonValuesForProperty: getComparisonValuesForProperty,
 		completeFirstLastDisplayName: completeFirstLastDisplayName,
 		getSimplifiedCard: getSimplifiedCard,
 		propertySet: propertySet,
