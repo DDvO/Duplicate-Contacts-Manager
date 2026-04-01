@@ -12,7 +12,7 @@ var DuplicateEntriesWindowCardValues = (function() {
 
 	/**
 	 * Gets a property value from a card object.
-	 * TB128: Cards are plain JavaScript objects, access properties directly instead of using getProperty().
+	 * TB128: Cards expose getProperty/setProperty (from createContactCardFromApiContact), delegating to VCardUtils.
 	 * @param {object} ctx - Context (window object)
 	 * @param {Object} card - Card object (plain JavaScript object)
 	 * @param {string} property - Property name

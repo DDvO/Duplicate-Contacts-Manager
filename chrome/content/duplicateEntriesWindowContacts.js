@@ -54,7 +54,7 @@ var DuplicateEntriesWindowContacts = (function() {
 	 * TB128: Now async, uses addressBooks API and vCard format.
 	 * Returns arrays with all vCards and mailing lists within given address book directory.
 	 * @param {string} addressBookId - Address book ID
-	 * @param {object} context - Must have enrichCardForComparison(card, mailLists), parseVCard, generateVCard
+	 * @param {object} context - Must have enrichCardForComparison(card, mailLists)
 	 * @returns {Promise<{ cards: Array, totalBefore: number }>} - cards array and total count
 	 */
 	async function getAllAbCards(addressBookId, context) {
@@ -88,45 +88,23 @@ var DuplicateEntriesWindowContacts = (function() {
 							if (listDetails.contacts) {
 								for (var j = 0; j < listDetails.contacts.length; j++) {
 									var listContact = listDetails.contacts[j];
-									if (listContact.properties && listContact.properties.PrimaryEmail) {
-										primaryEmails.push(listContact.properties.PrimaryEmail);
+									var memberEmail = VCardUtils.extractPrimaryEmailFromContact(listContact);
+									if (memberEmail) {
+										primaryEmails.push(memberEmail);
 									}
 								}
 							}
-							mailLists.push([contact.properties ? contact.properties.DisplayName : contact.id, primaryEmails]);
+							mailLists.push([VCardUtils.extractDisplayNameFromContact(contact), primaryEmails]);
 						} catch (e) {
 							console.warn("Error getting mailing list details:", e);
 						}
 					} else {
-						// Regular contact: prefer parsing vCard so N (FirstName/LastName) and all fields are correct
-						var cardProps = {};
-						if (contact.vCard && context && context.parseVCard) {
-							cardProps = context.parseVCard(contact.vCard);
-						} else if (contact.properties) {
-							cardProps = contact.properties;
-						} else {
-							cardProps = {};
+						// Regular contact: MV3 — fields from vCard only (see createContactCardFromApiContact)
+						if (typeof VCardUtils === 'undefined' || !VCardUtils.createContactCardFromApiContact) {
+							console.error("getAllAbCards: VCardUtils.createContactCardFromApiContact is required");
+							continue;
 						}
-
-						// Add internal tracking properties
-						cardProps._id = contact.id;
-						cardProps._addressBookId = addressBookId;
-						if (contact.vCard) {
-							cardProps._vCard = contact.vCard;
-						}
-
-						// Add helper methods for property access (similar to nsIAbCard API)
-						cardProps.getProperty = function(property, defaultValue) {
-							var value = this.hasOwnProperty(property) ? this[property] : defaultValue;
-							if (value === null || value === undefined) {
-								value = defaultValue;
-							}
-							return value;
-						};
-						cardProps.setProperty = function(property, value) {
-							this[property] = value;
-						};
-
+						var cardProps = VCardUtils.createContactCardFromApiContact(contact, addressBookId);
 						abCards.push(cardProps);
 						processedCount++;
 					}

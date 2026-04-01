@@ -364,7 +364,8 @@ var VCardUtils = (function() {
 	}
 
 	/**
-	 * Gets a property value from a vCard properties object.
+	 * Gets a property value from a plain contact object (parsed vCard fields on the object).
+	 * Matches legacy nsIAbCard-style behavior: missing, null, or undefined yields defaultValue.
 	 * @param {Object} vCardProps - Properties object (from parseVCard)
 	 * @param {string} property - Property name
 	 * @param {*} defaultValue - Default value if property doesn't exist
@@ -374,7 +375,14 @@ var VCardUtils = (function() {
 		if (!vCardProps || typeof vCardProps !== 'object') {
 			return defaultValue;
 		}
-		return vCardProps.hasOwnProperty(property) ? vCardProps[property] : defaultValue;
+		if (!vCardProps.hasOwnProperty(property)) {
+			return defaultValue;
+		}
+		var value = vCardProps[property];
+		if (value === null || value === undefined) {
+			return defaultValue;
+		}
+		return value;
 	}
 
 	/**
@@ -390,11 +398,73 @@ var VCardUtils = (function() {
 		vCardProps[property] = value;
 	}
 
+	/**
+	 * Builds a plain contact object from an MV3 addressBooks.contacts list entry (vCard only).
+	 * @param {{ id: string, vCard?: string }} contact - API contact node
+	 * @param {string} addressBookId - Parent address book id
+	 * @returns {Object} TB-shaped fields plus _id, _addressBookId, _vCard
+	 */
+	function createContactCardFromApiContact(contact, addressBookId) {
+		var cardProps = parseVCard(contact && contact.vCard ? contact.vCard : '');
+		cardProps._id = contact.id;
+		cardProps._addressBookId = addressBookId;
+		cardProps._vCard = (contact && contact.vCard) ? contact.vCard : '';
+		// nsIAbCard-style API: single delegation point to getProperty/setProperty above
+		cardProps.getProperty = function(property, defaultValue) {
+			return getProperty(this, property, defaultValue);
+		};
+		cardProps.setProperty = function(property, value) {
+			setProperty(this, property, value);
+		};
+		return cardProps;
+	}
+
+	/**
+	 * Primary email from contact vCard (MV3); no legacy properties API.
+	 * @param {{ vCard?: string }} contact
+	 * @returns {string}
+	 */
+	function extractPrimaryEmailFromContact(contact) {
+		if (!contact || !contact.vCard) {
+			return '';
+		}
+		var props = parseVCard(contact.vCard);
+		var email = props.PrimaryEmail;
+		if (email == null || email === undefined) {
+			return '';
+		}
+		email = String(email).trim();
+		return email;
+	}
+
+	/**
+	 * Display label from FN / N via parsed vCard, or contact id.
+	 * @param {{ id: string, vCard?: string }} contact
+	 * @returns {string}
+	 */
+	function extractDisplayNameFromContact(contact) {
+		if (!contact) {
+			return '';
+		}
+		var p = parseVCard(contact.vCard || '');
+		if (p.DisplayName) {
+			return p.DisplayName;
+		}
+		var fl = ((p.FirstName || '') + ' ' + (p.LastName || '')).trim();
+		if (fl) {
+			return fl;
+		}
+		return contact.id || '';
+	}
+
 	return {
 		parseVCard: parseVCard,
 		generateVCard: generateVCard,
 		getProperty: getProperty,
 		setProperty: setProperty,
-		escapeVCardValue: escapeVCardValue
+		escapeVCardValue: escapeVCardValue,
+		createContactCardFromApiContact: createContactCardFromApiContact,
+		extractPrimaryEmailFromContact: extractPrimaryEmailFromContact,
+		extractDisplayNameFromContact: extractDisplayNameFromContact
 	};
 })();
