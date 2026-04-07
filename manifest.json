@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "duplicateContactsManager",
   "description": "Duplicate Contacts Manager for Thunderbird",
-  "version": "2.2.2",
+  "version": "2.2.3",
   "author": "Marian Steinbach, David von Oheimb, Stefano Morpurgo, et al.",
   "homepage_url": "https://github.com/DDvO/Duplicate-Contacts-Manager",
   "default_locale": "en",
