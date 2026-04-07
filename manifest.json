@@ -21,7 +21,7 @@
     "scripts": ["background.js"]
   },
   "action": {
-    "default_title": "Duplicate Contacts Manager",
+    "default_title": "Duplicates",
     "default_icon": {
       "64": "chrome/content/kate.png"
     }
