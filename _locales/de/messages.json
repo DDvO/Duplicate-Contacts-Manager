@@ -368,12 +368,6 @@
   "handleDuplicates.endtext.helpDevelopment": {
     "message": "Du kannst helfen, dieses Thunderbird Add-On zu verbessern, indem du Probleme meldest oder kommentierst, Übersetzungen oder sogar Code beisteuerst. Die Entwickler-Seite ist:"
   },
-  "handleDuplicates.endtext.provideFeedback": {
-    "message": "oder maile Feedback direkt an unsere öffentliche Mailingliste:"
-  },
-  "handleDuplicates.feedbackMail": {
-    "message": "duplicate-contact-manager-for-thunderbird@googlegroups.com"
-  },
   "handleDuplicates.devSiteUrl": {
     "message": "http://code.google.com/p/duplicate-contact-manager-for-thundebird/"
   },
