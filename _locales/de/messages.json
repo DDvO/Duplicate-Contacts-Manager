@@ -3,7 +3,7 @@
     "message": "Kontakte"
   },
   "cards": {
-    "message": "Karten"
+    "message": "Einträge"
   },
   "to_be_kept": {
     "message": "zu behalten"
@@ -105,7 +105,7 @@
     "message": "Nachrichten-Format"
   },
   "PreferDisplayName_label": {
-    "message": "Anzeigename bevorzugt"
+    "message": "Bevorzugter Anzeigename"
   },
   "WorkPhone_label": {
     "message": "Telefon dienstlich"
@@ -174,7 +174,7 @@
     "message": "Dienst Land"
   },
   "JobTitle_label": {
-    "message": "Job Titel"
+    "message": "Job-Titel"
   },
   "Department_label": {
     "message": "Abteilung"
@@ -246,7 +246,7 @@
     "message": "Zuletzt geändert"
   },
   "CorrectAddressBookSelectedPrompt": {
-    "message": "Sie haben offenbar eine Verteilerliste ausgewählt. Auf der Suche nach Duplikaten wird das gesamte Adressbuch behandelt, in dem sich diese Liste befindet."
+    "message": "Du hast offenbar eine Verteilerliste ausgewählt. Auf der Suche nach Duplikaten wird das gesamte Adressbuch behandelt, in dem sich diese Liste befindet."
   },
   "true_label": {
     "message": "ja"
@@ -294,28 +294,28 @@
     "message": "Was passiert hier?"
   },
   "handleDuplicates.introtext": {
-    "message": "In den ausgewählten Adressbüchern wird nach zusammenpassenden, möglicherweise redudanten Einträgen gesucht."
+    "message": "In den ausgewählten Adressbüchern wird nach ähnlichen, möglicherweise redudanten Einträgen gesucht."
   },
   "handleDuplicates.chooseSecondary": {
-    "message": "Wenn Sie zwei verschiedene Adressbücher auswählen, werden Dubletten (nur) zwischen den beiden Adressbüchern behandelt, ansonsten innerhalb des selben Adressbuchs."
+    "message": "Wenn du zwei verschiedene Adressbücher auswählst, werden Dubletten (nur) zwischen den beiden Adressbüchern behandelt, ansonsten innerhalb des selben Adressbuchs."
   },
   "handleDuplicates.introtext2": {
-    "message": "Jedes Mal, wenn ein Paar von Kandidaten präsentiert wird, können Sie entscheiden, sie zu überspringen, sie zu bearbeiten und beide zu behalten, oder einen möglicherweise zu bearbeiten und den anderen zu löschen."
+    "message": "Jedes Mal, wenn ein Paar von Kandidaten präsentiert wird, kannst du entscheiden, sie zu überspringen, sie zu bearbeiten und beide zu behalten, oder einen möglicherweise zu bearbeiten und den anderen zu löschen."
   },
   "handleDuplicates.differentiator": {
-    "message": "Wenn Sie ausschließen möchten, dass Einträge jedes Mal als mögliche Dubletten angezeigt werden, können Sie ihnen unterschiedliche AIM-Namen geben."
+    "message": "Wenn du ausschließen möchtest, dass Einträge jedes Mal als mögliche Dubletten angezeigt werden, kannst du ihnen unterschiedliche AIM-Namen geben."
   },
   "handleDuplicates.removeWithoutAsking": {
-    "message": "Lösche ohne Nachfrage alle Dubletten mit weniger Informationen oder bei identischen Einträgen den zweiten."
+    "message": "Lösche ohne Nachfrage alle Dubletten mit weniger Informationen, oder bei identischen Einträgen den zweiten."
   },
   "handleDuplicates.preserveFirst": {
     "message": "Wenn zwei verschiedene Adressbücher ausgewählt sind, keine Einträge automatisch aus dem ersten löschen."
   },
   "handleDuplicates.deferInteractive": {
-    "message": "Sammle erst alle wahrscheinlichen Dubletten, die manuelle Behandlung erfordern, und präesentiere sie interaktiv."
+    "message": "Sammle erst alle wahrscheinlichen Dubletten, die manuelle Behandlung erfordern, und präesentiere sie dann interaktiv."
   },
   "handleDuplicates.durationWarning": {
-    "message": "Abhängig von der Anzahl der Einträge in Ihrem Adressbuch und der Leistung Ihres Rechners kann dieser Vorgang mehrere Minuten in Anspruch nehmen."
+    "message": "Abhängig von der Anzahl der Einträge in Ihrem Adressbuch und der Leistung Ihres Rechners kann dieser Vorgang eine Zeitlang dauern."
   },
   "handleDuplicates.natTrunkPrefix": {
     "message": "Anfangsziffer der Ortsvorwahl, z.B. '0'"
@@ -333,10 +333,10 @@
     "message": "Zu ignorierende Felder"
   },
   "handleDuplicates.introtext3": {
-    "message": "Sie können den Prozess unterbrechen, indem Sie 'Stop' drücken. Wenn Sie ein Paar nicht behandeln wollen, klicken Sie 'Überspringen'."
+    "message": "Du kannst den Prozess unterbrechen, indem du 'Stop' drückst. Wenn du ein Paar nicht behandeln willst, klicke 'Überspringen'."
   },
   "handleDuplicates.introtext4": {
-    "message": "Wenn Sie Änderungen speichern und beide Einträge behalten wollen, drücken Sie 'Beide behalten'; wenn sie einen Eintrag löschen wollen, drücken Sie 'Einen löschen'."
+    "message": "Wenn du Änderungen speichern und beide Einträge behalten willst, drücke 'Beide behalten'; wenn du einen Eintrag löschen willst, drücke 'Einen löschen'."
   },
   "handleDuplicates.options": {
     "message": "Optionen"
@@ -345,7 +345,7 @@
     "message": "Resultate"
   },
   "handleDuplicates.endtext": {
-    "message": "Sie haben sich von Ihren Dubletten getrennt und können Sich nun wieder angenehmeren Dingen widmen :-)"
+    "message": "Du hast dich von den Dubletten getrennt und kannst dich nun wieder angenehmeren Dingen widmen :-)"
   },
   "handleDuplicates.endtext.numBefore": {
     "message": "Anzahl der Einträge vorher"
@@ -378,10 +378,10 @@
     "message": "Geänderte Einträge"
   },
   "handleDuplicates.endtext.helpDevelopment": {
-    "message": "Sie können helfen, dieses Thunderbird Add-On zu verbessern, indem Sie Probleme melden oder kommentieren, Übersetzungen oder sogar Code beisteuern. Die Entwickler-Seite ist:"
+    "message": "Du kannst helfen, dieses Thunderbird Add-On zu verbessern, indem du Probleme meldest oder kommentierst, Übersetzungen oder sogar Code beisteuerst. Die Entwickler-Seite ist:"
   },
   "handleDuplicates.endtext.provideFeedback": {
-    "message": "oder mailen Sie Ihr Feedback direkt an unsere öffentliche Mailingliste:"
+    "message": "oder maile Feedback direkt an unsere öffentliche Mailingliste:"
   },
   "handleDuplicates.feedbackMail": {
     "message": "duplicate-contact-manager-for-thunderbird@googlegroups.com"
