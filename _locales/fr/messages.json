@@ -269,18 +269,6 @@
   "toolsmenu.items.handleduplicates.accesskey": {
     "message": "D"
   },
-  "abookmenu.label": {
-    "message": "Doublons"
-  },
-  "abookmenu.accesskey": {
-    "message": "D"
-  },
-  "abookmenu.items.handleduplicates.label": {
-    "message": "Cherche et traite les doublons..."
-  },
-  "abookmenu.items.handleduplicates.accesskey": {
-    "message": "C"
-  },
   "abooktoolbar.label": {
     "message": "Recherche des doublons"
   },

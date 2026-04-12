@@ -269,18 +269,6 @@
   "toolsmenu.items.handleduplicates.accesskey": {
     "message": "D"
   },
-  "abookmenu.label": {
-    "message": "Dubletten"
-  },
-  "abookmenu.accesskey": {
-    "message": "L"
-  },
-  "abookmenu.items.handleduplicates.label": {
-    "message": "Dubletten suchen und behandeln..."
-  },
-  "abookmenu.items.handleduplicates.accesskey": {
-    "message": "D"
-  },
   "abooktoolbar.label": {
     "message": "Dubletten suchen"
   },

@@ -269,18 +269,6 @@
   "toolsmenu.items.handleduplicates.accesskey": {
     "message": "D"
   },
-  "abookmenu.label": {
-    "message": "Duplicates"
-  },
-  "abookmenu.accesskey": {
-    "message": "C"
-  },
-  "abookmenu.items.handleduplicates.label": {
-    "message": "Find and manage duplicates..."
-  },
-  "abookmenu.items.handleduplicates.accesskey": {
-    "message": "f"
-  },
   "abooktoolbar.label": {
     "message": "Find Duplicates"
   },
