@@ -78,7 +78,7 @@
     "message": "Phonetic Name"
   },
   "DisplayName_label": {
-    "message": "Displayed Name"
+    "message": "Display Name"
   },
   "NickName_label": {
     "message": "Nickname"
@@ -105,7 +105,7 @@
     "message": "Preferred Email Format"
   },
   "PreferDisplayName_label": {
-    "message": "Display Name preferred"
+    "message": "Preferred Display Name"
   },
   "WorkPhone_label": {
     "message": "Work Phone"
@@ -246,7 +246,7 @@
     "message": "Last Modified"
   },
   "CorrectAddressBookSelectedPrompt": {
-    "message": "You seem to have selected an address list. When searching for duplicate contacts, not only this address list, but the whole address book which holds this list is going to be processed."
+    "message": "You seem to have selected an address list. When searching for duplicate contacts, not only this address list, but the whole address book that holds this list is going to be processed."
   },
   "true_label": {
     "message": "yes"
@@ -315,7 +315,7 @@
     "message": "First collect all potential duplicates requiring manual treatment and then present them interactively."
   },
   "handleDuplicates.durationWarning": {
-    "message": "Depending on the number of addresses and the speed of your computer, this process might take several minutes."
+    "message": "Depending on the number of addresses and on your computer, this process may take a while."
   },
   "handleDuplicates.natTrunkPrefix": {
     "message": "National phone number trunk prefix, e.g., '1' or '0'"
