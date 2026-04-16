@@ -200,6 +200,113 @@ var VCardUtils = (function() {
 	}
 
 	/**
+	 * Parses ADR structured value into Thunderbird-style address fields.
+	 *
+	 * vCard ADR (RFC 2426) is seven components separated by ';':
+	 *   PO Box; Extended address; Street; Locality (city); Region (state); Postal code; Country
+	 * Thunderbird / addressBooks often emit ;;Street;City;State;Zip;Country — street is parts[2],
+	 * not parts[3]. A previous bug assumed ;;;Street;City;... and shifted city into Address2, etc.
+	 *
+	 * We still accept legacy strings with three leading empties (;;;…) from older generateVCard:
+	 *   - 9+ parts: ;;;Street;Address2;City;State;Zip;Country
+	 *   - 8 parts:   ;;;Street;City;State;Zip;Country (no Address2 slot)
+	 * Shorter ;;; tails are mapped best-effort for truncated exports.
+	 *
+	 * @param {string} value - Raw ADR property value (escaped chars should already be unescaped by caller)
+	 * @returns {{ street: string, line2: string, city: string, state: string, zip: string, country: string }}
+	 */
+	function parseAdrComponents(value) {
+		var parts = value.split(';').map(function(p) { return (p || '').trim(); });
+		var street, line2, city, state, zip, country;
+		if (parts.length < 3) {
+			return { street: '', line2: '', city: '', state: '', zip: '', country: '' };
+		}
+		// Three leading empty components → legacy "extension" layout (street at index 3).
+		var tripleEmptyPrefix = parts[0] === '' && parts[1] === '' && parts[2] === '';
+		if (tripleEmptyPrefix) {
+			// Long form with explicit Address2 column
+			if (parts.length >= 9) {
+				street = parts[3] || '';
+				line2 = parts[4] || '';
+				city = parts[5] || '';
+				state = parts[6] || '';
+				zip = parts[7] || '';
+				country = parts[8] || '';
+			} else if (parts.length === 8) {
+				// Old emit: ;;;Street;City;State;Zip;Country — city is parts[4], not Address2
+				street = parts[3] || '';
+				line2 = '';
+				city = parts[4] || '';
+				state = parts[5] || '';
+				zip = parts[6] || '';
+				country = parts[7] || '';
+			} else if (parts.length === 7) {
+				street = parts[3] || '';
+				line2 = '';
+				city = parts[4] || '';
+				state = parts[5] || '';
+				zip = parts[6] || '';
+				country = '';
+			} else if (parts.length === 6) {
+				street = parts[3] || '';
+				line2 = '';
+				city = parts[4] || '';
+				state = parts[5] || '';
+				zip = '';
+				country = '';
+			} else if (parts.length === 5) {
+				street = parts[3] || '';
+				line2 = '';
+				city = parts[4] || '';
+				state = '';
+				zip = '';
+				country = '';
+			} else if (parts.length === 4) {
+				street = parts[3] || '';
+				line2 = '';
+				city = '';
+				state = '';
+				zip = '';
+				country = '';
+			} else {
+				// ;;; with no usable tail
+				street = '';
+				line2 = '';
+				city = '';
+				state = '';
+				zip = '';
+				country = '';
+			}
+		} else {
+			// Standard RFC layout (or PO/Extended present): street is never at index 3 alone.
+			line2 = parts[1] || '';
+			street = parts[2] || '';
+			city = parts[3] || '';
+			state = parts[4] || '';
+			zip = parts[5] || '';
+			country = parts[6] || '';
+		}
+		return { street: street, line2: line2, city: city, state: state, zip: zip, country: country };
+	}
+
+	/**
+	 * Builds the ADR value payload (semicolon-separated components only, no "ADR;TYPE=...:" prefix).
+	 * Leading ';' means PO Box is empty; first field is Extended (Thunderbird HomeAddress2 / WorkAddress2).
+	 * Must stay in sync with parseAdrComponents (non-;;; branch).
+	 * @param {string} line2 - Extended address / Address2
+	 * @param {string} street - Street / Address line 1
+	 * @param {string} city - Locality
+	 * @param {string} state - Region
+	 * @param {string} zip - Postal code
+	 * @param {string} country - Country
+	 * @returns {string}
+	 */
+	function formatAdrValue(line2, street, city, state, zip, country) {
+		return ';' + (line2 || '') + ';' + (street || '') + ';' +
+			(city || '') + ';' + (state || '') + ';' + (zip || '') + ';' + (country || '');
+	}
+
+	/**
 	 * Applies a single parsed vCard property to props (internal use in parseVCard).
 	 * Handles N -> FirstName/LastName; multiple EMAIL; REV -> LastModifiedDate; TEL; ADR;
 	 * BirthDay (BDAY line); etc.
@@ -237,17 +344,15 @@ var VCardUtils = (function() {
 				props['CellularNumber'] = value;
 			}
 		} else if (property === 'ADR' || property === 'HomeAddress' || property === 'WorkAddress') {
-			// Parse address: ;;;Street;City;State;Zip;Country
-			var parts = value.split(';');
-			if (parts.length >= 4) {
-				var baseProp = (property === 'ADR') ? 'Home' : property.replace('Address', '');
-				props[baseProp + 'Address'] = parts[3] || '';
-				props[baseProp + 'Address2'] = parts[4] || '';
-				props[baseProp + 'City'] = parts[5] || '';
-				props[baseProp + 'State'] = parts[6] || '';
-				props[baseProp + 'ZipCode'] = parts[7] || '';
-				props[baseProp + 'Country'] = parts[8] || '';
-			}
+			// mapVCardPropertyToTB maps TYPE=HOME/WORK ADR lines to HomeAddress / WorkAddress
+			var adr = parseAdrComponents(value);
+			var baseProp = (property === 'ADR') ? 'Home' : property.replace('Address', '');
+			props[baseProp + 'Address'] = adr.street;
+			props[baseProp + 'Address2'] = adr.line2;
+			props[baseProp + 'City'] = adr.city;
+			props[baseProp + 'State'] = adr.state;
+			props[baseProp + 'ZipCode'] = adr.zip;
+			props[baseProp + 'Country'] = adr.country;
 		} else if (property === 'BirthDay') {
 			// BDAY vCard line is mapped to property name BirthDay (see mapVCardPropertyToTB)
 			// Parse birthday: YYYY-MM-DD or YYYYMMDD into BirthYear / BirthMonth / day-of-month
@@ -306,15 +411,18 @@ var VCardUtils = (function() {
 			lines.push('TEL;TYPE=PAGER:' + escapeVCardValue(props['PagerNumber']));
 		}
 
-		// Addresses
-		if (props['HomeAddress'] || props['HomeCity']) {
-			var homeAddr = ';;;' + (props['HomeAddress'] || '') + ';' + (props['HomeCity'] || '') + ';' +
-				(props['HomeState'] || '') + ';' + (props['HomeZipCode'] || '') + ';' + (props['HomeCountry'] || '');
+		// Physical addresses: one ADR per type. Include Address2 in the "emit?" check so line-only contacts round-trip.
+		// Value shape must match parseAdrComponents (RFC branch), not the old ;;;Street;City;... shortcut.
+		if (props['HomeAddress'] || props['HomeAddress2'] || props['HomeCity']) {
+			var homeAddr = formatAdrValue(
+				props['HomeAddress2'], props['HomeAddress'], props['HomeCity'],
+				props['HomeState'], props['HomeZipCode'], props['HomeCountry']);
 			lines.push('ADR;TYPE=HOME:' + escapeVCardValue(homeAddr));
 		}
-		if (props['WorkAddress'] || props['WorkCity']) {
-			var workAddr = ';;;' + (props['WorkAddress'] || '') + ';' + (props['WorkCity'] || '') + ';' +
-				(props['WorkState'] || '') + ';' + (props['WorkZipCode'] || '') + ';' + (props['WorkCountry'] || '');
+		if (props['WorkAddress'] || props['WorkAddress2'] || props['WorkCity']) {
+			var workAddr = formatAdrValue(
+				props['WorkAddress2'], props['WorkAddress'], props['WorkCity'],
+				props['WorkState'], props['WorkZipCode'], props['WorkCountry']);
 			lines.push('ADR;TYPE=WORK:' + escapeVCardValue(workAddr));
 		}
 
