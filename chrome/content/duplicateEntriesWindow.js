@@ -316,6 +316,16 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 		},
 
 		/**
+		 * Deletes both currently displayed cards and continues with the next duplicate pair.
+		 * TB128: Now async
+		 */
+		removeBothAndSearchNextDuplicate: async function() {
+			await this.deleteAbCard(this.abId1, this.BOOK_1, this.position1, false);
+			await this.deleteAbCard(this.abId2, this.BOOK_2, this.position2, false);
+			this.searchNextDuplicate();
+		},
+
+		/**
 		 * Deletes the card identified by 'index' from the given address book.
 		 * TB128: Now async
 		 */

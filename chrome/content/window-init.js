@@ -93,6 +93,15 @@ document.addEventListener('DOMContentLoaded', function() {
 		});
 	}
 
+	const removeBothButton = document.getElementById('removebothbutton');
+	if (removeBothButton) {
+		removeBothButton.addEventListener('click', function() {
+			if (typeof DuplicateEntriesWindow !== 'undefined') {
+				DuplicateEntriesWindow.removeBothAndSearchNextDuplicate();
+			}
+		});
+	}
+
 	const stopButton = document.getElementById('stopbutton');
 	if (stopButton) {
 		stopButton.addEventListener('click', function() {

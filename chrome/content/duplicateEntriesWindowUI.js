@@ -146,9 +146,11 @@ var DuplicateEntriesWindowUI = (function() {
 		make_visible('skipnextbutton');
 		make_visible('keepnextbutton');
 		make_visible('applynextbutton');
+		make_visible('removebothbutton');
 		disable('skipnextbutton');
 		disable('keepnextbutton');
 		disable('applynextbutton');
+		disable('removebothbutton');
 		hide('stopbutton');
 		show('quitbutton');
 		show('explanation');
@@ -159,9 +161,11 @@ var DuplicateEntriesWindowUI = (function() {
 		ctx.make_visible('skipnextbutton');
 		ctx.make_visible('keepnextbutton');
 		ctx.make_visible('applynextbutton');
+		ctx.make_visible('removebothbutton');
 		ctx.disable('skipnextbutton');
 		ctx.disable('keepnextbutton');
 		ctx.disable('applynextbutton');
+		ctx.disable('removebothbutton');
 		ctx.hide('stopbutton');
 		ctx.show('quitbutton');
 		ctx.show('explanation');
@@ -190,6 +194,7 @@ var DuplicateEntriesWindowUI = (function() {
 		enable('skipnextbutton');
 		enable('keepnextbutton');
 		enable('applynextbutton');
+		enable('removebothbutton');
 		// Ensure tablepane is visible when showing duplicate pair
 		show('tablepane');
 		if (ctx.window)
@@ -203,6 +208,7 @@ var DuplicateEntriesWindowUI = (function() {
 		disable('skipnextbutton');
 		disable('keepnextbutton');
 		disable('applynextbutton');
+		disable('removebothbutton');
 	}
 
 	/**
@@ -213,6 +219,7 @@ var DuplicateEntriesWindowUI = (function() {
 		make_invisible('skipnextbutton');
 		make_invisible('keepnextbutton');
 		make_invisible('applynextbutton');
+		make_invisible('removebothbutton');
 		if (ctx.window)
 			ctx.window.removeAttribute('wait-cursor');
 		hide('stopbutton');

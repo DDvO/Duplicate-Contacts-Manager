@@ -389,6 +389,9 @@
   "handleDuplicates.keepnextbutton.accesskey": {
     "message": "C"
   },
+  "handleDuplicates.removebothbutton.label": {
+    "message": "Supprimer les deux >"
+  },
   "handleDuplicates.skipnextbutton.label": {
     "message": "Passer >"
   },
