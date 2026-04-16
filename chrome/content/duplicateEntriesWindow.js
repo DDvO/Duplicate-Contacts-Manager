@@ -278,30 +278,36 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 				return;
 			}
 
-			// see what's been modified
+			// Persist whatever the user sees in the comparison table for this side ('left' / 'right').
+			//
+			// Rows are filled with ctx.getProperty / CardValues (labels, transforms, defaults). Older
+			// logic only called saveCard when card.getProperty (raw vCard storage) differed from the form.
+			// Those two paths can agree in the UI but still compare "equal" on raw fields, so entryModified
+			// stayed false and the first card in "Keep both" often never hit the API.
+			//
+			// We therefore treat getCardFieldValues(side) as the single source of truth: copy every
+			// returned property onto the card, then save once whenever there is at least one editable
+			// field in the table. Trade-off: Apply/Keep may call contacts.update even if values are
+			// unchanged, in exchange for reliable persistence.
 			var updateFields = this.getCardFieldValues(side);
-			var entryModified = false;
-			for (let property in updateFields) {
-				const defaultValue = this.defaultValue(property); /* cannot be a set here */
-				var currentValue = card.getProperty(property, defaultValue);
-				if (currentValue != updateFields[property]) {
-					// not using this.getProperty here to give a chance to update wrongly empty field
-					try {
-						card.setProperty(property, updateFields[property]);
-						entryModified = true;
-					} catch (e) {
-						alert("Internal error: cannot set field '" + property + "' of " + (card.DisplayName || card._id) + ": " + e);
-					}
+			var props = Object.keys(updateFields);
+			if (props.length === 0) return;
+
+			for (var i = 0; i < props.length; i++) {
+				var property = props[i];
+				try {
+					card.setProperty(property, updateFields[property]);
+				} catch (e) {
+					alert("Internal error: cannot set field '" + property + "' of " + (card.DisplayName || card._id) + ": " + e);
+					return;
 				}
 			}
-			if (entryModified) {
-				this.vcardsSimplified[book][index] = null; // request reconstruction by getSimplifiedCard
-				try {
-					await DuplicateEntriesWindowContacts.saveCard(abId, card);
-					this.totalCardsChanged++;
-				} catch (e) {
-					alert("Internal error: cannot update card '" + (card.DisplayName || card._id) + "': " + e);
-				}
+			this.vcardsSimplified[book][index] = null; // request reconstruction by getSimplifiedCard
+			try {
+				await DuplicateEntriesWindowContacts.saveCard(abId, card);
+				this.totalCardsChanged++;
+			} catch (e) {
+				alert("Internal error: cannot update card '" + (card.DisplayName || card._id) + "': " + e);
 			}
 		},
 

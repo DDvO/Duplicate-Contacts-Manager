@@ -13,6 +13,32 @@
 var DuplicateEntriesWindowDisplay = (function() {
 	"use strict";
 
+	/**
+	 * Resolves the input/select/textarea for one cell in the duplicate comparison table.
+	 *
+	 * Uses #AttributesTableRows as the search root so we read the control that belongs to this table,
+	 * not some other element in the document that might share the same id (invalid HTML, but defensive).
+	 * CSS.escape is required for querySelector when ids contain characters that are special in CSS
+	 * selectors (e.g. colon in some property names).
+	 *
+	 * @param {object} ctx - Window context; should have attributesTableRows set while a pair is shown
+	 * @param {string} id - Full element id, e.g. left_PrimaryEmail
+	 * @returns {HTMLElement|null}
+	 */
+	function findFieldElementById(ctx, id) {
+		var root = ctx.attributesTableRows || document.getElementById('AttributesTableRows');
+		if (root && root.querySelector) {
+			try {
+				if (typeof CSS !== 'undefined' && CSS.escape) {
+					return root.querySelector('#' + CSS.escape(id));
+				}
+			} catch (e) {
+				/* fall through */
+			}
+		}
+		return document.getElementById(id);
+	}
+
 	function pushIfNew(elem, array) { /* well, this 'function' has a side effect on array */
 		if (!array.includes(elem))
 			array.push(elem);
@@ -377,16 +403,21 @@ var DuplicateEntriesWindowDisplay = (function() {
 	/**
 	 * Returns an object with all editable field values for the given side ('left' or 'right').
 	 * TB128: Handles HTML select/input/textarea elements.
-	 * Used when reading edited values from the table (save field in list for later retrieval).
+	 *
+	 * Used by updateAbCard / Keep both / Apply to read the live DOM after the user may have edited
+	 * cells. Only properties listed in ctx.editableFields (built when the pair was displayed) are read.
+	 * Each control is found via findFieldElementById so values come from this table, not a stray id match.
+	 *
 	 * @param {object} ctx - Context (window object)
 	 * @param {string} side - 'left' or 'right'
 	 * @returns {Object} Object with property names as keys and values as values
 	 */
 	function getCardFieldValues(ctx, side) {
 		var result = {};
+		if (!ctx.editableFields) return result;
 		for (var i = 0; i < ctx.editableFields.length; i++) {
 			const id = side + '_' + ctx.editableFields[i];
-			const valuebox = document.getElementById(id);
+			const valuebox = findFieldElementById(ctx, id);
 			if (!valuebox) continue;
 			// TB128: Handle HTML select/input/textarea elements
 			let value;
