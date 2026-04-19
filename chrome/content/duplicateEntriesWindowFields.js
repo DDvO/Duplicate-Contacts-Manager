@@ -7,6 +7,9 @@
 var DuplicateEntriesWindowFields = (function() {
 	"use strict";
 
+	/** Prefix for synthetic AIM values when splitting a duplicate pair (see makeDifferentAim). Edit here to change the label. */
+	var nodupAimPrefix = 'nodup';
+
 	var addressBookFields = [
 		'PhotoURI', 'PhotoType', 'PhotoName',
 		'NickName', '__Names', /* matchable */ 'FirstName', 'PhoneticFirstName', 'LastName', 'PhoneticLastName',
@@ -89,6 +92,7 @@ var DuplicateEntriesWindowFields = (function() {
 	}
 
 	return {
+		nodupAimPrefix: nodupAimPrefix,
 		addressBookFields: addressBookFields,
 		matchablesList: matchablesList,
 		metaProperties: metaProperties,

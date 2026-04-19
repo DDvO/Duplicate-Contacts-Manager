@@ -196,6 +196,10 @@ var VCardUtils = (function() {
 			return 'PrimaryEmail'; // SecondEmail handled in applyParsedProperty
 		}
 
+		if (vCardProp === 'X-AIM') {
+			return '_AimScreenName';
+		}
+
 		return propMap[vCardProp] || vCardProp;
 	}
 
@@ -449,6 +453,9 @@ var VCardUtils = (function() {
 		}
 		if (props['NickName']) {
 			lines.push('NICKNAME:' + escapeVCardValue(props['NickName']));
+		}
+		if (props['_AimScreenName']) {
+			lines.push('X-AIM:' + escapeVCardValue(props['_AimScreenName']));
 		}
 		if (props['PhotoURI']) {
 			lines.push('PHOTO:' + escapeVCardValue(props['PhotoURI']));

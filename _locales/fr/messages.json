@@ -401,6 +401,12 @@
   "handleDuplicates.mergeleftbutton.accesskey": {
     "message": "M"
   },
+  "handleDuplicates.makedifferentbutton.label": {
+    "message": "Différencier >"
+  },
+  "handleDuplicates.makedifferentbutton.accesskey": {
+    "message": "f"
+  },
   "handleDuplicates.keepnextbutton.label": {
     "message": "Conserver les deux >"
   },
