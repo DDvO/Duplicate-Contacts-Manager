@@ -93,6 +93,24 @@ document.addEventListener('DOMContentLoaded', function() {
 		});
 	}
 
+	const removeLeftButton = document.getElementById('removeleftbutton');
+	if (removeLeftButton) {
+		removeLeftButton.addEventListener('click', function() {
+			if (typeof DuplicateEntriesWindow !== 'undefined') {
+				DuplicateEntriesWindow.applyRemoveLeftAndSearchNextDuplicate();
+			}
+		});
+	}
+
+	const removeRightButton = document.getElementById('removerightbutton');
+	if (removeRightButton) {
+		removeRightButton.addEventListener('click', function() {
+			if (typeof DuplicateEntriesWindow !== 'undefined') {
+				DuplicateEntriesWindow.applyRemoveRightAndSearchNextDuplicate();
+			}
+		});
+	}
+
 	const mergeLeftButton = document.getElementById('mergeleftbutton');
 	if (mergeLeftButton) {
 		mergeLeftButton.addEventListener('click', function() {

@@ -203,7 +203,7 @@ The add-on's duplicate-finder window is implemented as a single HTML window (`wi
 - Hold all state (vcards, positions, preferences, DOM refs, options).
 - `init()`: bind Fields, use WebExtension `addressBooks` API, load prefs (async), apply to DOM, use `browser.i18n`/`messenger.i18n` for localization, build address book dropdowns, show ready state.
 - `startSearch()`: read prefs from DOM, validate, save prefs (async), read address books (async), reset search state, show searching state, call `searchNextDuplicate()` which schedules `DuplicateEntriesWindowSearch.runIntervalAction`.
-- Handle user actions: skip, keep both, apply (keep one + delete other), merge left (fill empty left table cells from right, DOM only); delegate card updates/deletes to Contacts (async); delegate table display to Display; delegate progress/stats to UI.
+- Handle user actions: skip, keep both, apply (keep one + delete other per radio), remove left / remove right (same as apply but fixed column), merge left (fill empty left table cells from right, DOM only); delegate card updates/deletes to Contacts (async); delegate table display to Display; delegate progress/stats to UI.
 - Thin delegates for all module APIs so that the window object remains the single "context" passed to modules.
 
 **Dependencies:** All modules above; no module depends on the main file except as "ctx" or by name for `setTimeout` (e.g. `DuplicateEntriesWindowSearch.runIntervalAction(DuplicateEntriesWindow)`). Uses WebExtension APIs (`addressBooks`, `storage`, `i18n`) instead of XPCOM (TB128).

@@ -383,6 +383,18 @@
   "handleDuplicates.applynextbutton.accesskey": {
     "message": "E"
   },
+  "handleDuplicates.removeleftbutton.label": {
+    "message": "Links entfernen >"
+  },
+  "handleDuplicates.removeleftbutton.accesskey": {
+    "message": "L"
+  },
+  "handleDuplicates.removerightbutton.label": {
+    "message": "Rechts entfernen >"
+  },
+  "handleDuplicates.removerightbutton.accesskey": {
+    "message": "T"
+  },
   "handleDuplicates.mergeleftbutton.label": {
     "message": "Links zusammenführen >"
   },

@@ -146,11 +146,15 @@ var DuplicateEntriesWindowUI = (function() {
 		make_visible('skipnextbutton');
 		make_visible('keepnextbutton');
 		make_visible('applynextbutton');
+		make_visible('removeleftbutton');
+		make_visible('removerightbutton');
 		make_visible('mergeleftbutton');
 		make_visible('removebothbutton');
 		disable('skipnextbutton');
 		disable('keepnextbutton');
 		disable('applynextbutton');
+		disable('removeleftbutton');
+		disable('removerightbutton');
 		disable('mergeleftbutton');
 		disable('removebothbutton');
 		hide('stopbutton');
@@ -163,11 +167,15 @@ var DuplicateEntriesWindowUI = (function() {
 		ctx.make_visible('skipnextbutton');
 		ctx.make_visible('keepnextbutton');
 		ctx.make_visible('applynextbutton');
+		ctx.make_visible('removeleftbutton');
+		ctx.make_visible('removerightbutton');
 		ctx.make_visible('mergeleftbutton');
 		ctx.make_visible('removebothbutton');
 		ctx.disable('skipnextbutton');
 		ctx.disable('keepnextbutton');
 		ctx.disable('applynextbutton');
+		ctx.disable('removeleftbutton');
+		ctx.disable('removerightbutton');
 		ctx.disable('mergeleftbutton');
 		ctx.disable('removebothbutton');
 		ctx.hide('stopbutton');
@@ -191,13 +199,15 @@ var DuplicateEntriesWindowUI = (function() {
 	}
 
 	/**
-	 * Duplicate pair state: enable Skip / Keep / Apply and remove wait cursor (user can act on the pair).
+	 * Duplicate pair state: enable Skip / Keep / Apply / Remove left / Remove right / Merge left / Remove both; remove wait cursor.
 	 * TB128: Also ensure tablepane is visible to show the comparison table.
 	 */
 	function showDuplicatePairState(ctx) {
 		enable('skipnextbutton');
 		enable('keepnextbutton');
 		enable('applynextbutton');
+		enable('removeleftbutton');
+		enable('removerightbutton');
 		enable('mergeleftbutton');
 		enable('removebothbutton');
 		// Ensure tablepane is visible when showing duplicate pair
@@ -207,12 +217,14 @@ var DuplicateEntriesWindowUI = (function() {
 	}
 
 	/**
-	 * Disable Skip / Keep / Apply (e.g. while searching for next pair).
+	 * Disable Skip / Keep / Apply / Remove left / Remove right / Merge left / Remove both (e.g. while searching for next pair).
 	 */
 	function disableDuplicateActionButtons(ctx) {
 		disable('skipnextbutton');
 		disable('keepnextbutton');
 		disable('applynextbutton');
+		disable('removeleftbutton');
+		disable('removerightbutton');
 		disable('mergeleftbutton');
 		disable('removebothbutton');
 	}
@@ -225,6 +237,8 @@ var DuplicateEntriesWindowUI = (function() {
 		make_invisible('skipnextbutton');
 		make_invisible('keepnextbutton');
 		make_invisible('applynextbutton');
+		make_invisible('removeleftbutton');
+		make_invisible('removerightbutton');
 		make_invisible('mergeleftbutton');
 		make_invisible('removebothbutton');
 		if (ctx.window)

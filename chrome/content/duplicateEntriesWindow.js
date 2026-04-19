@@ -271,6 +271,26 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 		},
 
 		/**
+		 * Same as Apply / "Remove one", but always removes the left column contact and keeps the right.
+		 * Ignores the keep-left / keep-right radio (the next pair replaces the table immediately).
+		 */
+		applyRemoveLeftAndSearchNextDuplicate: async function() {
+			await this.updateAbCard(this.abId2, this.BOOK_2, this.position2, 'right');
+			await this.deleteAbCard(this.abId1, this.BOOK_1, this.position1, false);
+			this.searchNextDuplicate();
+		},
+
+		/**
+		 * Same as Apply / "Remove one", but always removes the right column contact and keeps the left.
+		 * Ignores the keep-left / keep-right radio.
+		 */
+		applyRemoveRightAndSearchNextDuplicate: async function() {
+			await this.updateAbCard(this.abId1, this.BOOK_1, this.position1, 'left');
+			await this.deleteAbCard(this.abId2, this.BOOK_2, this.position2, false);
+			this.searchNextDuplicate();
+		},
+
+		/**
 		 * Fills empty left-column table cells from the right column (DOM only). Use Apply / Keep both to save.
 		 */
 		mergeEmptyLeftFromRightInTable: function() {

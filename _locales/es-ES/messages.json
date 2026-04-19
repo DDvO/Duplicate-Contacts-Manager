@@ -383,6 +383,18 @@
   "handleDuplicates.applynextbutton.accesskey": {
     "message": "E"
   },
+  "handleDuplicates.removeleftbutton.label": {
+    "message": "Eliminar izquierda >"
+  },
+  "handleDuplicates.removeleftbutton.accesskey": {
+    "message": "L"
+  },
+  "handleDuplicates.removerightbutton.label": {
+    "message": "Eliminar derecha >"
+  },
+  "handleDuplicates.removerightbutton.accesskey": {
+    "message": "T"
+  },
   "handleDuplicates.mergeleftbutton.label": {
     "message": "Combinar a la izquierda >"
   },
