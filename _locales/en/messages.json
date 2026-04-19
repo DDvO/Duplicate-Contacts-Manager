@@ -383,6 +383,12 @@
   "handleDuplicates.applynextbutton.accesskey": {
     "message": "R"
   },
+  "handleDuplicates.mergeleftbutton.label": {
+    "message": "Merge left >"
+  },
+  "handleDuplicates.mergeleftbutton.accesskey": {
+    "message": "M"
+  },
   "handleDuplicates.keepnextbutton.label": {
     "message": "Keep both >"
   },

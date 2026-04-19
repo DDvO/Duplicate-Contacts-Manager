@@ -5,7 +5,6 @@
 // Change history and architecture: see ARCHITECTURE_AND_HISTORY.md in the project root.
 
 // TODO: add option to prune and transform contents of individual or all cards
-// TODO: add option to automatically and/or manually merge fields (e.g., buttons with arrow)
 // TODO: generalize matching/comparison and manual treatment to more than two entries
 
 /*
@@ -269,6 +268,13 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			await this.updateAbCard(keptAbId, keptBook, keptIndex, this.sideKept);
 			await this.deleteAbCard(deleAbId, deleBook, deleIndex, false);
 			this.searchNextDuplicate();
+		},
+
+		/**
+		 * Fills empty left-column table cells from the right column (DOM only). Use Apply / Keep both to save.
+		 */
+		mergeEmptyLeftFromRightInTable: function() {
+			DuplicateEntriesWindowDisplay.mergeEmptyLeftFromRightInTable(this);
 		},
 
 		updateAbCard: async function(abId, book, index, side) {

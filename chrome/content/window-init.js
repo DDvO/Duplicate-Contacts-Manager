@@ -93,6 +93,15 @@ document.addEventListener('DOMContentLoaded', function() {
 		});
 	}
 
+	const mergeLeftButton = document.getElementById('mergeleftbutton');
+	if (mergeLeftButton) {
+		mergeLeftButton.addEventListener('click', function() {
+			if (typeof DuplicateEntriesWindow !== 'undefined') {
+				DuplicateEntriesWindow.mergeEmptyLeftFromRightInTable();
+			}
+		});
+	}
+
 	const removeBothButton = document.getElementById('removebothbutton');
 	if (removeBothButton) {
 		removeBothButton.addEventListener('click', function() {

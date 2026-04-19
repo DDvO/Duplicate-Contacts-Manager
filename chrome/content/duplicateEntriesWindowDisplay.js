@@ -2,7 +2,7 @@
 // file: duplicateEntriesWindowDisplay.js
 //
 // Comparison table display: displayCardData, displayCardField, SetRelation,
-// purgeAttributesTable, getCardFieldValues.
+// purgeAttributesTable, getCardFieldValues, mergeEmptyLeftFromRightInTable.
 // ctx must have: attributesTableRows, displayedFields, editableFields, consideredFields,
 // nonequivalentProperties, matchablesList, getString, getProperty, getAbstractedTransformedProperty,
 // (Equivalence symbols for non-set fields use DuplicateEntriesWindowCardValues.getComparisonValuesForProperty — same as compareCards.)
@@ -433,9 +433,64 @@ var DuplicateEntriesWindowDisplay = (function() {
 		return result;
 	}
 
+	/**
+	 * Copies the right column into the left for each editable row where the left cell is empty
+	 * and the right cell has a value. Only updates the comparison table DOM; does not save contacts.
+	 * @param {object} ctx - Window context (must have editableFields, defaultValue, isSelection, isNumerical)
+	 */
+	function mergeEmptyLeftFromRightInTable(ctx) {
+		if (!ctx.editableFields) return;
+		function readCell(valuebox) {
+			if (valuebox.tagName === 'SELECT') {
+				return valuebox.options[valuebox.selectedIndex] ? valuebox.options[valuebox.selectedIndex].value : '';
+			}
+			if (valuebox.tagName === 'INPUT' || valuebox.tagName === 'TEXTAREA') {
+				return valuebox.value;
+			}
+			return valuebox.textContent || '';
+		}
+		function leftIsEmpty(property, raw) {
+			var dv = ctx.defaultValue(property);
+			if (ctx.isSelection(property) || ctx.isNumerical(property)) {
+				return String(raw) === String(dv);
+			}
+			return raw == null || String(raw).trim() === '';
+		}
+		function rightHasValue(property, raw) {
+			var dv = ctx.defaultValue(property);
+			if (ctx.isSelection(property) || ctx.isNumerical(property)) {
+				return String(raw) !== String(dv);
+			}
+			return raw != null && String(raw).trim() !== '';
+		}
+		var i;
+		for (i = 0; i < ctx.editableFields.length; i++) {
+			var property = ctx.editableFields[i];
+			var leftEl = findFieldElementById(ctx, 'left_' + property);
+			var rightEl = findFieldElementById(ctx, 'right_' + property);
+			if (!leftEl || !rightEl) continue;
+			var lv = readCell(leftEl);
+			var rv = readCell(rightEl);
+			if (!leftIsEmpty(property, lv) || !rightHasValue(property, rv)) continue;
+			if (leftEl.tagName === 'SELECT') {
+				var want = String(rv);
+				var o;
+				for (o = 0; o < leftEl.options.length; o++) {
+					if (leftEl.options[o].value === want) {
+						leftEl.selectedIndex = o;
+						break;
+					}
+				}
+			} else if (leftEl.tagName === 'INPUT' || leftEl.tagName === 'TEXTAREA') {
+				leftEl.value = rv;
+			}
+		}
+	}
+
 	return {
 		displayCardData: displayCardData,
 		purgeAttributesTable: purgeAttributesTable,
-		getCardFieldValues: getCardFieldValues
+		getCardFieldValues: getCardFieldValues,
+		mergeEmptyLeftFromRightInTable: mergeEmptyLeftFromRightInTable
 	};
 })();
