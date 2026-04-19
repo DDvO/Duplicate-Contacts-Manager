@@ -36,12 +36,12 @@ The add-on's duplicate-finder window is implemented as a single HTML window (`wi
 
 **Role:** vCard parsing and generation utilities for converting between vCard strings (used by WebExtension API) and JavaScript objects (used by business logic).
 
-**Exports:** `parseVCard(vCardString)`, `generateVCard(cardObject)`, `getProperty`, `setProperty`.
+**Exports:** `parseVCard(vCardString)`, `generateVCard(cardObject)`, `getProperty`, `setProperty`, `createContactCardFromApiContact`, helpers for mailing-list extraction, etc.
 
 **Responsibilities:**
 - Parse vCard strings from the `addressBooks` API into plain JavaScript objects.
 - Generate vCard strings from plain JavaScript objects for saving contacts.
-- Handle vCard property mapping and normalization.
+- Handle vCard property mapping and normalization (including **`X-AIM`** ↔ **`_AimScreenName`** for AIM screen names used by “Make different”).
 
 **Dependencies:** None (load first).
 
@@ -63,7 +63,7 @@ The add-on's duplicate-finder window is implemented as a single HTML window (`wi
 
 **Role:** Read/write access to Thunderbird address books and contact cards.
 
-**Exports:** `getAddressBooks()`, `getAddressBook(id)`, `getAllAbCards(addressBookId, context)`, `getCardProperty`, `setCardProperty`, `saveCard(addressBookId, card)`, `deleteCard(addressBookId, card)`.
+**Exports:** `getAddressBooks()`, `getAddressBook(id)`, `getAllAbCards(addressBookId, context)`, `saveCard(addressBookId, card)`, `deleteCard(addressBookId, card)`.
 
 **Responsibilities:**
 - Use the WebExtension `addressBooks` API (`messenger.addressBooks` or `browser.addressBooks`) to list and access address books by ID.
@@ -78,7 +78,7 @@ The add-on's duplicate-finder window is implemented as a single HTML window (`wi
 
 **Role:** Central definition of address-book field lists and property-type predicates.
 
-**Exports:** `addressBookFields`, `matchablesList`, `metaProperties`, `ignoredFieldsDefault`, and predicates: `isText`, `isFirstLastDisplayName`, `isEmail`, `isPhoneNumber`, `isSet`, `isSelection`, `isNumerical`, `defaultValue`, `charWeight`.
+**Exports:** `nodupAimPrefix` (prefix for synthetic AIM values in “Make different”), `addressBookFields`, `matchablesList`, `metaProperties`, `ignoredFieldsDefault`, and predicates: `isText`, `isFirstLastDisplayName`, `isEmail`, `isPhoneNumber`, `isSet`, `isSelection`, `isNumerical`, `defaultValue`, `charWeight`.
 
 **Responsibilities:**
 - Define the full list of address book properties and which are used for matching (`__Names`, `__Emails`, `__PhoneNumbers`).
@@ -174,7 +174,7 @@ The add-on's duplicate-finder window is implemented as a single HTML window (`wi
 - Fill the HTML comparison table for a pair of cards: labels, matchable rows (names/emails/phones), per-field rows with left/right values and equivalence (≡ ≅ ⋦ ⋧ etc.), including PhotoURI and selection dropdowns.
 - Clear the table (purge rows, hide header via UI module).
 - Read back edited values from the table for a given side ("left" or "right").
-- **Merge left** button: copy right-column cell values into empty left-column cells only (DOM); saving is done via Apply / Keep both.
+- **Merge left** button: copy right-column cell values into empty left-column cells only (DOM); saving is done via **Remove one** or **Keep both**.
 
 **Dependencies:** Uses UI's `showComparisonTableHeader`, `hideComparisonTableHeader`; expects `ctx` to have Fields predicates, `getProperty`, `getAbstractedTransformedProperty`, `createSelectionList`, `setContactLeftRight`, `attributesTableRows`, `displayedFields`, `editableFields`, etc. Updated for HTML DOM and plain JavaScript card objects (TB128).
 
@@ -189,7 +189,7 @@ The add-on's duplicate-finder window is implemented as a single HTML window (`wi
 **Responsibilities:**
 - Advance (position1, position2) over all pairs (same-book triangle or two-book rectangle), skipping deleted slots.
 - When "defer interactive" is on, walk the pre-collected `duplicates` queue instead.
-- In `runIntervalAction(ctx)`: loop over pairs; for each pair get simplified cards, run matching (names/mails/phones); if match, run comparison; auto-delete or enqueue or show comparison UI; yield every ~1 s for UI updates and re-schedule via `setTimeout`.
+- In `runIntervalAction(ctx)`: loop over pairs; for each pair get simplified cards; **if `_AimScreenName` differs between the two, skip the pair** (treats them as already split, e.g. after “Make different”); else run matching (names/mails/phones); if match, run comparison; auto-delete or enqueue or show comparison UI; yield every ~1 s for UI updates and re-schedule via `setTimeout`.
 
 **Dependencies:** Uses Matching, Comparison, UI, Display; expects `ctx` to provide `vcards`, positions, `updateProgress`, `getSimplifiedCard`, `deleteAbCard`, `displayCardData`, `endSearch`, `getString`, and options (autoremoveDups, preserveFirst, etc.). Updated to use address book IDs instead of directories (TB128).
 
@@ -203,7 +203,8 @@ The add-on's duplicate-finder window is implemented as a single HTML window (`wi
 - Hold all state (vcards, positions, preferences, DOM refs, options).
 - `init()`: bind Fields, use WebExtension `addressBooks` API, load prefs (async), apply to DOM, use `browser.i18n`/`messenger.i18n` for localization, build address book dropdowns, show ready state.
 - `startSearch()`: read prefs from DOM, validate, save prefs (async), read address books (async), reset search state, show searching state, call `searchNextDuplicate()` which schedules `DuplicateEntriesWindowSearch.runIntervalAction`.
-- Handle user actions: skip, keep both, apply (keep one + delete other per radio), remove left / remove right (same as apply but fixed column), merge left (fill empty left table cells from right, DOM only); delegate card updates/deletes to Contacts (async); delegate table display to Display; delegate progress/stats to UI.
+- Handle user actions: skip; **make different** (set distinct synthetic `_AimScreenName` on both cards from table + `nodupAimPrefix` + name + id suffix, save both); keep both; **remove one** (UI label for `applynextbutton`: keep one side per radio + delete the other); remove left / remove right (same as remove one but fixed column); remove both; merge left (fill empty left table cells from right, DOM only; save via remove one / keep both). **Keep both** and **make different** each call `saveCard` twice with no transaction; `saveCard` logs `console.error` on failure before rethrowing; the window catches and shows `alert` without aborting the second save.
+- Delegate card updates/deletes to Contacts (async); delegate table display to Display; delegate progress/stats to UI.
 - Thin delegates for all module APIs so that the window object remains the single "context" passed to modules.
 
 **Dependencies:** All modules above; no module depends on the main file except as "ctx" or by name for `setTimeout` (e.g. `DuplicateEntriesWindowSearch.runIntervalAction(DuplicateEntriesWindow)`). Uses WebExtension APIs (`addressBooks`, `storage`, `i18n`) instead of XPCOM (TB128).
@@ -224,6 +225,14 @@ The add-on's duplicate-finder window is implemented as a single HTML window (`wi
 ---
 
 ## Change history
+
+### Version 2.2.4
+* **Make different:** set distinct synthetic `_AimScreenName` on both contacts (vCard `X-AIM` via `vCardUtils`); configurable `nodupAimPrefix` in `duplicateEntriesWindowFields.js`. Duplicate search skips pairs whose AIM already differs.
+* **Remove left / Remove right:** same as remove one (keep other column) with a fixed column; ignores keep-left/right radio.
+* **Merge left:** copy non-empty right cells into empty left cells in the table only; persistence still via remove one or keep both.
+* **Toolbar:** action buttons reordered; trailing `>` removed from localized labels; English **Remove one** label for the former Apply action.
+* **Noise:** remove verbose `console.log` from address book loading; `saveCard` still logs failures with `console.error` before rethrow.
+* **Docs:** architecture/history updated (Contacts exports, AIM/`X-AIM`, two-save behavior).
 
 ### Version 2.2.1 (post-2.2.0 fixes)
 * Fix preferences loading: Storage API does not support wildcards; request explicit keys in `loadPrefs`.

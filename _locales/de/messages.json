@@ -378,46 +378,46 @@
     "message": "a"
   },
   "handleDuplicates.applynextbutton.label": {
-    "message": "Einen löschen >"
+    "message": "Einen löschen"
   },
   "handleDuplicates.applynextbutton.accesskey": {
     "message": "E"
   },
   "handleDuplicates.removeleftbutton.label": {
-    "message": "Links entfernen >"
+    "message": "Links entfernen"
   },
   "handleDuplicates.removeleftbutton.accesskey": {
     "message": "L"
   },
   "handleDuplicates.removerightbutton.label": {
-    "message": "Rechts entfernen >"
+    "message": "Rechts entfernen"
   },
   "handleDuplicates.removerightbutton.accesskey": {
     "message": "T"
   },
   "handleDuplicates.mergeleftbutton.label": {
-    "message": "Links zusammenführen >"
+    "message": "Links zusammenführen"
   },
   "handleDuplicates.mergeleftbutton.accesskey": {
     "message": "M"
   },
   "handleDuplicates.makedifferentbutton.label": {
-    "message": "Unterscheiden >"
+    "message": "Unterscheiden"
   },
   "handleDuplicates.makedifferentbutton.accesskey": {
     "message": "f"
   },
   "handleDuplicates.keepnextbutton.label": {
-    "message": "Beide behalten >"
+    "message": "Beide behalten"
   },
   "handleDuplicates.keepnextbutton.accesskey": {
     "message": "B"
   },
   "handleDuplicates.removebothbutton.label": {
-    "message": "Beide löschen >"
+    "message": "Beide löschen"
   },
   "handleDuplicates.skipnextbutton.label": {
-    "message": "Überspringen >"
+    "message": "Überspringen"
   },
   "handleDuplicates.skipnextbutton.accesskey": {
     "message": "Ü"

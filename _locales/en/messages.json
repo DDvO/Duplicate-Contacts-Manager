@@ -378,46 +378,46 @@
     "message": "a"
   },
   "handleDuplicates.applynextbutton.label": {
-    "message": "Remove one >"
+    "message": "Remove one"
   },
   "handleDuplicates.applynextbutton.accesskey": {
     "message": "R"
   },
   "handleDuplicates.removeleftbutton.label": {
-    "message": "Remove left >"
+    "message": "Remove left"
   },
   "handleDuplicates.removeleftbutton.accesskey": {
     "message": "L"
   },
   "handleDuplicates.removerightbutton.label": {
-    "message": "Remove right >"
+    "message": "Remove right"
   },
   "handleDuplicates.removerightbutton.accesskey": {
     "message": "T"
   },
   "handleDuplicates.mergeleftbutton.label": {
-    "message": "Merge left >"
+    "message": "Merge left"
   },
   "handleDuplicates.mergeleftbutton.accesskey": {
     "message": "M"
   },
   "handleDuplicates.makedifferentbutton.label": {
-    "message": "Make different >"
+    "message": "Make different"
   },
   "handleDuplicates.makedifferentbutton.accesskey": {
     "message": "f"
   },
   "handleDuplicates.keepnextbutton.label": {
-    "message": "Keep both >"
+    "message": "Keep both"
   },
   "handleDuplicates.keepnextbutton.accesskey": {
     "message": "K"
   },
   "handleDuplicates.removebothbutton.label": {
-    "message": "Remove both >"
+    "message": "Remove both"
   },
   "handleDuplicates.skipnextbutton.label": {
-    "message": "Skip >"
+    "message": "Skip"
   },
   "handleDuplicates.skipnextbutton.accesskey": {
     "message": "i"

@@ -1,5 +1,6 @@
 // vCardUtils.js - vCard parsing and generation utilities for TB128
 // Converts between vCard strings (used by WebExtension API) and JavaScript objects (used by business logic)
+// X-AIM vCard lines map to _AimScreenName (used by “Make different” and duplicate search skip when AIM differs).
 // Phase 2: REV/date and EMAIL ordering helpers keep parse/generate inverse-consistent; display formatting
 // for LastModifiedDate is shared with duplicateEntriesWindowCardValues via parseLastModifiedDateForDisplay.
 
@@ -196,6 +197,7 @@ var VCardUtils = (function() {
 			return 'PrimaryEmail'; // SecondEmail handled in applyParsedProperty
 		}
 
+		// Legacy AIM; Thunderbird property _AimScreenName (see generateVCard).
 		if (vCardProp === 'X-AIM') {
 			return '_AimScreenName';
 		}
@@ -454,6 +456,7 @@ var VCardUtils = (function() {
 		if (props['NickName']) {
 			lines.push('NICKNAME:' + escapeVCardValue(props['NickName']));
 		}
+		// Persist AIM screen name for contacts.update (pairs with different AIM skip duplicate loop).
 		if (props['_AimScreenName']) {
 			lines.push('X-AIM:' + escapeVCardValue(props['_AimScreenName']));
 		}
