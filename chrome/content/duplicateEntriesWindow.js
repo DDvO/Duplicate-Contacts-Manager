@@ -278,17 +278,16 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 				return;
 			}
 
-			// Persist whatever the user sees in the comparison table for this side ('left' / 'right').
+			// Persist what the user sees in the comparison table for this side ('left' / 'right').
 			//
-			// Rows are filled with ctx.getProperty / CardValues (labels, transforms, defaults). Older
-			// logic only called saveCard when card.getProperty (raw vCard storage) differed from the form.
-			// Those two paths can agree in the UI but still compare "equal" on raw fields, so entryModified
-			// stayed false and the first card in "Keep both" often never hit the API.
+			// Table cells use getProperty / CardValues (labels, transforms, defaults). A naive
+			// "save only if raw card differs from the form" check can miss updates: the UI and raw
+			// storage can still compare equal while Apply / Keep both must write (e.g. one of two
+			// duplicates would skip contacts.update).
 			//
-			// We therefore treat getCardFieldValues(side) as the single source of truth: copy every
-			// returned property onto the card, then save once whenever there is at least one editable
-			// field in the table. Trade-off: Apply/Keep may call contacts.update even if values are
-			// unchanged, in exchange for reliable persistence.
+			// So getCardFieldValues(side) is the source of truth: copy every returned field onto the
+			// card, then save whenever at least one editable row exists. That may call contacts.update
+			// even when nothing effectively changed, in exchange for reliable persistence.
 			var updateFields = this.getCardFieldValues(side);
 			var props = Object.keys(updateFields);
 			if (props.length === 0) return;

@@ -290,9 +290,14 @@ var VCardUtils = (function() {
 	}
 
 	/**
-	 * Builds the ADR value payload (semicolon-separated components only, no "ADR;TYPE=...:" prefix).
-	 * Leading ';' means PO Box is empty; first field is Extended (Thunderbird HomeAddress2 / WorkAddress2).
-	 * Must stay in sync with parseAdrComponents (non-;;; branch).
+	 * Builds the ADR property value (seven semicolon-separated components; no "ADR;TYPE=...:" prefix).
+	 * Order: PO Box; extended (HomeAddress2/WorkAddress2); street; city; region; postal code; country.
+	 * The leading empty PO is represented by starting the joined string with ";" (see parseAdrComponents).
+	 *
+	 * Each component is escaped with escapeVCardValue, then joined with unescaped ';' delimiters.
+	 * Do not pass the whole composite through escapeVCardValue — that used to turn every field
+	 * delimiter into an escaped semicolon and broke RFC 2426 structured ADR (addresses missing in Thunderbird's editor).
+	 *
 	 * @param {string} line2 - Extended address / Address2
 	 * @param {string} street - Street / Address line 1
 	 * @param {string} city - Locality
@@ -302,8 +307,8 @@ var VCardUtils = (function() {
 	 * @returns {string}
 	 */
 	function formatAdrValue(line2, street, city, state, zip, country) {
-		return ';' + (line2 || '') + ';' + (street || '') + ';' +
-			(city || '') + ';' + (state || '') + ';' + (zip || '') + ';' + (country || '');
+		var parts = ['', (line2 || ''), (street || ''), (city || ''), (state || ''), (zip || ''), (country || '')];
+		return parts.map(function(p) { return escapeVCardValue(p); }).join(';');
 	}
 
 	/**
@@ -412,18 +417,18 @@ var VCardUtils = (function() {
 		}
 
 		// Physical addresses: one ADR per type. Include Address2 in the "emit?" check so line-only contacts round-trip.
-		// Value shape must match parseAdrComponents (RFC branch), not the old ;;;Street;City;... shortcut.
+		// Payload from formatAdrValue (per-field escape); do not wrap in escapeVCardValue — see formatAdrValue.
 		if (props['HomeAddress'] || props['HomeAddress2'] || props['HomeCity']) {
 			var homeAddr = formatAdrValue(
 				props['HomeAddress2'], props['HomeAddress'], props['HomeCity'],
 				props['HomeState'], props['HomeZipCode'], props['HomeCountry']);
-			lines.push('ADR;TYPE=HOME:' + escapeVCardValue(homeAddr));
+			lines.push('ADR;TYPE=HOME:' + homeAddr);
 		}
 		if (props['WorkAddress'] || props['WorkAddress2'] || props['WorkCity']) {
 			var workAddr = formatAdrValue(
 				props['WorkAddress2'], props['WorkAddress'], props['WorkCity'],
 				props['WorkState'], props['WorkZipCode'], props['WorkCountry']);
-			lines.push('ADR;TYPE=WORK:' + escapeVCardValue(workAddr));
+			lines.push('ADR;TYPE=WORK:' + workAddr);
 		}
 
 		// Other properties
