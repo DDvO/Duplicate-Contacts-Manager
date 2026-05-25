@@ -378,19 +378,46 @@
     "message": "D"
   },
   "handleDuplicates.applynextbutton.label": {
-    "message": "Supprimer un >"
+    "message": "Supprimer un"
   },
   "handleDuplicates.applynextbutton.accesskey": {
     "message": "S"
   },
+  "handleDuplicates.removeleftbutton.label": {
+    "message": "Supprimer à gauche"
+  },
+  "handleDuplicates.removeleftbutton.accesskey": {
+    "message": "L"
+  },
+  "handleDuplicates.removerightbutton.label": {
+    "message": "Supprimer à droite"
+  },
+  "handleDuplicates.removerightbutton.accesskey": {
+    "message": "T"
+  },
+  "handleDuplicates.mergeleftbutton.label": {
+    "message": "Fusionner à gauche"
+  },
+  "handleDuplicates.mergeleftbutton.accesskey": {
+    "message": "M"
+  },
+  "handleDuplicates.makedifferentbutton.label": {
+    "message": "Différencier"
+  },
+  "handleDuplicates.makedifferentbutton.accesskey": {
+    "message": "f"
+  },
   "handleDuplicates.keepnextbutton.label": {
-    "message": "Conserver les deux >"
+    "message": "Conserver les deux"
   },
   "handleDuplicates.keepnextbutton.accesskey": {
     "message": "C"
   },
+  "handleDuplicates.removebothbutton.label": {
+    "message": "Supprimer les deux"
+  },
   "handleDuplicates.skipnextbutton.label": {
-    "message": "Passer >"
+    "message": "Passer"
   },
   "handleDuplicates.skipnextbutton.accesskey": {
     "message": "P"

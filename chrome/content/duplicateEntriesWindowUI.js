@@ -144,11 +144,21 @@ var DuplicateEntriesWindowUI = (function() {
 		hide('tablepane');
 		hide('endinfo');
 		make_visible('skipnextbutton');
+		make_visible('makedifferentbutton');
 		make_visible('keepnextbutton');
 		make_visible('applynextbutton');
+		make_visible('removeleftbutton');
+		make_visible('removebothbutton');
+		make_visible('removerightbutton');
+		make_visible('mergeleftbutton');
 		disable('skipnextbutton');
+		disable('makedifferentbutton');
 		disable('keepnextbutton');
 		disable('applynextbutton');
+		disable('removeleftbutton');
+		disable('removebothbutton');
+		disable('removerightbutton');
+		disable('mergeleftbutton');
 		hide('stopbutton');
 		show('quitbutton');
 		show('explanation');
@@ -157,11 +167,21 @@ var DuplicateEntriesWindowUI = (function() {
 		ctx.hide('tablepane');
 		ctx.hide('endinfo');
 		ctx.make_visible('skipnextbutton');
+		ctx.make_visible('makedifferentbutton');
 		ctx.make_visible('keepnextbutton');
 		ctx.make_visible('applynextbutton');
+		ctx.make_visible('removeleftbutton');
+		ctx.make_visible('removebothbutton');
+		ctx.make_visible('removerightbutton');
+		ctx.make_visible('mergeleftbutton');
 		ctx.disable('skipnextbutton');
+		ctx.disable('makedifferentbutton');
 		ctx.disable('keepnextbutton');
 		ctx.disable('applynextbutton');
+		ctx.disable('removeleftbutton');
+		ctx.disable('removebothbutton');
+		ctx.disable('removerightbutton');
+		ctx.disable('mergeleftbutton');
 		ctx.hide('stopbutton');
 		ctx.show('quitbutton');
 		ctx.show('explanation');
@@ -183,13 +203,18 @@ var DuplicateEntriesWindowUI = (function() {
 	}
 
 	/**
-	 * Duplicate pair state: enable Skip / Keep / Apply and remove wait cursor (user can act on the pair).
+	 * Duplicate pair state: enable Skip / Make different / Keep both / Remove one / Remove left / Remove both / Remove right / Merge left; remove wait cursor.
 	 * TB128: Also ensure tablepane is visible to show the comparison table.
 	 */
 	function showDuplicatePairState(ctx) {
 		enable('skipnextbutton');
+		enable('makedifferentbutton');
 		enable('keepnextbutton');
 		enable('applynextbutton');
+		enable('removeleftbutton');
+		enable('removebothbutton');
+		enable('removerightbutton');
+		enable('mergeleftbutton');
 		// Ensure tablepane is visible when showing duplicate pair
 		show('tablepane');
 		if (ctx.window)
@@ -197,12 +222,17 @@ var DuplicateEntriesWindowUI = (function() {
 	}
 
 	/**
-	 * Disable Skip / Keep / Apply (e.g. while searching for next pair).
+	 * Disable duplicate-pair action buttons (e.g. while searching for next pair). Order matches window.html.
 	 */
 	function disableDuplicateActionButtons(ctx) {
 		disable('skipnextbutton');
+		disable('makedifferentbutton');
 		disable('keepnextbutton');
 		disable('applynextbutton');
+		disable('removeleftbutton');
+		disable('removebothbutton');
+		disable('removerightbutton');
+		disable('mergeleftbutton');
 	}
 
 	/**
@@ -211,8 +241,13 @@ var DuplicateEntriesWindowUI = (function() {
 	function showFinishedState(ctx) {
 		hide('tablepane');
 		make_invisible('skipnextbutton');
+		make_invisible('makedifferentbutton');
 		make_invisible('keepnextbutton');
 		make_invisible('applynextbutton');
+		make_invisible('removeleftbutton');
+		make_invisible('removebothbutton');
+		make_invisible('removerightbutton');
+		make_invisible('mergeleftbutton');
 		if (ctx.window)
 			ctx.window.removeAttribute('wait-cursor');
 		hide('stopbutton');
