@@ -1,0 +1,65 @@
+BEGIN:VCARD
+VERSION:3.0
+FN:Old01 EscapedHome
+N:EscapedHome;Old01;;;
+EMAIL;TYPE=INTERNET:old01@example.com
+ADR;TYPE=HOME:\;\;\;Via Roma 1\;Orta San Giulio\;NO\;28016\;Italy
+UID:dcm-old-01-a
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:Old01 EscapedHome
+N:EscapedHome;Old01;;;
+EMAIL;TYPE=INTERNET:old01@example.com
+ADR;TYPE=HOME:;;Via Roma 1;Orta San Giulio;NO;28016;Italy
+UID:dcm-old-01-b
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:Old02 PlainWork
+N:PlainWork;Old02;;;
+EMAIL;TYPE=INTERNET:old02@example.com
+ADR;TYPE=WORK:;;;Via Po 2;Milano;MI;20127;Italy
+UID:dcm-old-02-a
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:Old02 PlainWork
+N:PlainWork;Old02;;;
+EMAIL;TYPE=INTERNET:old02@example.com
+ADR;TYPE=WORK:;;Via Po 2;Milano;MI;20127;Italy
+UID:dcm-old-02-b
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:Old03 EmptyStreet
+N:EmptyStreet;Old03;;;
+EMAIL;TYPE=INTERNET:old03@example.com
+ADR;TYPE=HOME:;;;Orta San Giulio;NO;28016;Italy
+UID:dcm-old-03-a
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:Old03 EmptyStreet
+N:EmptyStreet;Old03;;;
+EMAIL;TYPE=INTERNET:old03@example.com
+ADR;TYPE=HOME:;;;Orta San Giulio;NO;28016;Italy;;
+UID:dcm-old-03-b
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:Old04 EditOld
+N:EditOld;Old04;;;
+EMAIL;TYPE=INTERNET:old04@example.com
+ADR;TYPE=HOME:\;\;\;Via Garibaldi 5\;Novara\;NO\;28100\;Italy
+ADR;TYPE=WORK:\;\;\;Corso Italia 9\;Torino\;TO\;10121\;Italy
+UID:dcm-old-04-a
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:Old04 EditOld
+N:EditOld;Old04;;;
+EMAIL;TYPE=INTERNET:old04@example.com
+ADR;TYPE=HOME:;;Via Garibaldi 5;Novara;NO;28100;Italy
+UID:dcm-old-04-b
+END:VCARD
