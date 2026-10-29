@@ -96,7 +96,7 @@ The add-on's duplicate-finder window is implemented as a single HTML window (`wi
 
 **Role:** Load and save user preferences for the duplicate-finder window using WebExtension storage API.
 
-**Exports:** `getPrefsBranch`, `loadPrefs(ctx)`, `applyPrefsToDOM(ctx)`, `readPrefsFromDOM(ctx)`, `savePrefs(ctx)`.
+**Exports:** `getPrefsBranch`, `loadPrefs(ctx)`, `applyPrefsToDOM(ctx)`, `readPrefsFromDOM(ctx)`, `refreshConsideredFieldsFromDOM(ctx)`, `savePrefs(ctx)`.
 
 **Responsibilities:**
 - Use the WebExtension `storage` API (`messenger.storage.local` or `browser.storage.local`) to read/write preferences.
@@ -235,6 +235,7 @@ The add-on's duplicate-finder window is implemented as a single HTML window (`wi
 * **Addresses from older versions:** addresses written by version 2.2.3 and earlier (`;;;Street;City;State;Zip;Country`, usually with every `;` escaped) are read again; the empty-street fix had dropped that rule. An edited address of this kind is saved in the standard form.
 * **Tests:** `tests/vcard-utils.test.html`.
 * **Merge left** now also marks the left contact as to be kept, so **Remove one** keeps the merged contact.
+* **Fields to consider** now updates while you edit **Fields to ignore** (`refreshConsideredFieldsFromDOM`); it is still a computed, read-only list.
 
 ### Version 2.2.4
 * **Make different:** set distinct synthetic `_AimScreenName` on both contacts (vCard `X-AIM` via `vCardUtils`); configurable `nodupAimPrefix` in `duplicateEntriesWindowFields.js`. Duplicate search skips pairs whose AIM already differs.

@@ -57,6 +57,16 @@ window.addEventListener('beforeunload', function() {
 
 // Set up button event handlers
 document.addEventListener('DOMContentLoaded', function() {
+	// Keep "Fields to consider" in step with "Fields to ignore" while typing
+	const ignoredFieldsBox = document.getElementById('ignoredFields');
+	if (ignoredFieldsBox) {
+		ignoredFieldsBox.addEventListener('input', function() {
+			if (typeof DuplicateEntriesWindow !== 'undefined') {
+				DuplicateEntriesWindowPrefs.refreshConsideredFieldsFromDOM(DuplicateEntriesWindow);
+			}
+		});
+	}
+
 	const startButton = document.getElementById('startbutton');
 	if (startButton) {
 		startButton.addEventListener('click', function() {
