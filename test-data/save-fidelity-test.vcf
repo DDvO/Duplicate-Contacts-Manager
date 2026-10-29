@@ -1,0 +1,212 @@
+BEGIN:VCARD
+VERSION:4.0
+FN:Save01 MultiEmail
+N:MultiEmail;Save01;;;
+EMAIL;PREF=1:save01.first@example.com
+EMAIL:save01.second@example.com
+EMAIL:save01.third@example.com
+UID:dcm-save-01-a
+END:VCARD
+BEGIN:VCARD
+VERSION:4.0
+FN:Save01 MultiEmail
+N:MultiEmail;Save01;;;
+EMAIL:save01.other@example.org
+UID:dcm-save-01-b
+END:VCARD
+BEGIN:VCARD
+VERSION:4.0
+FN:Save02 MultiPhone
+N:MultiPhone;Save02;;;
+EMAIL:save02@example.com
+TEL;TYPE=work;VALUE=TEXT:+39 02 0200001
+TEL;TYPE=work;VALUE=TEXT:+39 02 0200002
+TEL;TYPE=work,fax;VALUE=TEXT:+39 02 0200009
+TEL;TYPE=cell;VALUE=TEXT:+39 333 0200003
+UID:dcm-save-02-a
+END:VCARD
+BEGIN:VCARD
+VERSION:4.0
+FN:Save02 MultiPhone
+N:MultiPhone;Save02;;;
+EMAIL:save02.other@example.org
+UID:dcm-save-02-b
+END:VCARD
+BEGIN:VCARD
+VERSION:4.0
+FN:Save03 Extras
+N:Extras;Save03;;;
+EMAIL:save03@example.com
+ORG:Acme SpA;Sales;EMEA
+TITLE:Account Manager
+CATEGORIES:Friends,Work
+IMPP:xmpp:save03@example.com
+ANNIVERSARY:20100612
+X-CUSTOM1:custom one
+X-CUSTOM2:custom two
+URL;TYPE=work;VALUE=URL:https://example.com/work?a=1,2
+URL;TYPE=home;VALUE=URL:https://example.com/home
+UID:dcm-save-03-a
+END:VCARD
+BEGIN:VCARD
+VERSION:4.0
+FN:Save03 Extras
+N:Extras;Save03;;;
+EMAIL:save03.other@example.org
+UID:dcm-save-03-b
+END:VCARD
+BEGIN:VCARD
+VERSION:4.0
+FN:Save04 NameParts
+N:NameParts;Save04;Maria;Dr.;PhD
+EMAIL:save04@example.com
+UID:dcm-save-04-a
+END:VCARD
+BEGIN:VCARD
+VERSION:4.0
+FN:Save04 NameParts
+N:NameParts;Save04;;;
+EMAIL:save04.other@example.org
+UID:dcm-save-04-b
+END:VCARD
+BEGIN:VCARD
+VERSION:4.0
+FN:Save05 EmptyStreet
+N:EmptyStreet;Save05;;;
+EMAIL:save05@example.com
+ADR;TYPE=home:;;;Orta San Giulio;NO;28016;Italy
+ADR;TYPE=work:;;;Milano;MI;20127;Italy
+UID:dcm-save-05-a
+END:VCARD
+BEGIN:VCARD
+VERSION:4.0
+FN:Save05 EmptyStreet
+N:EmptyStreet;Save05;;;
+EMAIL:save05.other@example.org
+UID:dcm-save-05-b
+END:VCARD
+BEGIN:VCARD
+VERSION:4.0
+FN:Save06 PoBox
+N:PoBox;Save06;;;
+EMAIL:save06@example.com
+ADR;TYPE=home:Casella Postale 12;Scala B;Via Roma 1;Torino;TO;10121;Italy
+UID:dcm-save-06-a
+END:VCARD
+BEGIN:VCARD
+VERSION:4.0
+FN:Save06 PoBox
+N:PoBox;Save06;;;
+EMAIL:save06.other@example.org
+UID:dcm-save-06-b
+END:VCARD
+BEGIN:VCARD
+VERSION:4.0
+FN:Save07 Escapes
+N:Escapes;Save07;;;
+EMAIL:save07@example.com
+ADR;TYPE=work:;;Via Verdi 3\; int. 4\, piano 2;Bologna;BO;40121;Italy
+UID:dcm-save-07-a
+END:VCARD
+BEGIN:VCARD
+VERSION:4.0
+FN:Save07 Escapes
+N:Escapes;Save07;;;
+EMAIL:save07.other@example.org
+UID:dcm-save-07-b
+END:VCARD
+BEGIN:VCARD
+VERSION:4.0
+FN:Save08 LongNote
+N:LongNote;Save08;;;
+EMAIL:save08@example.com
+NOTE:This note is long enough to be folded by most exporters and the word
+  after the fold must keep its space. Path: C:\\new\\folder\nSecond line.
+UID:dcm-save-08-a
+END:VCARD
+BEGIN:VCARD
+VERSION:4.0
+FN:Save08 LongNote
+N:LongNote;Save08;;;
+EMAIL:save08.other@example.org
+UID:dcm-save-08-b
+END:VCARD
+BEGIN:VCARD
+VERSION:3.0
+FN:Save09 Photo
+N:Photo;Save09;;;
+EMAIL;TYPE=INTERNET:save09@example.com
+PHOTO;ENCODING=b;TYPE=PNG:iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAf
+ FcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAA
+ AABJRU5ErkJggg==
+UID:dcm-save-09-a
+END:VCARD
+BEGIN:VCARD
+VERSION:4.0
+FN:Save09 Photo
+N:Photo;Save09;;;
+EMAIL:save09.other@example.org
+UID:dcm-save-09-b
+END:VCARD
+BEGIN:VCARD
+VERSION:4.0
+FN:Save10 PartialBday
+N:PartialBday;Save10;;;
+EMAIL:save10@example.com
+BDAY:--0612
+UID:dcm-save-10-a
+END:VCARD
+BEGIN:VCARD
+VERSION:4.0
+FN:Save10 PartialBday
+N:PartialBday;Save10;;;
+EMAIL:save10.other@example.org
+UID:dcm-save-10-b
+END:VCARD
+BEGIN:VCARD
+VERSION:4.0
+FN:Save11 AimSplit
+N:AimSplit;Save11;;;
+EMAIL:save11.a@example.com
+X-AIM:split-a
+UID:dcm-save-11-a
+END:VCARD
+BEGIN:VCARD
+VERSION:4.0
+FN:Save11 AimSplit
+N:AimSplit;Save11;;;
+EMAIL:save11.b@example.org
+X-AIM:split-b
+UID:dcm-save-11-b
+END:VCARD
+BEGIN:VCARD
+VERSION:4.0
+FN:Save12 AimSame
+N:AimSame;Save12;;;
+EMAIL:save12.a@example.com
+X-AIM:same-aim
+UID:dcm-save-12-a
+END:VCARD
+BEGIN:VCARD
+VERSION:4.0
+FN:Save12 AimSame
+N:AimSame;Save12;;;
+EMAIL:save12.b@example.org
+X-AIM:same-aim
+UID:dcm-save-12-b
+END:VCARD
+BEGIN:VCARD
+VERSION:4.0
+FN:Save13 ShiftedAddress
+N:ShiftedAddress;Save13;;;
+EMAIL:save13@example.com
+ADR;TYPE=home:;NO;Orta San Giulio;28016;Italy;;
+UID:dcm-save-13-a
+END:VCARD
+BEGIN:VCARD
+VERSION:4.0
+FN:Save13 ShiftedAddress
+N:ShiftedAddress;Save13;;;
+EMAIL:save13.other@example.org
+UID:dcm-save-13-b
+END:VCARD
