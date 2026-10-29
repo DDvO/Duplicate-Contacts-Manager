@@ -265,11 +265,17 @@ var VCardUtils = (function() {
 	 * in Address 2, ZIP in City, country in State — which matches real Italian contacts
 	 * (e.g. Orta San Giulio / NO / 28016 / Italy).
 	 *
+	 * Addresses written by this add-on up to version 2.2.3 use another layout; see legacyAdrComponents.
+	 *
 	 * @param {string} value - Raw (still escaped) ADR property value
 	 * @returns {{ street: string, line2: string, city: string, state: string, zip: string, country: string }}
 	 */
 	function parseAdrComponents(value) {
 		var parts = structuredComponents(value);
+		var legacy = legacyAdrComponents(parts);
+		if (legacy) {
+			return legacy;
+		}
 		while (parts.length < 7) {
 			parts.push('');
 		}
@@ -281,6 +287,28 @@ var VCardUtils = (function() {
 			zip: parts[5] || '',
 			country: parts[6] || ''
 		};
+	}
+
+	/**
+	 * Reads the address layout written by this add-on up to version 2.2.3:
+	 *   ;;;Street;City;State;Zip;Country
+	 * usually with every ';' escaped, so the whole address arrives as one component.
+	 * Only that exact shape matches: eight parts with three leading empties and, when not
+	 * escaped, a non-empty last part. Standard seven-part addresses never match.
+	 * @param {string[]} parts - Unescaped, trimmed ADR components
+	 * @returns {?{ street: string, line2: string, city: string, state: string, zip: string, country: string }}
+	 */
+	function legacyAdrComponents(parts) {
+		var old = parts;
+		if (parts.length === 1 && parts[0].indexOf(';;;') === 0) {
+			old = parts[0].split(';').map(function(p) { return p.trim(); });
+		} else if (parts.length !== 8 || parts[7] === '') {
+			return null;
+		}
+		if (old.length !== 8 || old[0] !== '' || old[1] !== '' || old[2] !== '') {
+			return null;
+		}
+		return { street: old[3], line2: '', city: old[4], state: old[5], zip: old[6], country: old[7] };
 	}
 
 	/**
@@ -478,7 +506,9 @@ var VCardUtils = (function() {
 				if (!(props[base + 'Address'] || props[base + 'Address2'] || props[base + 'City'])) {
 					return null;
 				}
-				var poBox = orig ? splitStructuredValue(orig.value)[0] : '';
+				// Keep the PO box, except from the 2.2.3 layout, whose first component held the whole address
+				var poBox = (orig && !legacyAdrComponents(structuredComponents(orig.value))) ?
+					splitStructuredValue(orig.value)[0] : '';
 				return (orig ? orig.head : 'ADR;TYPE=' + base.toUpperCase()) + ':' + formatAdrValue(
 					props[base + 'Address2'], props[base + 'Address'], props[base + 'City'],
 					props[base + 'State'], props[base + 'ZipCode'], props[base + 'Country'], poBox);

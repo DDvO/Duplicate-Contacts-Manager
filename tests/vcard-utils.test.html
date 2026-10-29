@@ -183,6 +183,31 @@ test('ADR with empty street is not field-shifted, and saves the same way', funct
 	contains(out, 'ADR;TYPE=work:;;;Milano;MI;20127;Italy');
 });
 
+test('address written by version 2.2.3 and earlier is read, and rewritten in the standard form', function() {
+	var orig = card(['VERSION:3.0', 'FN:x',
+		'ADR;TYPE=HOME:\\;\\;\\;Via Roma 1\\;Orta\\;NO\\;28016\\;Italy',
+		'ADR;TYPE=WORK:;;;Via Po 2;Milano;MI;20127;Italy']);
+	var p = VCardUtils.parseVCard(orig);
+	eq(p.HomeAddress, 'Via Roma 1', 'HomeAddress');
+	eq(p.HomeAddress2, '', 'HomeAddress2');
+	eq(p.HomeCity, 'Orta', 'HomeCity');
+	eq(p.HomeState, 'NO', 'HomeState');
+	eq(p.HomeZipCode, '28016', 'HomeZipCode');
+	eq(p.HomeCountry, 'Italy', 'HomeCountry');
+	eq(p.WorkAddress, 'Via Po 2', 'WorkAddress');
+	eq(p.WorkCity, 'Milano', 'WorkCity');
+	eq(p.WorkCountry, 'Italy', 'WorkCountry');
+	eq(save(orig), orig, 'unchanged vCard');
+	var out = save(orig, { HomeCity: 'Orta San Giulio', WorkCity: 'Milan' });
+	contains(out, 'ADR;TYPE=HOME:;;Via Roma 1;Orta San Giulio;NO;28016;Italy');
+	contains(out, 'ADR;TYPE=WORK:;;Via Po 2;Milan;MI;20127;Italy');
+	// Standard addresses with an empty street or extra trailing ';' are not taken for the old layout
+	var std = VCardUtils.parseVCard(card(['ADR;TYPE=HOME:;;;Orta;NO;28016;Italy;;', 'ADR;TYPE=WORK:;;;Milano;MI;20127;Italy']));
+	eq(std.HomeCity, 'Orta', 'standard HomeCity');
+	eq(std.HomeCountry, 'Italy', 'standard HomeCountry');
+	eq(std.WorkCity, 'Milano', 'standard WorkCity');
+});
+
 test('TEL type lists, quoted types and vCard 2.1 bare types', function() {
 	var p = VCardUtils.parseVCard(card([
 		'TEL;TYPE=work,fax:1', 'TEL;TYPE="cell":2', 'TEL;WORK;VOICE:3', 'TEL;TYPE=HOME;TYPE=VOICE:4', 'item1.TEL;type=pager:5'
