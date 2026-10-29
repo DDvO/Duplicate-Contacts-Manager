@@ -177,7 +177,7 @@ The add-on's duplicate-finder window is implemented as a single HTML window (`wi
 - Fill the HTML comparison table for a pair of cards: labels, matchable rows (names/emails/phones), per-field rows with left/right values and equivalence (≡ ≅ ⋦ ⋧ etc.), including PhotoURI and selection dropdowns.
 - Clear the table (purge rows, hide header via UI module).
 - Read back edited values from the table for a given side ("left" or "right").
-- **Merge left** button: copy right-column cell values into empty left-column cells only (DOM); saving is done via **Remove one** or **Keep both**.
+- **Merge left** button: copy right-column cell values into empty left-column cells only (DOM) and mark the left contact as to be kept; saving is done via **Remove one** or **Keep both**.
 
 **Dependencies:** Uses UI's `showComparisonTableHeader`, `hideComparisonTableHeader`; expects `ctx` to have Fields predicates, `getProperty`, `getAbstractedTransformedProperty`, `createSelectionList`, `setContactLeftRight`, `attributesTableRows`, `displayedFields`, `editableFields`, etc. Updated for HTML DOM and plain JavaScript card objects (TB128).
 
@@ -234,6 +234,7 @@ The add-on's duplicate-finder window is implemented as a single HTML window (`wi
 * **vCard parsing:** folded lines keep their spaces; `\\n` is no longer read as a newline; escaped `;` inside ADR/N components is respected; `TEL` types are read from type lists, quoted values and vCard 2.1 bare types; `ORG` sets Company and Department; `URL;TYPE=home` maps to WebPage2; photos are written as `ENCODING=b` in vCard 3.0.
 * **Addresses from older versions:** addresses written by version 2.2.3 and earlier (`;;;Street;City;State;Zip;Country`, usually with every `;` escaped) are read again; the empty-street fix had dropped that rule. An edited address of this kind is saved in the standard form.
 * **Tests:** `tests/vcard-utils.test.html`.
+* **Merge left** now also marks the left contact as to be kept, so **Remove one** keeps the merged contact.
 
 ### Version 2.2.4
 * **Make different:** set distinct synthetic `_AimScreenName` on both contacts (vCard `X-AIM` via `vCardUtils`); configurable `nodupAimPrefix` in `duplicateEntriesWindowFields.js`. Duplicate search skips pairs whose AIM already differs.

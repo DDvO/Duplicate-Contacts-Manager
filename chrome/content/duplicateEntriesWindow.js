@@ -293,10 +293,12 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 		},
 
 		/**
-		 * Fills empty left-column table cells from the right column (DOM only). Use Apply / Keep both to save.
+		 * Fills empty left-column table cells from the right column (DOM only) and marks the left
+		 * contact as the one to keep, since it now holds the merged data. Use Apply / Keep both to save.
 		 */
 		mergeEmptyLeftFromRightInTable: function() {
 			DuplicateEntriesWindowDisplay.mergeEmptyLeftFromRightInTable(this);
+			this.setContactLeftRight('left');
 		},
 
 		/**
