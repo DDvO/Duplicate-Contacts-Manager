@@ -39,8 +39,8 @@ The add-on's duplicate-finder window is implemented as a single HTML window (`wi
 **Exports:** `parseVCard(vCardString)`, `mergeVCard(originalVCard, cardObject)`, `generateVCard(cardObject)`, `getProperty`, `setProperty`, `createContactCardFromApiContact`, helpers for mailing-list extraction, etc.
 
 **Responsibilities:**
-- Parse vCard strings from the `addressBooks` API into plain JavaScript objects.
-- Save edits with `mergeVCard`: the vCard the contact was loaded from (`card._vCard`) is replayed line by line. Lines that set no modelled field (third `EMAIL`, a second `TEL` of the same type, `CATEGORIES`, `IMPP`, `X-*`, …) and lines whose fields are unchanged are kept verbatim; changed lines are rewritten in place with their original parameters; new fields are appended. N prefix/suffix and the ADR PO box are kept when those lines are rewritten. `generateVCard` is only used for contacts without an original vCard.
+- Parse vCard strings from the `addressBooks` API into plain JavaScript objects (RFC line unfolding, one-pass unescaping, structured N/ADR/ORG split on unescaped `;`, TYPE lists such as `TYPE=work,fax` and vCard 2.1 bare types).
+- Save edits with `mergeVCard`: the vCard the contact was loaded from (`card._vCard`) is replayed line by line. Lines that set no modelled field (third `EMAIL`, a second `TEL` of the same type, `CATEGORIES`, `IMPP`, `X-*`, …) and lines whose fields are unchanged are kept verbatim; changed lines are rewritten in place with their original parameters; new fields are appended. N prefix/suffix, the ADR PO box and further ORG units are kept when those lines are rewritten. `generateVCard` is only used for contacts without an original vCard.
 - The modelled fields and their vCard lines are listed once, in `VCARD_UNITS`; for these, the first line in a vCard wins.
 - Handle vCard property mapping and normalization (including **`X-AIM`** ↔ **`_AimScreenName`** for AIM screen names used by “Make different”).
 
@@ -231,6 +231,7 @@ The add-on's duplicate-finder window is implemented as a single HTML window (`wi
 
 ### Unreleased
 * **No data loss on save:** Apply / Keep both / Make different merge edits into the original vCard (`VCardUtils.mergeVCard`) instead of regenerating it, so data the add-on does not show (extra emails and phones, categories, custom fields, name prefix/suffix, PO box, year-less birthdays, …) is preserved. `saveCard` updates `card._vCard` after each save.
+* **vCard parsing:** folded lines keep their spaces; `\\n` is no longer read as a newline; escaped `;` inside ADR/N components is respected; `TEL` types are read from type lists, quoted values and vCard 2.1 bare types; `ORG` sets Company and Department; `URL;TYPE=home` maps to WebPage2; photos are written as `ENCODING=b` in vCard 3.0.
 * **Tests:** `tests/vcard-utils.test.html`.
 
 ### Version 2.2.4

@@ -13,10 +13,11 @@ var VCardUtils = (function() {
 	"use strict";
 
 	/**
-	 * Splits a vCard string into logical content lines: a line starting with a space or tab
-	 * continues the previous one.
+	 * Splits a vCard string into logical content lines.
+	 * RFC 6350 3.2 / RFC 2425 5.8.1: a line break followed by ONE space or tab is removed; any further
+	 * whitespace belongs to the value (trimming it used to glue words of long NOTE lines together).
 	 * @param {string} vCardString
-	 * @returns {string[]} Unfolded lines
+	 * @returns {string[]} Unfolded lines (not trimmed)
 	 */
 	function unfoldVCardLines(vCardString) {
 		var physical = String(vCardString || '').split(/\r?\n/);
@@ -24,7 +25,7 @@ var VCardUtils = (function() {
 		for (var i = 0; i < physical.length; i++) {
 			var line = physical[i];
 			if (line.length > 0 && (line[0] === ' ' || line[0] === '\t') && lines.length > 0) {
-				lines[lines.length - 1] += line.substring(1).trim();
+				lines[lines.length - 1] += line.substring(1);
 			} else {
 				lines.push(line);
 			}
@@ -34,7 +35,7 @@ var VCardUtils = (function() {
 
 	/**
 	 * Splits one content line into name, parameters and raw (still escaped) value.
-	 * The first ':' ends the parameters. A group prefix (ITEM1.EMAIL) is dropped from name.
+	 * The first ':' outside double quotes ends the parameters. A group prefix (ITEM1.EMAIL) is dropped from name.
 	 * @param {string} line - Unfolded content line
 	 * @returns {{ head: string, name: string, params: string, value: string }|null}
 	 *   head: original text before the value colon (kept when a changed line is rewritten);
@@ -45,7 +46,17 @@ var VCardUtils = (function() {
 		if (!text) {
 			return null;
 		}
-		var colonIndex = text.indexOf(':');
+		var inQuotes = false;
+		var colonIndex = -1;
+		for (var i = 0; i < text.length; i++) {
+			var ch = text[i];
+			if (ch === '"') {
+				inQuotes = !inQuotes;
+			} else if (ch === ':' && !inQuotes) {
+				colonIndex = i;
+				break;
+			}
+		}
 		if (colonIndex === -1) {
 			return null;
 		}
@@ -63,17 +74,42 @@ var VCardUtils = (function() {
 	}
 
 	/**
-	 * Unescapes a vCard text value (\n, \, \; \\).
+	 * Returns the TYPE values of a parameter string: TYPE=WORK,VOICE, TYPE="work", repeated TYPE params,
+	 * and vCard 2.1 bare types (TEL;WORK;FAX).
+	 * @param {string} params - Upper-cased parameters (without the property name)
+	 * @returns {string[]}
+	 */
+	function getTypeTokens(params) {
+		var tokens = [];
+		String(params || '').split(';').forEach(function(param) {
+			var eq = param.indexOf('=');
+			if (eq !== -1 && param.substring(0, eq).trim() !== 'TYPE') {
+				return;
+			}
+			param.substring(eq + 1).split(',').forEach(function(t) {
+				t = t.replace(/"/g, '').trim();
+				if (t) {
+					tokens.push(t);
+				}
+			});
+		});
+		return tokens;
+	}
+
+	/**
+	 * Unescapes a vCard text value in one pass (\\ \; \, \n \N), so "\\n" stays backslash + n.
 	 * @param {string} value - Raw value
 	 * @returns {string}
 	 */
 	function unescapeVCardValue(value) {
-		return String(value == null ? '' : value).replace(/\\n/g, '\n').replace(/\\,/g, ',').replace(/\\;/g, ';').replace(/\\\\/g, '\\');
+		return String(value == null ? '' : value).replace(/\\([\\;,nN])/g, function(m, c) {
+			return (c === 'n' || c === 'N') ? '\n' : c;
+		});
 	}
 
 	/**
-	 * Splits a structured value (N, ADR) on unescaped ';'. Components stay escaped, so they can be
-	 * written back verbatim.
+	 * Splits a structured value (N, ADR, ORG) on unescaped ';'. Components stay escaped, so they can be
+	 * written back verbatim; pass each through unescapeVCardValue to read it.
 	 * @param {string} raw - Raw value
 	 * @returns {string[]}
 	 */
@@ -98,7 +134,7 @@ var VCardUtils = (function() {
 	}
 
 	function structuredComponents(raw) {
-		return unescapeVCardValue(raw).split(';').map(function(p) { return p.trim(); });
+		return splitStructuredValue(raw).map(function(p) { return unescapeVCardValue(p).trim(); });
 	}
 
 	/**
@@ -147,8 +183,8 @@ var VCardUtils = (function() {
 				if (type === 'jpg') type = 'jpeg';
 				imageType = 'image/' + type;
 			}
-			// Convert to data URI
-			return 'data:' + imageType + ';base64,' + value;
+			// Convert to data URI (some exporters fold base64 with extra indentation)
+			return 'data:' + imageType + ';base64,' + value.replace(/\s+/g, '');
 		}
 
 		// Return as-is (might be a URI without scheme)
@@ -162,8 +198,9 @@ var VCardUtils = (function() {
 	 * @returns {string} - Thunderbird property name
 	 */
 	function mapVCardPropertyToTB(vCardProp, params) {
+		var types = getTypeTokens(params);
 		function has(t) {
-			return String(params || '').indexOf('TYPE=' + t) !== -1;
+			return types.indexOf(t) !== -1;
 		}
 
 		switch (vCardProp) {
@@ -175,11 +212,12 @@ var VCardUtils = (function() {
 			case 'EMAIL':
 				return 'PrimaryEmail'; // SecondEmail handled in applyParsedProperty
 			case 'TEL':
+				// Most specific type first: a "work,fax" line is a fax number
+				if (has('FAX')) return 'FaxNumber';
+				if (has('PAGER')) return 'PagerNumber';
 				if (has('CELL') || has('MOBILE')) return 'CellularNumber';
 				if (has('WORK')) return 'WorkPhone';
 				if (has('HOME')) return 'HomePhone';
-				if (has('FAX')) return 'FaxNumber';
-				if (has('PAGER')) return 'PagerNumber';
 				// Default to CellularNumber if no type specified
 				return 'CellularNumber';
 			case 'ADR':
@@ -187,9 +225,10 @@ var VCardUtils = (function() {
 				if (has('WORK')) return 'WorkAddress';
 				return 'HomeAddress';
 			case 'URL':
-				return 'WebPage1';
+				// Thunderbird writes WebPage1 as URL;TYPE=work and WebPage2 as URL;TYPE=home
+				return has('HOME') ? 'WebPage2' : 'WebPage1';
 			case 'ORG':
-				return 'Company';
+				return 'Company'; // ORG:Company;Department — parsed in applyParsedProperty
 			case 'TITLE':
 				return 'JobTitle';
 			case 'NOTE':
@@ -272,13 +311,13 @@ var VCardUtils = (function() {
 		'CellularNumber', 'WorkPhone', 'HomePhone', 'FaxNumber', 'PagerNumber',
 		'HomeAddress', 'HomeAddress2', 'HomeCity', 'HomeState', 'HomeZipCode', 'HomeCountry',
 		'WorkAddress', 'WorkAddress2', 'WorkCity', 'WorkState', 'WorkZipCode', 'WorkCountry',
-		'Company', 'JobTitle', 'Notes', 'WebPage1',
+		'Company', 'Department', 'JobTitle', 'Notes', 'WebPage1', 'WebPage2',
 		'BirthYear', 'BirthMonth', 'BirthDay', 'NickName', '_AimScreenName', 'PhotoURI', 'UID', 'LastModifiedDate'
 	];
 
 	/**
 	 * Applies a single parsed vCard property to props (internal use in parseVCard and mergeVCard).
-	 * Handles N -> FirstName/LastName; multiple EMAIL; REV -> LastModifiedDate; TEL; ADR;
+	 * Handles N -> FirstName/LastName; multiple EMAIL; REV -> LastModifiedDate; TEL; ADR; ORG;
 	 * BirthDay (BDAY line); etc. For modelled fields the first line wins; later ones are left to mergeVCard,
 	 * which keeps them verbatim.
 	 * @param {Object} props - Properties object
@@ -327,6 +366,16 @@ var VCardUtils = (function() {
 			props[baseProp + 'ZipCode'] = adr.zip;
 			props[baseProp + 'Country'] = adr.country;
 			return adrFields(baseProp);
+		} else if (property === 'Company') {
+			if (props.hasOwnProperty('Company')) {
+				return [];
+			}
+			var org = structuredComponents(rawValue);
+			props['Company'] = org[0] || '';
+			if (org[1]) {
+				props['Department'] = org[1];
+			}
+			return ['Company', 'Department'];
 		} else if (property === 'BirthDay') {
 			// BDAY vCard line is mapped to property name BirthDay (see mapVCardPropertyToTB)
 			// Parse birthday: YYYY-MM-DD or YYYYMMDD into BirthYear / BirthMonth / day-of-month.
@@ -352,8 +401,11 @@ var VCardUtils = (function() {
 			if (props.hasOwnProperty(property)) {
 				return [];
 			}
+			// URL and PHOTO are URI values: no text escaping (RFC 6350 4)
 			if (property === 'PhotoURI') {
-				props[property] = processPhotoValue(unescapeVCardValue(rawValue), params);
+				props[property] = processPhotoValue(rawValue, params);
+			} else if (property === 'WebPage1' || property === 'WebPage2') {
+				props[property] = rawValue;
 			} else {
 				props[property] = unescapeVCardValue(rawValue);
 			}
@@ -369,7 +421,24 @@ var VCardUtils = (function() {
 	}
 
 	/**
-	 * A unit is one vCard line that represents a fixed set of fields. emit(props, orig) returns the
+	 * Builds a PHOTO line. Data URIs become ENCODING=b in vCard 3.0; vCard 4.0 and URLs use a URI value.
+	 * @param {string} uri - PhotoURI value
+	 * @param {boolean} version4 - True when writing into a vCard 4.0
+	 * @returns {string}
+	 */
+	function formatPhotoLine(uri, version4) {
+		var m = /^data:image\/([a-z0-9.+-]+);base64,(.*)$/i.exec(uri);
+		if (version4) {
+			return 'PHOTO:' + uri;
+		}
+		if (m) {
+			return 'PHOTO;ENCODING=b;TYPE=' + m[1].toUpperCase() + ':' + m[2];
+		}
+		return 'PHOTO;VALUE=uri:' + uri;
+	}
+
+	/**
+	 * A unit is one vCard line that represents a fixed set of fields. emit(props, orig, opts) returns the
 	 * line for the current props, or null to omit it. orig is the parsed original line being rewritten
 	 * (null for a new line): its head (group, TYPE/PREF params) and unmodelled structured components are reused.
 	 */
@@ -382,6 +451,19 @@ var VCardUtils = (function() {
 					return null;
 				}
 				return (orig ? orig.head : fallbackHead) + ':' + escapeVCardValue(props[field]);
+			}
+		};
+	}
+
+	function uriUnit(key, field, fallbackHead) {
+		return {
+			key: key,
+			fields: [field],
+			emit: function(props, orig) {
+				if (!props[field]) {
+					return null;
+				}
+				return (orig ? orig.head : fallbackHead) + ':' + String(props[field]).replace(/[\r\n]+/g, '');
 			}
 		};
 	}
@@ -431,10 +513,26 @@ var VCardUtils = (function() {
 		textUnit('TEL_PAGER', 'PagerNumber', 'TEL;TYPE=PAGER'),
 		adrUnit('Home'),
 		adrUnit('Work'),
-		textUnit('ORG', 'Company', 'ORG'),
+		{
+			key: 'ORG',
+			fields: ['Company', 'Department'],
+			emit: function(props, orig) {
+				var old = orig ? splitStructuredValue(orig.value) : [];
+				var tail = old.slice(2); // further organizational units are not modelled
+				if (!props['Company'] && !props['Department'] && tail.length === 0) {
+					return null;
+				}
+				var parts = [escapeVCardValue(props['Company'] || '')];
+				if (props['Department'] || tail.length) {
+					parts.push(escapeVCardValue(props['Department'] || ''));
+				}
+				return (orig ? orig.head : 'ORG') + ':' + parts.concat(tail).join(';');
+			}
+		},
 		textUnit('TITLE', 'JobTitle', 'TITLE'),
 		textUnit('NOTE', 'Notes', 'NOTE'),
-		textUnit('URL1', 'WebPage1', 'URL'),
+		uriUnit('URL1', 'WebPage1', 'URL'),
+		uriUnit('URL2', 'WebPage2', 'URL;TYPE=HOME'),
 		{
 			key: 'BDAY',
 			fields: ['BirthYear', 'BirthMonth', 'BirthDay'],
@@ -451,8 +549,8 @@ var VCardUtils = (function() {
 		{
 			key: 'PHOTO',
 			fields: ['PhotoURI'],
-			emit: function(props) {
-				return props['PhotoURI'] ? 'PHOTO:' + escapeVCardValue(props['PhotoURI']) : null;
+			emit: function(props, orig, opts) {
+				return props['PhotoURI'] ? formatPhotoLine(String(props['PhotoURI']), opts && opts.version4) : null;
 			}
 		},
 		textUnit('UID', 'UID', 'UID'),
@@ -488,7 +586,7 @@ var VCardUtils = (function() {
 		}
 		var lines = ['BEGIN:VCARD', 'VERSION:3.0'];
 		for (var i = 0; i < VCARD_UNITS.length; i++) {
-			var line = VCARD_UNITS[i].emit(props, null);
+			var line = VCARD_UNITS[i].emit(props, null, { version4: false });
 			if (line !== null) {
 				lines.push(line);
 			}
@@ -533,6 +631,7 @@ var VCardUtils = (function() {
 		var firstUnmodelledByName = {}; // vCard name -> index in out of the first kept, unmodelled line
 		var unmodelledSingles = [];     // { index, name } of unparsed BDAY/N/UID/REV lines
 		var singleNames = { BDAY: 'BDAY', N: 'N', UID: 'UID', REV: 'REV' };
+		var version4 = false;
 		var endOut = -1;
 
 		for (var i = beginIndex; i <= endIndex; i++) {
@@ -545,6 +644,9 @@ var VCardUtils = (function() {
 				endOut = out.length;
 				out.push(raw);
 				continue;
+			}
+			if (parsed.name === 'VERSION' && parsed.value.trim() === '4.0') {
+				version4 = true;
 			}
 			var fields = (parsed.name === 'BEGIN' || parsed.value === '') ? [] :
 				applyParsedProperty(replay, mapVCardPropertyToTB(parsed.name, parsed.params), parsed.value, parsed.params);
@@ -566,13 +668,14 @@ var VCardUtils = (function() {
 
 		// Units that had no line in the original
 		var insertBefore = {}; // out index -> lines
+		var opts = { version4: version4 };
 		var rewrittenNames = {};
 		for (var u = 0; u < VCARD_UNITS.length; u++) {
 			var unitU = VCARD_UNITS[u];
 			if (placedUnits[unitU.key]) {
 				continue;
 			}
-			var line = unitU.emit(props, null);
+			var line = unitU.emit(props, null, opts);
 			if (line === null || (unitU.key === 'N' && !props['LastName'] && !props['FirstName'] && !props['MiddleName'])) {
 				continue;
 			}
@@ -602,7 +705,7 @@ var VCardUtils = (function() {
 			if (typeof out[j] === 'string') {
 				result.push(out[j]);
 			} else {
-				var rewritten = out[j].unit.emit(props, out[j].orig);
+				var rewritten = out[j].unit.emit(props, out[j].orig, opts);
 				if (rewritten !== null) {
 					result.push(rewritten);
 				}
@@ -628,7 +731,7 @@ var VCardUtils = (function() {
 			.replace(/\\/g, '\\\\')
 			.replace(/;/g, '\\;')
 			.replace(/,/g, '\\,')
-			.replace(/\n/g, '\\n');
+			.replace(/\r\n|\r|\n/g, '\\n');
 	}
 
 	/**
