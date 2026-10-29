@@ -63,12 +63,19 @@ var DuplicateEntriesWindowContacts = (function() {
 			return { cards: [], totalBefore: 0 };
 		}
 
+		// Diagnostic output goes through the window's debug() (off by default)
+		var debug = (context && context.debug) ? function(str) { context.debug(str); } : function() {};
+
 		try {
+			debug("Getting contacts from address book: " + addressBookId);
+
 			// Get all contacts from the address book
 			const contacts = await addressBooksAPI.contacts.list(addressBookId);
+			debug("Found " + contacts.length + " contacts");
 
 			var abCards = [];
 			var mailLists = [];
+			var processedCount = 0;
 
 			// Process contacts and mailing lists
 			for (var i = 0; i < contacts.length; i++) {
@@ -102,11 +109,14 @@ var DuplicateEntriesWindowContacts = (function() {
 						}
 						var cardProps = VCardUtils.createContactCardFromApiContact(contact, addressBookId);
 						abCards.push(cardProps);
+						processedCount++;
 					}
 				} catch (e) {
 					console.warn("Error processing contact at index", i, ":", e);
 				}
 			}
+
+			debug("Processed " + processedCount + " cards successfully");
 
 			// Enrich cards with virtual properties
 			for (var j = 0; j < abCards.length; j++) {
@@ -115,6 +125,7 @@ var DuplicateEntriesWindowContacts = (function() {
 				}
 			}
 
+			debug("Loaded " + abCards.length + " contacts from address book " + addressBookId);
 			return { cards: abCards, totalBefore: abCards.length };
 		} catch (error) {
 			console.error("Error in getAllAbCards:", error);

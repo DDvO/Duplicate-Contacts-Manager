@@ -17,7 +17,10 @@
 if (typeof(DuplicateContactsManager_Running) == "undefined") {
 	/** Single window object; passed as context (ctx) to all duplicate-finder modules. Holds state and delegates to Contacts, Fields, Prefs, Matching, CardValues, Comparison, UI, Display, Search. */
 	var DuplicateEntriesWindow = Object.assign(DuplicateEntriesWindowState.defaultState(), {
-		debug: function() {},
+		/** Diagnostic output, off by default; uncomment the console.log to re-enable it. */
+		debug: function(str) {
+			// console.log(str);
+		},
 
 		/** Returns config object for DuplicateEntriesWindowMatching (normalization). */
 		getNormalizationConfig: function() {
@@ -544,19 +547,24 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			// TB128: getAllAbCards is async and takes address book ID
 			try {
 				if (this.abId1) {
+					this.debug("Loading contacts from address book 1: " + this.abId1);
 					var result1 = await Contacts.getAllAbCards(this.abId1, this);
 					this.vcards[this.BOOK_1] = result1.cards;
 					this.vcardsSimplified[this.BOOK_1] = new Array();
 					this.totalCardsBefore = result1.totalBefore;
+					this.debug("Loaded " + result1.cards.length + " contacts from address book 1");
 				}
 				if (this.abId2 && this.abId2 != this.abId1) {
+					this.debug("Loading contacts from address book 2: " + this.abId2);
 					var result2 = await Contacts.getAllAbCards(this.abId2, this);
 					this.vcards[this.BOOK_2] = result2.cards;
 					this.vcardsSimplified[this.BOOK_2] = new Array();
 					this.totalCardsBefore += result2.totalBefore;
+					this.debug("Loaded " + result2.cards.length + " contacts from address book 2");
 				} else {
 					this.vcards[this.BOOK_2] = this.vcards[this.BOOK_1];
 					this.vcardsSimplified[this.BOOK_2] = this.vcardsSimplified[this.BOOK_1];
+					this.debug("Using same address book for both, total contacts: " + (this.vcards[this.BOOK_1] ? this.vcards[this.BOOK_1].length : 0));
 				}
 			} catch (error) {
 				console.error("Error reading address books:", error);
