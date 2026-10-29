@@ -57,7 +57,6 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 			this.isNumerical = F.isNumerical;
 			this.defaultValue = F.defaultValue;
 			this.charWeight = F.charWeight;
-			this.nodupAimPrefix = F.nodupAimPrefix;
 
 			// Add vCard utilities to context
 			this.parseVCard = VCardUtils.parseVCard;
@@ -299,99 +298,6 @@ if (typeof(DuplicateContactsManager_Running) == "undefined") {
 		mergeEmptyLeftFromRightInTable: function() {
 			DuplicateEntriesWindowDisplay.mergeEmptyLeftFromRightInTable(this);
 			this.setContactLeftRight('left');
-		},
-
-		/**
-		 * Full display name for the nodup AIM marker: DisplayName, or FirstName + LastName, or PrimaryEmail.
-		 */
-		getFullNameForNodupMarker: function(card) {
-			if (!card || typeof card.getProperty !== 'function') {
-				return '';
-			}
-			var dn = card.getProperty('DisplayName', '');
-			if (dn && String(dn).trim()) {
-				return String(dn).trim();
-			}
-			var fn = String(card.getProperty('FirstName', '') || '').trim();
-			var ln = String(card.getProperty('LastName', '') || '').trim();
-			if (fn || ln) {
-				return (fn + ' ' + ln).trim();
-			}
-			var em = card.getProperty('PrimaryEmail', '');
-			if (em && String(em).trim()) {
-				return String(em).trim();
-			}
-			return '';
-		},
-
-		/** Strip characters that break vCard / AIM lines (semicolons, newlines); collapse spaces. */
-		sanitizeNodupNameSegment: function(s) {
-			if (s == null || s === undefined) {
-				return '';
-			}
-			return String(s).replace(/[\r\n;]+/g, ' ').replace(/\s+/g, ' ').trim();
-		},
-
-		/**
-		 * Builds a unique AIM screen name: {nodupAimPrefix}-{full name}-{last 8 chars of card._id}.
-		 * Name uses the whole resolved display string (see getFullNameForNodupMarker); id suffix disambiguates same-name pairs.
-		 * Prefix is configurable in duplicateEntriesWindowFields.js (nodupAimPrefix).
-		 */
-		buildNodupAimScreenName: function(card) {
-			var prefix = this.nodupAimPrefix != null ? String(this.nodupAimPrefix) : 'nodup';
-			var id = (card && card._id) ? String(card._id) : '';
-			var idSeg = id.length <= 8 ? id : id.slice(-8);
-			var namePart = this.sanitizeNodupNameSegment(this.getFullNameForNodupMarker(card));
-			if (!namePart) {
-				namePart = 'contact';
-			}
-			return prefix + '-' + namePart + '-' + idSeg;
-		},
-
-		/**
-		 * Applies comparison-table fields to one card, sets _AimScreenName to the nodup marker, then saves.
-		 */
-		applyFormAndSaveCardWithNodupAim: async function(abId, book, index, side) {
-			var card = this.vcards[book][index];
-			if (!card) {
-				console.error("applyFormAndSaveCardWithNodupAim: Card not found at book", book, "index", index);
-				return;
-			}
-			var updateFields = this.getCardFieldValues(side);
-			var props = Object.keys(updateFields);
-			for (var i = 0; i < props.length; i++) {
-				var property = props[i];
-				try {
-					card.setProperty(property, updateFields[property]);
-				} catch (e) {
-					alert("Internal error: cannot set field '" + property + "' of " + (card.DisplayName || card._id) + ": " + e);
-					return;
-				}
-			}
-			var aimVal;
-			try {
-				aimVal = this.buildNodupAimScreenName(card);
-				card.setProperty('_AimScreenName', aimVal);
-			} catch (e) {
-				alert("Internal error: cannot set AIM screen name on " + (card.DisplayName || card._id) + ": " + e);
-				return;
-			}
-			this.vcardsSimplified[book][index] = null;
-			try {
-				await DuplicateEntriesWindowContacts.saveCard(abId, card);
-				this.totalCardsChanged++;
-			} catch (e) {
-				alert("Internal error: cannot update card '" + (card.DisplayName || card._id) + "': " + e);
-			}
-		},
-
-		/**
-		 * Writes distinct AIM markers to both contacts so they no longer match as duplicates, then advances.
-		 */
-		makeDifferentAimAndSearchNextDuplicate: async function() {
-			await this.applyFormAndSaveCardWithNodupAim(this.abId1, this.BOOK_1, this.position1, 'left');
-			await this.applyFormAndSaveCardWithNodupAim(this.abId2, this.BOOK_2, this.position2, 'right');
-			this.searchNextDuplicate();
 		},
 
 		updateAbCard: async function(abId, book, index, side) {

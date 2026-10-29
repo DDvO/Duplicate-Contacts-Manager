@@ -139,7 +139,7 @@ test('every modelled field reads back after a save', function() {
 		HomeAddress: 'Via A; 1', HomeAddress2: 'Int 2', HomeCity: 'C', HomeState: 'S', HomeZipCode: 'Z', HomeCountry: 'IT',
 		WorkAddress: 'W', WorkCity: 'WC', Company: 'Co', Department: 'D', JobTitle: 'T', Notes: 'a\nb, c',
 		WebPage1: 'https://a.example', WebPage2: 'https://b.example', BirthYear: '1980', BirthMonth: '02', BirthDay: '29',
-		NickName: 'N', _AimScreenName: 'nodup-x-1', UID: 'u-1'
+		NickName: 'N', _AimScreenName: 'aim-x-1', UID: 'u-1'
 	};
 	[THUNDERBIRD_CARD, card(['VERSION:3.0', 'FN:x'])].forEach(function(orig) {
 		var back = VCardUtils.parseVCard(save(orig, edits));

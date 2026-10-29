@@ -42,7 +42,7 @@ The add-on's duplicate-finder window is implemented as a single HTML window (`wi
 - Parse vCard strings from the `addressBooks` API into plain JavaScript objects (RFC line unfolding, one-pass unescaping, structured N/ADR/ORG split on unescaped `;`, TYPE lists such as `TYPE=work,fax` and vCard 2.1 bare types). Addresses in the layout written up to version 2.2.3 (`;;;Street;City;State;Zip;Country`, usually escaped as one value) are recognised by `legacyAdrComponents` and rewritten in the standard form when edited.
 - Save edits with `mergeVCard`: the vCard the contact was loaded from (`card._vCard`) is replayed line by line. Lines that set no modelled field (third `EMAIL`, a second `TEL` of the same type, `CATEGORIES`, `IMPP`, `X-*`, …) and lines whose fields are unchanged are kept verbatim; changed lines are rewritten in place with their original parameters; new fields are appended. N prefix/suffix, the ADR PO box and further ORG units are kept when those lines are rewritten. `generateVCard` is only used for contacts without an original vCard.
 - The modelled fields and their vCard lines are listed once, in `VCARD_UNITS`; for these, the first line in a vCard wins.
-- Handle vCard property mapping and normalization (including **`X-AIM`** ↔ **`_AimScreenName`** for AIM screen names used by “Make different”).
+- Handle vCard property mapping and normalization (including **`X-AIM`** ↔ **`_AimScreenName`** for AIM screen names; the duplicate search skips pairs whose AIM differs).
 
 **Tests:** open `tests/vcard-utils.test.html` in a browser served over HTTP from the project root (for example `py -m http.server`); it is not packaged into the XPI.
 
@@ -81,7 +81,7 @@ The add-on's duplicate-finder window is implemented as a single HTML window (`wi
 
 **Role:** Central definition of address-book field lists and property-type predicates.
 
-**Exports:** `nodupAimPrefix` (prefix for synthetic AIM values in “Make different”), `addressBookFields`, `matchablesList`, `metaProperties`, `ignoredFieldsDefault`, and predicates: `isText`, `isFirstLastDisplayName`, `isEmail`, `isPhoneNumber`, `isSet`, `isSelection`, `isNumerical`, `defaultValue`, `charWeight`.
+**Exports:** `addressBookFields`, `matchablesList`, `metaProperties`, `ignoredFieldsDefault`, and predicates: `isText`, `isFirstLastDisplayName`, `isEmail`, `isPhoneNumber`, `isSet`, `isSelection`, `isNumerical`, `defaultValue`, `charWeight`.
 
 **Responsibilities:**
 - Define the full list of address book properties and which are used for matching (`__Names`, `__Emails`, `__PhoneNumbers`).
@@ -192,7 +192,7 @@ The add-on's duplicate-finder window is implemented as a single HTML window (`wi
 **Responsibilities:**
 - Advance (position1, position2) over all pairs (same-book triangle or two-book rectangle), skipping deleted slots.
 - When "defer interactive" is on, walk the pre-collected `duplicates` queue instead.
-- In `runIntervalAction(ctx)`: loop over pairs; for each pair get simplified cards; **if `_AimScreenName` differs between the two, skip the pair** (treats them as already split, e.g. after “Make different”); else run matching (names/mails/phones); if match, run comparison; auto-delete or enqueue or show comparison UI; yield every ~1 s for UI updates and re-schedule via `setTimeout`.
+- In `runIntervalAction(ctx)`: loop over pairs; for each pair get simplified cards; **if `_AimScreenName` differs between the two, skip the pair** (treats them as already split, e.g. by the former “Make different” action); else run matching (names/mails/phones); if match, run comparison; auto-delete or enqueue or show comparison UI; yield every ~1 s for UI updates and re-schedule via `setTimeout`.
 
 **Dependencies:** Uses Matching, Comparison, UI, Display; expects `ctx` to provide `vcards`, positions, `updateProgress`, `getSimplifiedCard`, `deleteAbCard`, `displayCardData`, `endSearch`, `getString`, and options (autoremoveDups, preserveFirst, etc.). Updated to use address book IDs instead of directories (TB128).
 
@@ -206,7 +206,7 @@ The add-on's duplicate-finder window is implemented as a single HTML window (`wi
 - Hold all state (vcards, positions, preferences, DOM refs, options).
 - `init()`: bind Fields, use WebExtension `addressBooks` API, load prefs (async), apply to DOM, use `browser.i18n`/`messenger.i18n` for localization, build address book dropdowns, show ready state.
 - `startSearch()`: read prefs from DOM, validate, save prefs (async), read address books (async), reset search state, show searching state, call `searchNextDuplicate()` which schedules `DuplicateEntriesWindowSearch.runIntervalAction`.
-- Handle user actions: skip; **make different** (set distinct synthetic `_AimScreenName` on both cards from table + `nodupAimPrefix` + name + id suffix, save both); keep both; **remove one** (UI label for `applynextbutton`: keep one side per radio + delete the other); remove left / remove right (same as remove one but fixed column); remove both; merge left (fill empty left table cells from right, DOM only; save via remove one / keep both). **Keep both** and **make different** each call `saveCard` twice with no transaction; `saveCard` logs `console.error` on failure before rethrowing; the window catches and shows `alert` without aborting the second save.
+- Handle user actions: skip; keep both; **remove one** (UI label for `applynextbutton`: keep one side per radio + delete the other); remove left / remove right (same as remove one but fixed column); remove both; merge left (fill empty left table cells from right, DOM only; save via remove one / keep both). **Keep both** calls `saveCard` twice with no transaction; `saveCard` logs `console.error` on failure before rethrowing; the window catches and shows `alert` without aborting the second save.
 - Delegate card updates/deletes to Contacts (async); delegate table display to Display; delegate progress/stats to UI.
 - Thin delegates for all module APIs so that the window object remains the single "context" passed to modules.
 
@@ -230,10 +230,11 @@ The add-on's duplicate-finder window is implemented as a single HTML window (`wi
 ## Change history
 
 ### Unreleased
-* **No data loss on save:** Apply / Keep both / Make different merge edits into the original vCard (`VCardUtils.mergeVCard`) instead of regenerating it, so data the add-on does not show (extra emails and phones, categories, custom fields, name prefix/suffix, PO box, year-less birthdays, …) is preserved. `saveCard` updates `card._vCard` after each save.
+* **No data loss on save:** Apply / Keep both merge edits into the original vCard (`VCardUtils.mergeVCard`) instead of regenerating it, so data the add-on does not show (extra emails and phones, categories, custom fields, name prefix/suffix, PO box, year-less birthdays, …) is preserved. `saveCard` updates `card._vCard` after each save.
 * **vCard parsing:** folded lines keep their spaces; `\\n` is no longer read as a newline; escaped `;` inside ADR/N components is respected; `TEL` types are read from type lists, quoted values and vCard 2.1 bare types; `ORG` sets Company and Department; `URL;TYPE=home` maps to WebPage2; photos are written as `ENCODING=b` in vCard 3.0.
 * **Addresses from older versions:** addresses written by version 2.2.3 and earlier (`;;;Street;City;State;Zip;Country`, usually with every `;` escaped) are read again; the empty-street fix had dropped that rule. An edited address of this kind is saved in the standard form.
 * **Tests:** `tests/vcard-utils.test.html`.
+* **Removed “Make different”:** the button was confusing and could not be undone. Pairs already split by it (different `X-AIM` values) are still skipped by the search; clear the AIM field in Thunderbird to have them matched again.
 * **Merge left** now also marks the left contact as to be kept, so **Remove one** keeps the merged contact.
 * **Fields to consider** now updates while you edit **Fields to ignore** (`refreshConsideredFieldsFromDOM`); it is still a computed, read-only list.
 

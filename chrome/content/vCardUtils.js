@@ -1,13 +1,13 @@
 // vCardUtils.js - vCard parsing and generation utilities for TB128
 // Converts between vCard strings (used by WebExtension API) and JavaScript objects (used by business logic)
-// X-AIM vCard lines map to _AimScreenName (used by “Make different” and duplicate search skip when AIM differs).
+// X-AIM vCard lines map to _AimScreenName (duplicate search skips pairs whose AIM differs).
 // Phase 2: REV/date and EMAIL ordering helpers keep parse/generate inverse-consistent; display formatting
 // for LastModifiedDate is shared with duplicateEntriesWindowCardValues via parseLastModifiedDateForDisplay.
 //
 // Saving an existing contact goes through mergeVCard, not generateVCard: the original vCard is kept
 // line by line and only lines whose mapped fields changed are rewritten. Anything this add-on does not
 // model (third EMAIL, second TEL of a type, CATEGORIES, IMPP, X-*, N prefix/suffix, ADR PO box, ...)
-// therefore survives Apply / Keep both / Make different.
+// therefore survives Apply / Keep both.
 
 var VCardUtils = (function() {
 	"use strict";

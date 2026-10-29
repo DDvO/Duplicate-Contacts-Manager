@@ -130,15 +130,6 @@ document.addEventListener('DOMContentLoaded', function() {
 		});
 	}
 
-	const makeDifferentButton = document.getElementById('makedifferentbutton');
-	if (makeDifferentButton) {
-		makeDifferentButton.addEventListener('click', function() {
-			if (typeof DuplicateEntriesWindow !== 'undefined') {
-				DuplicateEntriesWindow.makeDifferentAimAndSearchNextDuplicate();
-			}
-		});
-	}
-
 	const removeBothButton = document.getElementById('removebothbutton');
 	if (removeBothButton) {
 		removeBothButton.addEventListener('click', function() {
