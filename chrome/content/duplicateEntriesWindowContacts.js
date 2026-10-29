@@ -147,10 +147,11 @@ var DuplicateEntriesWindowContacts = (function() {
 		}
 
 		try {
-			// Generate vCard from card properties
+			// Merge card properties into the vCard the contact was loaded from, so properties this
+			// add-on does not model (extra emails/phones, categories, X-* ...) are not dropped.
 			var vCardString;
-			if (typeof VCardUtils !== 'undefined' && VCardUtils.generateVCard) {
-				vCardString = VCardUtils.generateVCard(card);
+			if (typeof VCardUtils !== 'undefined' && VCardUtils.mergeVCard) {
+				vCardString = card._vCard ? VCardUtils.mergeVCard(card._vCard, card) : VCardUtils.generateVCard(card);
 			} else {
 				throw new Error("No vCard generator available");
 			}
@@ -163,6 +164,8 @@ var DuplicateEntriesWindowContacts = (function() {
 				// Update: API update(id, vCard) — contact id and vCard string only
 				await addressBooksAPI.contacts.update(card._id, vCardString);
 			}
+			// The card may be shown again in a later pair: merge further edits into what was saved
+			card._vCard = vCardString;
 		} catch (error) {
 			console.error("Error saving card:", error);
 			throw error;

@@ -36,12 +36,15 @@ The add-on's duplicate-finder window is implemented as a single HTML window (`wi
 
 **Role:** vCard parsing and generation utilities for converting between vCard strings (used by WebExtension API) and JavaScript objects (used by business logic).
 
-**Exports:** `parseVCard(vCardString)`, `generateVCard(cardObject)`, `getProperty`, `setProperty`, `createContactCardFromApiContact`, helpers for mailing-list extraction, etc.
+**Exports:** `parseVCard(vCardString)`, `mergeVCard(originalVCard, cardObject)`, `generateVCard(cardObject)`, `getProperty`, `setProperty`, `createContactCardFromApiContact`, helpers for mailing-list extraction, etc.
 
 **Responsibilities:**
 - Parse vCard strings from the `addressBooks` API into plain JavaScript objects.
-- Generate vCard strings from plain JavaScript objects for saving contacts.
+- Save edits with `mergeVCard`: the vCard the contact was loaded from (`card._vCard`) is replayed line by line. Lines that set no modelled field (third `EMAIL`, a second `TEL` of the same type, `CATEGORIES`, `IMPP`, `X-*`, …) and lines whose fields are unchanged are kept verbatim; changed lines are rewritten in place with their original parameters; new fields are appended. N prefix/suffix and the ADR PO box are kept when those lines are rewritten. `generateVCard` is only used for contacts without an original vCard.
+- The modelled fields and their vCard lines are listed once, in `VCARD_UNITS`; for these, the first line in a vCard wins.
 - Handle vCard property mapping and normalization (including **`X-AIM`** ↔ **`_AimScreenName`** for AIM screen names used by “Make different”).
+
+**Tests:** open `tests/vcard-utils.test.html` in a browser served over HTTP from the project root (for example `py -m http.server`); it is not packaged into the XPI.
 
 **Dependencies:** None (load first).
 
@@ -225,6 +228,10 @@ The add-on's duplicate-finder window is implemented as a single HTML window (`wi
 ---
 
 ## Change history
+
+### Unreleased
+* **No data loss on save:** Apply / Keep both / Make different merge edits into the original vCard (`VCardUtils.mergeVCard`) instead of regenerating it, so data the add-on does not show (extra emails and phones, categories, custom fields, name prefix/suffix, PO box, year-less birthdays, …) is preserved. `saveCard` updates `card._vCard` after each save.
+* **Tests:** `tests/vcard-utils.test.html`.
 
 ### Version 2.2.4
 * **Make different:** set distinct synthetic `_AimScreenName` on both contacts (vCard `X-AIM` via `vCardUtils`); configurable `nodupAimPrefix` in `duplicateEntriesWindowFields.js`. Duplicate search skips pairs whose AIM already differs.
