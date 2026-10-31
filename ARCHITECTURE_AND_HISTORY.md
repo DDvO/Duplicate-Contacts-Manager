@@ -237,6 +237,7 @@ The add-on's duplicate-finder window is implemented as a single HTML window (`wi
 * **Removed “Make different”:** the button was confusing and could not be undone. Pairs already split by it (different `X-AIM` values) are still skipped by the search; clear the AIM field in Thunderbird to have them matched again.
 * **Merge left** now also marks the left contact as to be kept, so **Remove one** keeps the merged contact.
 * **Fields to consider** now updates while you edit **Fields to ignore** (`refreshConsideredFieldsFromDOM`); it is still a computed, read-only list.
+* **Window size:** the window opens at most 960×850 and is shrunk to fit inside the Thunderbird window it is opened from (`fitWindowGeometry` in `background.js`), so on small or scaled screens its title bar and buttons are no longer pushed off screen. The button row wraps in a narrow window.
 
 ### Version 2.2.4
 * **Make different:** set distinct synthetic `_AimScreenName` on both contacts (vCard `X-AIM` via `vCardUtils`); configurable `nodupAimPrefix` in `duplicateEntriesWindowFields.js`. Duplicate search skips pairs whose AIM already differs.

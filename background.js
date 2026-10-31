@@ -60,6 +60,31 @@ if (actionAPI && actionAPI.onClicked) {
   });
 }
 
+/** Preferred size of the duplicate manager window; smaller screens get less. */
+const WINDOW_WIDTH = 960;
+const WINDOW_HEIGHT = 850;
+
+/**
+ * Size and position for the duplicate manager window: the preferred size, shrunk to fit inside the
+ * Thunderbird window it is opened from and centred on it. Without this, an 850px window on a small or
+ * scaled screen is pushed above the top edge, hiding its title bar and buttons.
+ * @param {?Object} parent - windows.Window with left/top/width/height, or null
+ * @returns {{ width: number, height: number, left?: number, top?: number }}
+ */
+function fitWindowGeometry(parent) {
+  if (!parent || !(parent.width > 0) || !(parent.height > 0)) {
+    return { width: WINDOW_WIDTH, height: WINDOW_HEIGHT };
+  }
+  const width = Math.min(WINDOW_WIDTH, parent.width);
+  const height = Math.min(WINDOW_HEIGHT, parent.height);
+  return {
+    width: width,
+    height: height,
+    left: (parent.left || 0) + Math.round((parent.width - width) / 2),
+    top: (parent.top || 0) + Math.round((parent.height - height) / 2)
+  };
+}
+
 /**
  * Opens the duplicate manager window.
  * TB128: Uses WebExtension windows API instead of window.open() with chrome:// URL.
@@ -67,13 +92,17 @@ if (actionAPI && actionAPI.onClicked) {
  */
 async function openDuplicateManagerWindow() {
   try {
-    const window = await windowsAPI.create({
+    let parent = null;
+    try {
+      parent = await windowsAPI.getLastFocused();
+    } catch (e) {
+      // No focused window: fall back to the preferred size
+    }
+    const window = await windowsAPI.create(Object.assign({
       url: runtimeAPI.getURL("window.html"),
       type: "popup",
-      width: 960,
-      height: 850,
       allowScriptsToClose: true
-    });
+    }, fitWindowGeometry(parent)));
   } catch (error) {
     console.error("Error opening duplicate manager window:", error);
   }
