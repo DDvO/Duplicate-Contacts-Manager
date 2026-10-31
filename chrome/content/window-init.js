@@ -57,6 +57,16 @@ window.addEventListener('beforeunload', function() {
 
 // Set up button event handlers
 document.addEventListener('DOMContentLoaded', function() {
+	// Keep "Fields to consider" in step with "Fields to ignore" while typing
+	const ignoredFieldsBox = document.getElementById('ignoredFields');
+	if (ignoredFieldsBox) {
+		ignoredFieldsBox.addEventListener('input', function() {
+			if (typeof DuplicateEntriesWindow !== 'undefined') {
+				DuplicateEntriesWindowPrefs.refreshConsideredFieldsFromDOM(DuplicateEntriesWindow);
+			}
+		});
+	}
+
 	const startButton = document.getElementById('startbutton');
 	if (startButton) {
 		startButton.addEventListener('click', function() {
@@ -89,6 +99,42 @@ document.addEventListener('DOMContentLoaded', function() {
 		applyButton.addEventListener('click', function() {
 			if (typeof DuplicateEntriesWindow !== 'undefined') {
 				DuplicateEntriesWindow.applyAndSearchNextDuplicate();
+			}
+		});
+	}
+
+	const removeLeftButton = document.getElementById('removeleftbutton');
+	if (removeLeftButton) {
+		removeLeftButton.addEventListener('click', function() {
+			if (typeof DuplicateEntriesWindow !== 'undefined') {
+				DuplicateEntriesWindow.applyRemoveLeftAndSearchNextDuplicate();
+			}
+		});
+	}
+
+	const removeRightButton = document.getElementById('removerightbutton');
+	if (removeRightButton) {
+		removeRightButton.addEventListener('click', function() {
+			if (typeof DuplicateEntriesWindow !== 'undefined') {
+				DuplicateEntriesWindow.applyRemoveRightAndSearchNextDuplicate();
+			}
+		});
+	}
+
+	const mergeLeftButton = document.getElementById('mergeleftbutton');
+	if (mergeLeftButton) {
+		mergeLeftButton.addEventListener('click', function() {
+			if (typeof DuplicateEntriesWindow !== 'undefined') {
+				DuplicateEntriesWindow.mergeEmptyLeftFromRightInTable();
+			}
+		});
+	}
+
+	const removeBothButton = document.getElementById('removebothbutton');
+	if (removeBothButton) {
+		removeBothButton.addEventListener('click', function() {
+			if (typeof DuplicateEntriesWindow !== 'undefined') {
+				DuplicateEntriesWindow.removeBothAndSearchNextDuplicate();
 			}
 		});
 	}

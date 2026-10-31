@@ -104,7 +104,6 @@ var DuplicateEntriesWindowPrefs = (function() {
 		var natTrunkPrefixEl = document.getElementById('natTrunkPrefix');
 		var intCallPrefixEl = document.getElementById('intCallPrefix');
 		var countryCallingCodeEl = document.getElementById('countryCallingCode');
-		var consideredFieldsEl = document.getElementById('consideredFields');
 		var ignoredFieldsEl = document.getElementById('ignoredFields');
 
 		if (autoremoveEl) autoremoveEl.checked = ctx.autoremoveDups;
@@ -116,13 +115,37 @@ var DuplicateEntriesWindowPrefs = (function() {
 
 		// consideredFields = addressBookFields - ignoredFields
 		ctx.consideredFields = ctx.addressBookFields.filter(function(x) { return !ctx.ignoredFields.includes(x); });
-		if (consideredFieldsEl) {
-			consideredFieldsEl.textContent = ctx.consideredFields
-				.filter(function(x) { return !ctx.isSet(x) && !ctx.matchablesList.includes(x); }).join(", ");
-		}
+		showConsideredFields(ctx, ctx.consideredFields);
 		if (ignoredFieldsEl) {
 			ignoredFieldsEl.value = ctx.ignoredFields.join(", ");
 		}
+	}
+
+	/** Splits the comma-separated "Fields to ignore" text into field names. */
+	function parseIgnoredFieldsText(text) {
+		return String(text || '').split(/\s*,\s*/).filter(function(f) { return f.trim().length > 0; });
+	}
+
+	/** Shows the given considered fields (without virtual set/matchable entries) in #consideredFields. */
+	function showConsideredFields(ctx, consideredFields) {
+		var consideredFieldsEl = document.getElementById('consideredFields');
+		if (consideredFieldsEl) {
+			consideredFieldsEl.textContent = consideredFields
+				.filter(function(x) { return !ctx.isSet(x) && !ctx.matchablesList.includes(x); }).join(", ");
+		}
+	}
+
+	/**
+	 * Refreshes the "Fields to consider" list from the "Fields to ignore" box as the user types.
+	 * Display only: ctx.ignoredFields / ctx.consideredFields are set by readPrefsFromDOM on Start.
+	 */
+	function refreshConsideredFieldsFromDOM(ctx) {
+		var ignoredFieldsEl = document.getElementById('ignoredFields');
+		if (!ignoredFieldsEl || !ctx.addressBookFields) {
+			return;
+		}
+		var ignored = parseIgnoredFieldsText(ignoredFieldsEl.value);
+		showConsideredFields(ctx, ctx.addressBookFields.filter(function(x) { return !ignored.includes(x); }));
 	}
 
 	/**
@@ -146,7 +169,7 @@ var DuplicateEntriesWindowPrefs = (function() {
 		ctx.countryCallingCode = countryCallingCodeEl ? countryCallingCodeEl.value : "";
 
 		if (ignoredFieldsEl) {
-			ctx.ignoredFields = ignoredFieldsEl.value.split(/\s*,\s*/).filter(function(f) {	return f.trim().length > 0; });
+			ctx.ignoredFields = parseIgnoredFieldsText(ignoredFieldsEl.value);
 		} else {
 			ctx.ignoredFields = ctx.ignoredFieldsDefault.slice();
 		}
@@ -191,6 +214,7 @@ var DuplicateEntriesWindowPrefs = (function() {
 		loadPrefs: loadPrefs,
 		applyPrefsToDOM: applyPrefsToDOM,
 		readPrefsFromDOM: readPrefsFromDOM,
+		refreshConsideredFieldsFromDOM: refreshConsideredFieldsFromDOM,
 		savePrefs: savePrefs
 	};
 })();

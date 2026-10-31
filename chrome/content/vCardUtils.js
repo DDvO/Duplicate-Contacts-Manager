@@ -1,10 +1,141 @@
 // vCardUtils.js - vCard parsing and generation utilities for TB128
 // Converts between vCard strings (used by WebExtension API) and JavaScript objects (used by business logic)
+// X-AIM vCard lines map to _AimScreenName (duplicate search skips pairs whose AIM differs).
 // Phase 2: REV/date and EMAIL ordering helpers keep parse/generate inverse-consistent; display formatting
 // for LastModifiedDate is shared with duplicateEntriesWindowCardValues via parseLastModifiedDateForDisplay.
+//
+// Saving an existing contact goes through mergeVCard, not generateVCard: the original vCard is kept
+// line by line and only lines whose mapped fields changed are rewritten. Anything this add-on does not
+// model (third EMAIL, second TEL of a type, CATEGORIES, IMPP, X-*, N prefix/suffix, ADR PO box, ...)
+// therefore survives Apply / Keep both.
 
 var VCardUtils = (function() {
 	"use strict";
+
+	/**
+	 * Splits a vCard string into logical content lines.
+	 * RFC 6350 3.2 / RFC 2425 5.8.1: a line break followed by ONE space or tab is removed; any further
+	 * whitespace belongs to the value (trimming it used to glue words of long NOTE lines together).
+	 * @param {string} vCardString
+	 * @returns {string[]} Unfolded lines (not trimmed)
+	 */
+	function unfoldVCardLines(vCardString) {
+		var physical = String(vCardString || '').split(/\r?\n/);
+		var lines = [];
+		for (var i = 0; i < physical.length; i++) {
+			var line = physical[i];
+			if (line.length > 0 && (line[0] === ' ' || line[0] === '\t') && lines.length > 0) {
+				lines[lines.length - 1] += line.substring(1);
+			} else {
+				lines.push(line);
+			}
+		}
+		return lines;
+	}
+
+	/**
+	 * Splits one content line into name, parameters and raw (still escaped) value.
+	 * The first ':' outside double quotes ends the parameters. A group prefix (ITEM1.EMAIL) is dropped from name.
+	 * @param {string} line - Unfolded content line
+	 * @returns {{ head: string, name: string, params: string, value: string }|null}
+	 *   head: original text before the value colon (kept when a changed line is rewritten);
+	 *   name / params: upper-cased; null for empty or malformed lines
+	 */
+	function parseContentLine(line) {
+		var text = String(line).trim();
+		if (!text) {
+			return null;
+		}
+		var inQuotes = false;
+		var colonIndex = -1;
+		for (var i = 0; i < text.length; i++) {
+			var ch = text[i];
+			if (ch === '"') {
+				inQuotes = !inQuotes;
+			} else if (ch === ':' && !inQuotes) {
+				colonIndex = i;
+				break;
+			}
+		}
+		if (colonIndex === -1) {
+			return null;
+		}
+		var head = text.substring(0, colonIndex);
+		var semicolonIndex = head.indexOf(';');
+		// vCard 3.0/4.0 property names are case-insensitive
+		var name = (semicolonIndex === -1 ? head : head.substring(0, semicolonIndex)).toUpperCase();
+		var dot = name.lastIndexOf('.');
+		return {
+			head: head,
+			name: dot === -1 ? name : name.substring(dot + 1),
+			params: semicolonIndex === -1 ? '' : head.substring(semicolonIndex + 1).toUpperCase(),
+			value: text.substring(colonIndex + 1)
+		};
+	}
+
+	/**
+	 * Returns the TYPE values of a parameter string: TYPE=WORK,VOICE, TYPE="work", repeated TYPE params,
+	 * and vCard 2.1 bare types (TEL;WORK;FAX).
+	 * @param {string} params - Upper-cased parameters (without the property name)
+	 * @returns {string[]}
+	 */
+	function getTypeTokens(params) {
+		var tokens = [];
+		String(params || '').split(';').forEach(function(param) {
+			var eq = param.indexOf('=');
+			if (eq !== -1 && param.substring(0, eq).trim() !== 'TYPE') {
+				return;
+			}
+			param.substring(eq + 1).split(',').forEach(function(t) {
+				t = t.replace(/"/g, '').trim();
+				if (t) {
+					tokens.push(t);
+				}
+			});
+		});
+		return tokens;
+	}
+
+	/**
+	 * Unescapes a vCard text value in one pass (\\ \; \, \n \N), so "\\n" stays backslash + n.
+	 * @param {string} value - Raw value
+	 * @returns {string}
+	 */
+	function unescapeVCardValue(value) {
+		return String(value == null ? '' : value).replace(/\\([\\;,nN])/g, function(m, c) {
+			return (c === 'n' || c === 'N') ? '\n' : c;
+		});
+	}
+
+	/**
+	 * Splits a structured value (N, ADR, ORG) on unescaped ';'. Components stay escaped, so they can be
+	 * written back verbatim; pass each through unescapeVCardValue to read it.
+	 * @param {string} raw - Raw value
+	 * @returns {string[]}
+	 */
+	function splitStructuredValue(raw) {
+		var parts = [];
+		var current = '';
+		var s = String(raw == null ? '' : raw);
+		for (var i = 0; i < s.length; i++) {
+			var ch = s[i];
+			if (ch === '\\' && i + 1 < s.length) {
+				current += ch + s[i + 1];
+				i++;
+			} else if (ch === ';') {
+				parts.push(current);
+				current = '';
+			} else {
+				current += ch;
+			}
+		}
+		parts.push(current);
+		return parts;
+	}
+
+	function structuredComponents(raw) {
+		return splitStructuredValue(raw).map(function(p) { return unescapeVCardValue(p).trim(); });
+	}
 
 	/**
 	 * Parses a vCard string into a JavaScript object with properties.
@@ -15,92 +146,23 @@ var VCardUtils = (function() {
 		if (!vCardString || typeof vCardString !== 'string') {
 			return {};
 		}
-
 		var props = {};
-		var lines = vCardString.split(/\r?\n/);
-		var currentProperty = null;
-		var currentValue = [];
-		var currentPropertyParams = null; // Track parameters for special handling
-
+		var lines = unfoldVCardLines(vCardString);
 		for (var i = 0; i < lines.length; i++) {
-			var line = lines[i];
-
-			// Handle line continuation (starts with space or tab) - DON'T trim before this check!
-			if (line.length > 0 && (line[0] === ' ' || line[0] === '\t')) {
-				if (currentProperty) {
-					// Remove the leading space/tab and add to current value
-					currentValue.push(line.substring(1).trim());
-				}
+			var parsed = parseContentLine(lines[i]);
+			// Skip malformed lines, BEGIN/END and properties without a value
+			if (!parsed || parsed.name === 'BEGIN' || parsed.name === 'END' || parsed.value === '') {
 				continue;
 			}
-
-			// Now we can trim for non-continuation lines
-			line = line.trim();
-
-			// Process accumulated value
-			if (currentProperty && currentValue.length > 0) {
-				var value = currentValue.join('').replace(/\\n/g, '\n').replace(/\\,/g, ',').replace(/\\;/g, ';').replace(/\\\\/g, '\\');
-
-				// Special handling for PHOTO with base64 encoding
-				if (currentProperty === 'PhotoURI' && currentPropertyParams) {
-					value = processPhotoValue(value, currentPropertyParams);
-				}
-
-				applyParsedProperty(props, currentProperty, value);
-				currentValue = [];
-				currentPropertyParams = null;
-			}
-
-			// Skip empty lines and BEGIN/END
-			if (!line || line === 'BEGIN:VCARD' || line === 'END:VCARD') {
-				continue;
-			}
-
-			// Parse property line (format: PROPERTY[;PARAM=VALUE]*:VALUE)
-			var colonIndex = line.indexOf(':');
-			if (colonIndex === -1) {
-				continue;
-			}
-
-			var propertyPart = line.substring(0, colonIndex);
-			var valuePart = line.substring(colonIndex + 1);
-
-			// Extract property name (before first semicolon). vCard 3.0/4.0 are case-insensitive.
-			var semicolonIndex = propertyPart.indexOf(';');
-			var propertyName = (semicolonIndex === -1 ? propertyPart : propertyPart.substring(0, semicolonIndex)).toUpperCase();
-
-			// Map vCard properties to Thunderbird property names
-			currentProperty = mapVCardPropertyToTB(propertyName, propertyPart.toUpperCase());
-
-			// Store property parameters for special processing (e.g., PHOTO encoding)
-			if (propertyName === 'PHOTO') {
-				currentPropertyParams = propertyPart.toUpperCase();
-			}
-
-			if (valuePart) {
-				currentValue.push(valuePart);
-			}
+			applyParsedProperty(props, mapVCardPropertyToTB(parsed.name, parsed.params), parsed.value, parsed.params);
 		}
-
-		// Process last property
-		if (currentProperty && currentValue.length > 0) {
-			var value = currentValue.join('').replace(/\\n/g, '\n').replace(/\\,/g, ',').replace(/\\;/g, ';').replace(/\\\\/g, '\\');
-
-			// Special handling for PHOTO with base64 encoding
-			if (currentProperty === 'PhotoURI' && currentPropertyParams) {
-				value = processPhotoValue(value, currentPropertyParams);
-			}
-
-			applyParsedProperty(props, currentProperty, value);
-		}
-
 		return props;
 	}
 
 	/**
 	 * Processes a PHOTO field value, converting base64 data to data URI if needed.
 	 * @param {string} value - The photo value (may be base64, data URI, or regular URI)
-	 * @param {string} propertyParams - The property parameters (e.g., "PHOTO;ENCODING=BASE64;TYPE=JPEG")
+	 * @param {string} propertyParams - The property parameters (e.g., "ENCODING=BASE64;TYPE=JPEG")
 	 * @returns {string} - Processed photo value suitable for img src
 	 */
 	function processPhotoValue(value, propertyParams) {
@@ -110,7 +172,7 @@ var VCardUtils = (function() {
 		}
 
 		// Check if it's base64 encoded
-		var upperParams = propertyParams.toUpperCase();
+		var upperParams = String(propertyParams || '').toUpperCase();
 		if (upperParams.indexOf('ENCODING=BASE64') !== -1 || upperParams.indexOf('ENCODING=B') !== -1) {
 			// Extract image type (TYPE=JPEG, TYPE=PNG, etc.)
 			var imageType = 'image/jpeg'; // default
@@ -121,8 +183,8 @@ var VCardUtils = (function() {
 				if (type === 'jpg') type = 'jpeg';
 				imageType = 'image/' + type;
 			}
-			// Convert to data URI
-			return 'data:' + imageType + ';base64,' + value;
+			// Convert to data URI (some exporters fold base64 with extra indentation)
+			return 'data:' + imageType + ';base64,' + value.replace(/\s+/g, '');
 		}
 
 		// Return as-is (might be a URI without scheme)
@@ -131,140 +193,420 @@ var VCardUtils = (function() {
 
 	/**
 	 * Maps vCard property names to Thunderbird property names.
-	 * @param {string} vCardProp - vCard property name (e.g., "FN", "EMAIL")
-	 * @param {string} fullProperty - Full property line including parameters
+	 * @param {string} vCardProp - vCard property name without group (e.g., "FN", "EMAIL")
+	 * @param {string} params - Upper-cased parameters of the line
 	 * @returns {string} - Thunderbird property name
 	 */
-	function mapVCardPropertyToTB(vCardProp, fullProperty) {
-		// Handle grouped ITEMn.FN (DisplayName)
-		if (/^ITEM\d+\.FN$/i.test(vCardProp)) {
-			return 'DisplayName';
+	function mapVCardPropertyToTB(vCardProp, params) {
+		var types = getTypeTokens(params);
+		function has(t) {
+			return types.indexOf(t) !== -1;
 		}
 
-		var propMap = {
-			'FN': 'DisplayName',
-			'N': 'N', // Structured name - will be parsed separately
-			'EMAIL': 'PrimaryEmail', // First email becomes PrimaryEmail
-			'TEL': 'TEL', // Will be mapped by TYPE parameter
-			'ADR': 'ADR', // Will be mapped by TYPE parameter
-			'ORG': 'Company',
-			'TITLE': 'JobTitle',
-			'NOTE': 'Notes',
-			'URL': 'WebPage1',
-			'BDAY': 'BirthDay',
-			'NICKNAME': 'NickName',
-			'PHOTO': 'PhotoURI',
-			'UID': 'UID',
-			'REV': 'LastModifiedDate'
-		};
-
-		// Handle structured name (N property) and grouped ITEMn.N
-		if (vCardProp === 'N' || /^ITEM\d+\.N$/i.test(vCardProp)) {
-			// N format: Family;Given;Additional;Prefix;Suffix — parsed in applyParsedProperty
-			return 'N';
-		}
-
-		// Handle TEL with TYPE parameter (and grouped ITEMn.TEL)
-		if ((vCardProp === 'TEL' || /^ITEM\d+\.TEL$/i.test(vCardProp)) && fullProperty) {
-			if (fullProperty.indexOf('TYPE=CELL') !== -1 || fullProperty.indexOf('TYPE=MOBILE') !== -1) {
+		switch (vCardProp) {
+			case 'FN':
+				return 'DisplayName';
+			case 'N':
+				// N format: Family;Given;Additional;Prefix;Suffix — parsed in applyParsedProperty
+				return 'N';
+			case 'EMAIL':
+				return 'PrimaryEmail'; // SecondEmail handled in applyParsedProperty
+			case 'TEL':
+				// Most specific type first: a "work,fax" line is a fax number
+				if (has('FAX')) return 'FaxNumber';
+				if (has('PAGER')) return 'PagerNumber';
+				if (has('CELL') || has('MOBILE')) return 'CellularNumber';
+				if (has('WORK')) return 'WorkPhone';
+				if (has('HOME')) return 'HomePhone';
+				// Default to CellularNumber if no type specified
 				return 'CellularNumber';
-			} else if (fullProperty.indexOf('TYPE=WORK') !== -1) {
-				return 'WorkPhone';
-			} else if (fullProperty.indexOf('TYPE=HOME') !== -1) {
-				return 'HomePhone';
-			} else if (fullProperty.indexOf('TYPE=FAX') !== -1) {
-				return 'FaxNumber';
-			} else if (fullProperty.indexOf('TYPE=PAGER') !== -1) {
-				return 'PagerNumber';
-			}
-			// Default to CellularNumber if no type specified
-			return 'CellularNumber';
-		}
-
-		// Handle ADR with TYPE parameter (and grouped ITEMn.ADR)
-		if ((vCardProp === 'ADR' || /^ITEM\d+\.ADR$/i.test(vCardProp)) && fullProperty) {
-			if (fullProperty.indexOf('TYPE=HOME') !== -1) {
+			case 'ADR':
+				if (has('HOME')) return 'HomeAddress';
+				if (has('WORK')) return 'WorkAddress';
 				return 'HomeAddress';
-			} else if (fullProperty.indexOf('TYPE=WORK') !== -1) {
-				return 'WorkAddress';
-			}
-			return 'HomeAddress';
+			case 'URL':
+				// Thunderbird writes WebPage1 as URL;TYPE=work and WebPage2 as URL;TYPE=home
+				return has('HOME') ? 'WebPage2' : 'WebPage1';
+			case 'ORG':
+				return 'Company'; // ORG:Company;Department — parsed in applyParsedProperty
+			case 'TITLE':
+				return 'JobTitle';
+			case 'NOTE':
+				return 'Notes';
+			case 'BDAY':
+				return 'BirthDay';
+			case 'NICKNAME':
+				return 'NickName';
+			case 'PHOTO':
+				return 'PhotoURI';
+			case 'UID':
+				return 'UID';
+			case 'REV':
+				return 'LastModifiedDate';
+			case 'X-AIM':
+				// Legacy AIM; Thunderbird property _AimScreenName (see generateVCard).
+				return '_AimScreenName';
 		}
-
-		// Handle EMAIL and grouped ITEMn.EMAIL (e.g. ITEM1.EMAIL, ITEM2.EMAIL from some exporters)
-		if (vCardProp === 'EMAIL' || /^ITEM\d+\.EMAIL$/i.test(vCardProp)) {
-			return 'PrimaryEmail'; // SecondEmail handled in applyParsedProperty
-		}
-
-		return propMap[vCardProp] || vCardProp;
+		return vCardProp;
 	}
 
 	/**
-	 * Applies a single parsed vCard property to props (internal use in parseVCard).
-	 * Handles N -> FirstName/LastName; multiple EMAIL; REV -> LastModifiedDate; TEL; ADR;
-	 * BirthDay (BDAY line); etc.
+	 * Parses ADR structured value into Thunderbird-style address fields.
+	 *
+	 * vCard ADR (RFC 2426 / 6350) is seven components separated by ';':
+	 *   PO Box; Extended address; Street; Locality (city); Region (state); Postal code; Country
+	 *
+	 * Thunderbird / addressBooks typically emit:
+	 *   ;;Street;City;State;Zip;Country
+	 * so street is parts[2], city parts[3], … Extra trailing ';' (8+ parts) is ignored.
+	 *
+	 * Empty street is valid: ;;;City;Region;Zip;Country (city stays at index 3). Treating
+	 * "three leading empties" as a shifted layout used to put city in Home Address, region
+	 * in Address 2, ZIP in City, country in State — which matches real Italian contacts
+	 * (e.g. Orta San Giulio / NO / 28016 / Italy).
+	 *
+	 * Addresses written by this add-on up to version 2.2.3 use another layout; see legacyAdrComponents.
+	 *
+	 * @param {string} value - Raw (still escaped) ADR property value
+	 * @returns {{ street: string, line2: string, city: string, state: string, zip: string, country: string }}
+	 */
+	function parseAdrComponents(value) {
+		var parts = structuredComponents(value);
+		var legacy = legacyAdrComponents(parts);
+		if (legacy) {
+			return legacy;
+		}
+		while (parts.length < 7) {
+			parts.push('');
+		}
+		return {
+			line2: parts[1] || '',
+			street: parts[2] || '',
+			city: parts[3] || '',
+			state: parts[4] || '',
+			zip: parts[5] || '',
+			country: parts[6] || ''
+		};
+	}
+
+	/**
+	 * Reads the address layout written by this add-on up to version 2.2.3:
+	 *   ;;;Street;City;State;Zip;Country
+	 * usually with every ';' escaped, so the whole address arrives as one component.
+	 * Only that exact shape matches: eight parts with three leading empties and, when not
+	 * escaped, a non-empty last part. Standard seven-part addresses never match.
+	 * @param {string[]} parts - Unescaped, trimmed ADR components
+	 * @returns {?{ street: string, line2: string, city: string, state: string, zip: string, country: string }}
+	 */
+	function legacyAdrComponents(parts) {
+		var old = parts;
+		if (parts.length === 1 && parts[0].indexOf(';;;') === 0) {
+			old = parts[0].split(';').map(function(p) { return p.trim(); });
+		} else if (parts.length !== 8 || parts[7] === '') {
+			return null;
+		}
+		if (old.length !== 8 || old[0] !== '' || old[1] !== '' || old[2] !== '') {
+			return null;
+		}
+		return { street: old[3], line2: '', city: old[4], state: old[5], zip: old[6], country: old[7] };
+	}
+
+	/**
+	 * Builds the ADR property value (seven semicolon-separated components; no "ADR;TYPE=...:" prefix).
+	 * Order: PO Box; extended (HomeAddress2/WorkAddress2); street; city; region; postal code; country.
+	 *
+	 * Each component is escaped with escapeVCardValue, then joined with unescaped ';' delimiters.
+	 * Do not pass the whole composite through escapeVCardValue — that used to turn every field
+	 * delimiter into an escaped semicolon and broke RFC 2426 structured ADR (addresses missing in Thunderbird's editor).
+	 *
+	 * @param {string} line2 - Extended address / Address2
+	 * @param {string} street - Street / Address line 1
+	 * @param {string} city - Locality
+	 * @param {string} state - Region
+	 * @param {string} zip - Postal code
+	 * @param {string} country - Country
+	 * @param {string} [poBox] - Raw (escaped) PO box from the original line, not modelled as a field
+	 * @returns {string}
+	 */
+	function formatAdrValue(line2, street, city, state, zip, country, poBox) {
+		var parts = [(line2 || ''), (street || ''), (city || ''), (state || ''), (zip || ''), (country || '')];
+		return [poBox || ''].concat(parts.map(function(p) { return escapeVCardValue(p); })).join(';');
+	}
+
+	/** Fields generateVCard / mergeVCard write; first line wins when a vCard repeats one of them. */
+	var GENERATED_FIELDS = [
+		'DisplayName', 'LastName', 'FirstName', 'MiddleName', 'PrimaryEmail', 'SecondEmail',
+		'CellularNumber', 'WorkPhone', 'HomePhone', 'FaxNumber', 'PagerNumber',
+		'HomeAddress', 'HomeAddress2', 'HomeCity', 'HomeState', 'HomeZipCode', 'HomeCountry',
+		'WorkAddress', 'WorkAddress2', 'WorkCity', 'WorkState', 'WorkZipCode', 'WorkCountry',
+		'Company', 'Department', 'JobTitle', 'Notes', 'WebPage1', 'WebPage2',
+		'BirthYear', 'BirthMonth', 'BirthDay', 'NickName', '_AimScreenName', 'PhotoURI', 'UID', 'LastModifiedDate'
+	];
+
+	/**
+	 * Applies a single parsed vCard property to props (internal use in parseVCard and mergeVCard).
+	 * Handles N -> FirstName/LastName; multiple EMAIL; REV -> LastModifiedDate; TEL; ADR; ORG;
+	 * BirthDay (BDAY line); etc. For modelled fields the first line wins; later ones are left to mergeVCard,
+	 * which keeps them verbatim.
 	 * @param {Object} props - Properties object
 	 * @param {string} property - Thunderbird property name (e.g. 'N', 'PrimaryEmail', 'LastModifiedDate')
-	 * @param {string} value - Property value
+	 * @param {string} rawValue - Raw (still escaped) property value
+	 * @param {string} params - Upper-cased parameters of the line
+	 * @returns {string[]} Modelled fields this line set (empty: line not represented by generated output)
 	 */
-	function applyParsedProperty(props, property, value) {
+	function applyParsedProperty(props, property, rawValue, params) {
 		if (property === 'N') {
-			// Parse structured name: Family;Given;Additional;Prefix;Suffix (vCard 3.0/4.0 use semicolon)
-			var parts = value.split(';').map(function(p) { return (p || '').trim(); });
-			if (parts.length >= 1) {
-				props['LastName'] = parts[0] || '';
+			if (props.hasOwnProperty('LastName')) {
+				return [];
 			}
-			if (parts.length >= 2) {
-				props['FirstName'] = parts[1] || '';
-			}
-			if (parts.length >= 3 && parts[2]) {
+			// Structured name: Family;Given;Additional;Prefix;Suffix (prefix/suffix kept by mergeVCard)
+			var parts = structuredComponents(rawValue);
+			props['LastName'] = parts[0] || '';
+			props['FirstName'] = parts[1] || '';
+			if (parts[2]) {
 				props['MiddleName'] = parts[2];
 			}
+			return ['LastName', 'FirstName', 'MiddleName'];
 		} else if (property === 'PrimaryEmail') {
 			// Multiple EMAIL properties in one vCard: first line -> PrimaryEmail, second -> SecondEmail
-			// (must match appendEmailLinesToVCard order in generateVCard)
+			// (must match the EMAIL1 / EMAIL2 unit order in VCARD_UNITS)
+			var email = unescapeVCardValue(rawValue);
 			if (!props['PrimaryEmail']) {
-				props['PrimaryEmail'] = value;
+				props['PrimaryEmail'] = email;
+				return ['PrimaryEmail'];
 			} else if (!props['SecondEmail']) {
-				props['SecondEmail'] = value;
+				props['SecondEmail'] = email;
+				return ['SecondEmail'];
 			}
-			// Third and further EMAIL lines are ignored (same as previous behavior)
-		} else if (property === 'LastModifiedDate') {
-			props['LastModifiedDate'] = parseRevToStoredRevValue(value);
-		} else if (property === 'TEL') {
-			// TEL without type - default to CellularNumber
-			if (!props['CellularNumber']) {
-				props['CellularNumber'] = value;
+			// Third and further EMAIL lines are not modelled (mergeVCard keeps them)
+			return [];
+		} else if (property === 'HomeAddress' || property === 'WorkAddress') {
+			// mapVCardPropertyToTB maps TYPE=HOME/WORK ADR lines to HomeAddress / WorkAddress
+			var baseProp = property.replace('Address', '');
+			if (props.hasOwnProperty(baseProp + 'Address')) {
+				return [];
 			}
-		} else if (property === 'ADR' || property === 'HomeAddress' || property === 'WorkAddress') {
-			// Parse address: ;;;Street;City;State;Zip;Country
-			var parts = value.split(';');
-			if (parts.length >= 4) {
-				var baseProp = (property === 'ADR') ? 'Home' : property.replace('Address', '');
-				props[baseProp + 'Address'] = parts[3] || '';
-				props[baseProp + 'Address2'] = parts[4] || '';
-				props[baseProp + 'City'] = parts[5] || '';
-				props[baseProp + 'State'] = parts[6] || '';
-				props[baseProp + 'ZipCode'] = parts[7] || '';
-				props[baseProp + 'Country'] = parts[8] || '';
+			var adr = parseAdrComponents(rawValue);
+			props[baseProp + 'Address'] = adr.street;
+			props[baseProp + 'Address2'] = adr.line2;
+			props[baseProp + 'City'] = adr.city;
+			props[baseProp + 'State'] = adr.state;
+			props[baseProp + 'ZipCode'] = adr.zip;
+			props[baseProp + 'Country'] = adr.country;
+			return adrFields(baseProp);
+		} else if (property === 'Company') {
+			if (props.hasOwnProperty('Company')) {
+				return [];
 			}
+			var org = structuredComponents(rawValue);
+			props['Company'] = org[0] || '';
+			if (org[1]) {
+				props['Department'] = org[1];
+			}
+			return ['Company', 'Department'];
 		} else if (property === 'BirthDay') {
 			// BDAY vCard line is mapped to property name BirthDay (see mapVCardPropertyToTB)
-			// Parse birthday: YYYY-MM-DD or YYYYMMDD into BirthYear / BirthMonth / day-of-month
-			var dateMatch = value.match(/^(\d{4})-?(\d{2})-?(\d{2})/);
-			if (dateMatch) {
-				props['BirthYear'] = dateMatch[1];
-				props['BirthMonth'] = dateMatch[2];
-				props['BirthDay'] = dateMatch[3];
+			// Parse birthday: YYYY-MM-DD or YYYYMMDD into BirthYear / BirthMonth / day-of-month.
+			// Year-less (--MMDD) or text birthdays are not modelled and stay in the vCard as they are.
+			if (props.hasOwnProperty('BirthYear')) {
+				return [];
 			}
-		} else {
-			// Includes UID, Notes, unmapped vCard props, etc. (REV/LastModifiedDate handled above)
-			props[property] = value;
+			var dateMatch = unescapeVCardValue(rawValue).match(/^(\d{4})-?(\d{2})-?(\d{2})/);
+			if (!dateMatch) {
+				return [];
+			}
+			props['BirthYear'] = dateMatch[1];
+			props['BirthMonth'] = dateMatch[2];
+			props['BirthDay'] = dateMatch[3];
+			return ['BirthYear', 'BirthMonth', 'BirthDay'];
+		} else if (property === 'LastModifiedDate') {
+			if (props.hasOwnProperty('LastModifiedDate')) {
+				return [];
+			}
+			props['LastModifiedDate'] = parseRevToStoredRevValue(unescapeVCardValue(rawValue));
+			return ['LastModifiedDate'];
+		} else if (GENERATED_FIELDS.indexOf(property) !== -1) {
+			if (props.hasOwnProperty(property)) {
+				return [];
+			}
+			// URL and PHOTO are URI values: no text escaping (RFC 6350 4)
+			if (property === 'PhotoURI') {
+				props[property] = processPhotoValue(rawValue, params);
+			} else if (property === 'WebPage1' || property === 'WebPage2') {
+				props[property] = rawValue;
+			} else {
+				props[property] = unescapeVCardValue(rawValue);
+			}
+			return [property];
 		}
+		// Includes VERSION, CATEGORIES, IMPP, X-* etc.: readable, but never rewritten
+		props[property] = unescapeVCardValue(rawValue);
+		return [];
+	}
+
+	function adrFields(base) {
+		return [base + 'Address', base + 'Address2', base + 'City', base + 'State', base + 'ZipCode', base + 'Country'];
+	}
+
+	/**
+	 * Builds a PHOTO line. Data URIs become ENCODING=b in vCard 3.0; vCard 4.0 and URLs use a URI value.
+	 * @param {string} uri - PhotoURI value
+	 * @param {boolean} version4 - True when writing into a vCard 4.0
+	 * @returns {string}
+	 */
+	function formatPhotoLine(uri, version4) {
+		var m = /^data:image\/([a-z0-9.+-]+);base64,(.*)$/i.exec(uri);
+		if (version4) {
+			return 'PHOTO:' + uri;
+		}
+		if (m) {
+			return 'PHOTO;ENCODING=b;TYPE=' + m[1].toUpperCase() + ':' + m[2];
+		}
+		return 'PHOTO;VALUE=uri:' + uri;
+	}
+
+	/**
+	 * A unit is one vCard line that represents a fixed set of fields. emit(props, orig, opts) returns the
+	 * line for the current props, or null to omit it. orig is the parsed original line being rewritten
+	 * (null for a new line): its head (group, TYPE/PREF params) and unmodelled structured components are reused.
+	 */
+	function textUnit(key, field, fallbackHead) {
+		return {
+			key: key,
+			fields: [field],
+			emit: function(props, orig) {
+				if (!props[field]) {
+					return null;
+				}
+				return (orig ? orig.head : fallbackHead) + ':' + escapeVCardValue(props[field]);
+			}
+		};
+	}
+
+	function uriUnit(key, field, fallbackHead) {
+		return {
+			key: key,
+			fields: [field],
+			emit: function(props, orig) {
+				if (!props[field]) {
+					return null;
+				}
+				return (orig ? orig.head : fallbackHead) + ':' + String(props[field]).replace(/[\r\n]+/g, '');
+			}
+		};
+	}
+
+	function adrUnit(base) {
+		var fields = adrFields(base);
+		return {
+			key: 'ADR_' + base,
+			fields: fields,
+			emit: function(props, orig) {
+				// Include Address2 in the "emit?" check so line-only contacts round-trip.
+				if (!(props[base + 'Address'] || props[base + 'Address2'] || props[base + 'City'])) {
+					return null;
+				}
+				// Keep the PO box, except from the 2.2.3 layout, whose first component held the whole address
+				var poBox = (orig && !legacyAdrComponents(structuredComponents(orig.value))) ?
+					splitStructuredValue(orig.value)[0] : '';
+				return (orig ? orig.head : 'ADR;TYPE=' + base.toUpperCase()) + ':' + formatAdrValue(
+					props[base + 'Address2'], props[base + 'Address'], props[base + 'City'],
+					props[base + 'State'], props[base + 'ZipCode'], props[base + 'Country'], poBox);
+			}
+		};
+	}
+
+	var VCARD_UNITS = [
+		textUnit('FN', 'DisplayName', 'FN'),
+		{
+			key: 'N',
+			fields: ['LastName', 'FirstName', 'MiddleName'],
+			emit: function(props, orig) {
+				// Prefix and suffix are not modelled: keep them from the original line
+				var old = orig ? splitStructuredValue(orig.value) : [];
+				return (orig ? orig.head : 'N') + ':' + [
+					escapeVCardValue(props['LastName'] || ''),
+					escapeVCardValue(props['FirstName'] || ''),
+					escapeVCardValue(props['MiddleName'] || ''),
+					old[3] || '',
+					old[4] || ''
+				].join(';');
+			}
+		},
+		// Emails: order must match applyParsedProperty (first EMAIL is PrimaryEmail)
+		textUnit('EMAIL1', 'PrimaryEmail', 'EMAIL;TYPE=INTERNET'),
+		textUnit('EMAIL2', 'SecondEmail', 'EMAIL;TYPE=INTERNET'),
+		textUnit('TEL_CELL', 'CellularNumber', 'TEL;TYPE=CELL'),
+		textUnit('TEL_WORK', 'WorkPhone', 'TEL;TYPE=WORK'),
+		textUnit('TEL_HOME', 'HomePhone', 'TEL;TYPE=HOME'),
+		textUnit('TEL_FAX', 'FaxNumber', 'TEL;TYPE=FAX'),
+		textUnit('TEL_PAGER', 'PagerNumber', 'TEL;TYPE=PAGER'),
+		adrUnit('Home'),
+		adrUnit('Work'),
+		{
+			key: 'ORG',
+			fields: ['Company', 'Department'],
+			emit: function(props, orig) {
+				var old = orig ? splitStructuredValue(orig.value) : [];
+				var tail = old.slice(2); // further organizational units are not modelled
+				if (!props['Company'] && !props['Department'] && tail.length === 0) {
+					return null;
+				}
+				var parts = [escapeVCardValue(props['Company'] || '')];
+				if (props['Department'] || tail.length) {
+					parts.push(escapeVCardValue(props['Department'] || ''));
+				}
+				return (orig ? orig.head : 'ORG') + ':' + parts.concat(tail).join(';');
+			}
+		},
+		textUnit('TITLE', 'JobTitle', 'TITLE'),
+		textUnit('NOTE', 'Notes', 'NOTE'),
+		uriUnit('URL1', 'WebPage1', 'URL'),
+		uriUnit('URL2', 'WebPage2', 'URL;TYPE=HOME'),
+		{
+			key: 'BDAY',
+			fields: ['BirthYear', 'BirthMonth', 'BirthDay'],
+			emit: function(props) {
+				if (!(props['BirthYear'] && props['BirthMonth'] && props['BirthDay'])) {
+					return null;
+				}
+				return 'BDAY:' + props['BirthYear'] + '-' + props['BirthMonth'] + '-' + props['BirthDay'];
+			}
+		},
+		textUnit('NICKNAME', 'NickName', 'NICKNAME'),
+		// Persist AIM screen name for contacts.update (pairs with different AIM skip duplicate loop).
+		textUnit('X-AIM', '_AimScreenName', 'X-AIM'),
+		{
+			key: 'PHOTO',
+			fields: ['PhotoURI'],
+			emit: function(props, orig, opts) {
+				return props['PhotoURI'] ? formatPhotoLine(String(props['PhotoURI']), opts && opts.version4) : null;
+			}
+		},
+		textUnit('UID', 'UID', 'UID'),
+		{
+			key: 'REV',
+			fields: ['LastModifiedDate'],
+			emit: function(props) {
+				// REV: uses formatRevForVCard so epoch / compact / ISO-like values round-trip with parseRevToStoredRevValue
+				var revVal = props['LastModifiedDate'] ? formatRevForVCard(props['LastModifiedDate']) : '';
+				return revVal !== '' ? 'REV:' + revVal : null;
+			}
+		}
+	];
+
+	function unitForField(field) {
+		for (var i = 0; i < VCARD_UNITS.length; i++) {
+			if (VCARD_UNITS[i].fields.indexOf(field) !== -1) {
+				return VCARD_UNITS[i];
+			}
+		}
+		return null;
 	}
 
 	/**
 	 * Generates a vCard string from a JavaScript object with properties.
+	 * Only modelled fields are written: use mergeVCard when updating an existing contact.
 	 * @param {Object} props - Object with contact properties
 	 * @returns {string} - vCard string
 	 */
@@ -272,87 +614,138 @@ var VCardUtils = (function() {
 		if (!props || typeof props !== 'object') {
 			return 'BEGIN:VCARD\r\nVERSION:3.0\r\nEND:VCARD';
 		}
-
 		var lines = ['BEGIN:VCARD', 'VERSION:3.0'];
-
-		// Map Thunderbird properties to vCard properties
-		if (props['DisplayName']) {
-			lines.push('FN:' + escapeVCardValue(props['DisplayName']));
-		}
-
-		// Structured name (N)
-		var familyName = props['LastName'] || '';
-		var givenName = props['FirstName'] || '';
-		var middleName = props['MiddleName'] || '';
-		lines.push('N:' + escapeVCardValue(familyName) + ';' + escapeVCardValue(givenName) + ';' + escapeVCardValue(middleName) + ';;');
-
-		// Emails (order must match applyParsedProperty for multiple EMAIL properties)
-		appendEmailLinesToVCard(lines, props);
-
-		// Phone numbers
-		if (props['CellularNumber']) {
-			lines.push('TEL;TYPE=CELL:' + escapeVCardValue(props['CellularNumber']));
-		}
-		if (props['WorkPhone']) {
-			lines.push('TEL;TYPE=WORK:' + escapeVCardValue(props['WorkPhone']));
-		}
-		if (props['HomePhone']) {
-			lines.push('TEL;TYPE=HOME:' + escapeVCardValue(props['HomePhone']));
-		}
-		if (props['FaxNumber']) {
-			lines.push('TEL;TYPE=FAX:' + escapeVCardValue(props['FaxNumber']));
-		}
-		if (props['PagerNumber']) {
-			lines.push('TEL;TYPE=PAGER:' + escapeVCardValue(props['PagerNumber']));
-		}
-
-		// Addresses
-		if (props['HomeAddress'] || props['HomeCity']) {
-			var homeAddr = ';;;' + (props['HomeAddress'] || '') + ';' + (props['HomeCity'] || '') + ';' +
-				(props['HomeState'] || '') + ';' + (props['HomeZipCode'] || '') + ';' + (props['HomeCountry'] || '');
-			lines.push('ADR;TYPE=HOME:' + escapeVCardValue(homeAddr));
-		}
-		if (props['WorkAddress'] || props['WorkCity']) {
-			var workAddr = ';;;' + (props['WorkAddress'] || '') + ';' + (props['WorkCity'] || '') + ';' +
-				(props['WorkState'] || '') + ';' + (props['WorkZipCode'] || '') + ';' + (props['WorkCountry'] || '');
-			lines.push('ADR;TYPE=WORK:' + escapeVCardValue(workAddr));
-		}
-
-		// Other properties
-		if (props['Company']) {
-			lines.push('ORG:' + escapeVCardValue(props['Company']));
-		}
-		if (props['JobTitle']) {
-			lines.push('TITLE:' + escapeVCardValue(props['JobTitle']));
-		}
-		if (props['Notes']) {
-			lines.push('NOTE:' + escapeVCardValue(props['Notes']));
-		}
-		if (props['WebPage1']) {
-			lines.push('URL:' + escapeVCardValue(props['WebPage1']));
-		}
-		if (props['BirthYear'] && props['BirthMonth'] && props['BirthDay']) {
-			lines.push('BDAY:' + props['BirthYear'] + '-' + props['BirthMonth'] + '-' + props['BirthDay']);
-		}
-		if (props['NickName']) {
-			lines.push('NICKNAME:' + escapeVCardValue(props['NickName']));
-		}
-		if (props['PhotoURI']) {
-			lines.push('PHOTO:' + escapeVCardValue(props['PhotoURI']));
-		}
-		if (props['UID']) {
-			lines.push('UID:' + escapeVCardValue(props['UID']));
-		}
-		// REV: uses formatRevForVCard so epoch / compact / ISO-like values round-trip with parseRevToStoredRevValue
-		if (props['LastModifiedDate']) {
-			var revVal = formatRevForVCard(props['LastModifiedDate']);
-			if (revVal !== '') {
-				lines.push('REV:' + revVal);
+		for (var i = 0; i < VCARD_UNITS.length; i++) {
+			var line = VCARD_UNITS[i].emit(props, null, { version4: false });
+			if (line !== null) {
+				lines.push(line);
 			}
 		}
-
 		lines.push('END:VCARD');
 		return lines.join('\r\n');
+	}
+
+	/**
+	 * Writes props back into an existing vCard with as few changes as possible.
+	 *
+	 * The original is replayed line by line through applyParsedProperty:
+	 * - lines that set no modelled field (CATEGORIES, IMPP, X-*, third EMAIL, second TEL;TYPE=WORK, ...)
+	 *   are kept verbatim;
+	 * - lines whose fields still hold the parsed value are kept verbatim (params, group, folding-free text);
+	 * - lines whose fields changed are rewritten in place (same head; cleared fields drop the line);
+	 * - fields that had no line get a new one, before any kept line of the same property (so a new
+	 *   SecondEmail is not shadowed by a kept third EMAIL) or else before END:VCARD.
+	 * A modelled single-value property (BDAY, N, UID, REV) that is newly written replaces any unparsed
+	 * original line of that property, e.g. a year-less BDAY.
+	 *
+	 * @param {string} originalVCard - vCard the contact was loaded from (card._vCard)
+	 * @param {Object} props - Current contact fields
+	 * @returns {string} vCard string
+	 */
+	function mergeVCard(originalVCard, props) {
+		var origLines = unfoldVCardLines(originalVCard);
+		var beginIndex = -1;
+		var endIndex = -1;
+		for (var b = 0; b < origLines.length; b++) {
+			var t = origLines[b].trim().toUpperCase();
+			if (beginIndex === -1 && t === 'BEGIN:VCARD') beginIndex = b;
+			if (t === 'END:VCARD') endIndex = b;
+		}
+		if (!props || typeof props !== 'object' || beginIndex === -1 || endIndex < beginIndex) {
+			return generateVCard(props);
+		}
+
+		var replay = {};
+		var out = [];             // strings (kept lines) or { unit, orig } (lines to rewrite)
+		var placedUnits = {};
+		var firstUnmodelledByName = {}; // vCard name -> index in out of the first kept, unmodelled line
+		var unmodelledSingles = [];     // { index, name } of unparsed BDAY/N/UID/REV lines
+		var singleNames = { BDAY: 'BDAY', N: 'N', UID: 'UID', REV: 'REV' };
+		var version4 = false;
+		var endOut = -1;
+
+		for (var i = beginIndex; i <= endIndex; i++) {
+			var raw = origLines[i];
+			var parsed = parseContentLine(raw);
+			if (!parsed) {
+				continue; // blank or malformed lines
+			}
+			if (i === endIndex) {
+				endOut = out.length;
+				out.push(raw);
+				continue;
+			}
+			if (parsed.name === 'VERSION' && parsed.value.trim() === '4.0') {
+				version4 = true;
+			}
+			var fields = (parsed.name === 'BEGIN' || parsed.value === '') ? [] :
+				applyParsedProperty(replay, mapVCardPropertyToTB(parsed.name, parsed.params), parsed.value, parsed.params);
+			if (fields.length === 0) {
+				if (!firstUnmodelledByName.hasOwnProperty(parsed.name)) {
+					firstUnmodelledByName[parsed.name] = out.length;
+				}
+				if (singleNames.hasOwnProperty(parsed.name)) {
+					unmodelledSingles.push({ index: out.length, name: parsed.name });
+				}
+				out.push(raw);
+				continue;
+			}
+			var unit = unitForField(fields[0]);
+			placedUnits[unit.key] = true;
+			var unchanged = fields.every(function(f) { return sameFieldValue(props[f], replay[f]); });
+			out.push(unchanged ? raw : { unit: unit, orig: parsed });
+		}
+
+		// Units that had no line in the original
+		var insertBefore = {}; // out index -> lines
+		var opts = { version4: version4 };
+		var rewrittenNames = {};
+		for (var u = 0; u < VCARD_UNITS.length; u++) {
+			var unitU = VCARD_UNITS[u];
+			if (placedUnits[unitU.key]) {
+				continue;
+			}
+			var line = unitU.emit(props, null, opts);
+			if (line === null || (unitU.key === 'N' && !props['LastName'] && !props['FirstName'] && !props['MiddleName'])) {
+				continue;
+			}
+			var name = parseContentLine(line).name;
+			rewrittenNames[name] = true;
+			var at = firstUnmodelledByName.hasOwnProperty(name) ? firstUnmodelledByName[name] : endOut;
+			(insertBefore[at] = insertBefore[at] || []).push(line);
+		}
+		for (var k = 0; k < out.length; k++) {
+			if (typeof out[k] !== 'string') {
+				rewrittenNames[out[k].orig.name] = true;
+			}
+		}
+		var dropped = {};
+		unmodelledSingles.forEach(function(s) {
+			if (rewrittenNames[s.name]) dropped[s.index] = true;
+		});
+
+		var result = [];
+		for (var j = 0; j < out.length; j++) {
+			if (insertBefore[j]) {
+				result = result.concat(insertBefore[j]);
+			}
+			if (dropped[j]) {
+				continue;
+			}
+			if (typeof out[j] === 'string') {
+				result.push(out[j]);
+			} else {
+				var rewritten = out[j].unit.emit(props, out[j].orig, opts);
+				if (rewritten !== null) {
+					result.push(rewritten);
+				}
+			}
+		}
+		return result.join('\r\n');
+	}
+
+	function sameFieldValue(a, b) {
+		return (a == null ? '' : String(a)) === (b == null ? '' : String(b));
 	}
 
 	/**
@@ -368,7 +761,7 @@ var VCardUtils = (function() {
 			.replace(/\\/g, '\\\\')
 			.replace(/;/g, '\\;')
 			.replace(/,/g, '\\,')
-			.replace(/\n/g, '\\n');
+			.replace(/\r\n|\r|\n/g, '\\n');
 	}
 
 	/**
@@ -434,21 +827,6 @@ var VCardUtils = (function() {
 	}
 
 	/**
-	 * Appends EMAIL;TYPE=INTERNET lines in document order: PrimaryEmail, then SecondEmail.
-	 * Matches applyParsedProperty: first EMAIL in the vCard becomes PrimaryEmail, second becomes SecondEmail.
-	 * @param {string[]} lines - vCard line buffer (mutated)
-	 * @param {Object} props - Thunderbird-shaped contact properties
-	 */
-	function appendEmailLinesToVCard(lines, props) {
-		if (props['PrimaryEmail']) {
-			lines.push('EMAIL;TYPE=INTERNET:' + escapeVCardValue(props['PrimaryEmail']));
-		}
-		if (props['SecondEmail']) {
-			lines.push('EMAIL;TYPE=INTERNET:' + escapeVCardValue(props['SecondEmail']));
-		}
-	}
-
-	/**
 	 * Gets a property value from a plain contact object (parsed vCard fields on the object).
 	 * Matches legacy nsIAbCard-style behavior: missing, null, or undefined yields defaultValue.
 	 * @param {Object} vCardProps - Properties object (from parseVCard)
@@ -493,6 +871,7 @@ var VCardUtils = (function() {
 		var cardProps = parseVCard(contact && contact.vCard ? contact.vCard : '');
 		cardProps._id = contact.id;
 		cardProps._addressBookId = addressBookId;
+		// Original vCard: saveCard merges edits into it (mergeVCard) so unmodelled data is preserved
 		cardProps._vCard = (contact && contact.vCard) ? contact.vCard : '';
 		// nsIAbCard-style API: single delegation point to getProperty/setProperty above
 		cardProps.getProperty = function(property, defaultValue) {
@@ -545,6 +924,7 @@ var VCardUtils = (function() {
 	return {
 		parseVCard: parseVCard,
 		generateVCard: generateVCard,
+		mergeVCard: mergeVCard,
 		getProperty: getProperty,
 		setProperty: setProperty,
 		escapeVCardValue: escapeVCardValue,

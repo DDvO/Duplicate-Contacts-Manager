@@ -36,12 +36,15 @@ The add-on's duplicate-finder window is implemented as a single HTML window (`wi
 
 **Role:** vCard parsing and generation utilities for converting between vCard strings (used by WebExtension API) and JavaScript objects (used by business logic).
 
-**Exports:** `parseVCard(vCardString)`, `generateVCard(cardObject)`, `getProperty`, `setProperty`.
+**Exports:** `parseVCard(vCardString)`, `mergeVCard(originalVCard, cardObject)`, `generateVCard(cardObject)`, `getProperty`, `setProperty`, `createContactCardFromApiContact`, helpers for mailing-list extraction, etc.
 
 **Responsibilities:**
-- Parse vCard strings from the `addressBooks` API into plain JavaScript objects.
-- Generate vCard strings from plain JavaScript objects for saving contacts.
-- Handle vCard property mapping and normalization.
+- Parse vCard strings from the `addressBooks` API into plain JavaScript objects (RFC line unfolding, one-pass unescaping, structured N/ADR/ORG split on unescaped `;`, TYPE lists such as `TYPE=work,fax` and vCard 2.1 bare types). Addresses in the layout written up to version 2.2.3 (`;;;Street;City;State;Zip;Country`, usually escaped as one value) are recognised by `legacyAdrComponents` and rewritten in the standard form when edited.
+- Save edits with `mergeVCard`: the vCard the contact was loaded from (`card._vCard`) is replayed line by line. Lines that set no modelled field (third `EMAIL`, a second `TEL` of the same type, `CATEGORIES`, `IMPP`, `X-*`, …) and lines whose fields are unchanged are kept verbatim; changed lines are rewritten in place with their original parameters; new fields are appended. N prefix/suffix, the ADR PO box and further ORG units are kept when those lines are rewritten. `generateVCard` is only used for contacts without an original vCard.
+- The modelled fields and their vCard lines are listed once, in `VCARD_UNITS`; for these, the first line in a vCard wins.
+- Handle vCard property mapping and normalization (including **`X-AIM`** ↔ **`_AimScreenName`** for AIM screen names; the duplicate search skips pairs whose AIM differs).
+
+**Tests:** open `tests/vcard-utils.test.html` in a browser served over HTTP from the project root (for example `py -m http.server`); it is not packaged into the XPI.
 
 **Dependencies:** None (load first).
 
@@ -63,7 +66,7 @@ The add-on's duplicate-finder window is implemented as a single HTML window (`wi
 
 **Role:** Read/write access to Thunderbird address books and contact cards.
 
-**Exports:** `getAddressBooks()`, `getAddressBook(id)`, `getAllAbCards(addressBookId, context)`, `getCardProperty`, `setCardProperty`, `saveCard(addressBookId, card)`, `deleteCard(addressBookId, card)`.
+**Exports:** `getAddressBooks()`, `getAddressBook(id)`, `getAllAbCards(addressBookId, context)`, `saveCard(addressBookId, card)`, `deleteCard(addressBookId, card)`.
 
 **Responsibilities:**
 - Use the WebExtension `addressBooks` API (`messenger.addressBooks` or `browser.addressBooks`) to list and access address books by ID.
@@ -93,7 +96,7 @@ The add-on's duplicate-finder window is implemented as a single HTML window (`wi
 
 **Role:** Load and save user preferences for the duplicate-finder window using WebExtension storage API.
 
-**Exports:** `getPrefsBranch`, `loadPrefs(ctx)`, `applyPrefsToDOM(ctx)`, `readPrefsFromDOM(ctx)`, `savePrefs(ctx)`.
+**Exports:** `getPrefsBranch`, `loadPrefs(ctx)`, `applyPrefsToDOM(ctx)`, `readPrefsFromDOM(ctx)`, `refreshConsideredFieldsFromDOM(ctx)`, `savePrefs(ctx)`.
 
 **Responsibilities:**
 - Use the WebExtension `storage` API (`messenger.storage.local` or `browser.storage.local`) to read/write preferences.
@@ -168,12 +171,13 @@ The add-on's duplicate-finder window is implemented as a single HTML window (`wi
 
 **Role:** Build and clear the comparison table (side-by-side fields, equivalence symbols, editable inputs).
 
-**Exports:** `displayCardData`, `purgeAttributesTable`, `getCardFieldValues`.
+**Exports:** `displayCardData`, `purgeAttributesTable`, `getCardFieldValues`, `mergeEmptyLeftFromRightInTable`.
 
 **Responsibilities:**
 - Fill the HTML comparison table for a pair of cards: labels, matchable rows (names/emails/phones), per-field rows with left/right values and equivalence (≡ ≅ ⋦ ⋧ etc.), including PhotoURI and selection dropdowns.
 - Clear the table (purge rows, hide header via UI module).
 - Read back edited values from the table for a given side ("left" or "right").
+- **Merge left** button: copy right-column cell values into empty left-column cells only (DOM) and mark the left contact as to be kept; saving is done via **Remove one** or **Keep both**.
 
 **Dependencies:** Uses UI's `showComparisonTableHeader`, `hideComparisonTableHeader`; expects `ctx` to have Fields predicates, `getProperty`, `getAbstractedTransformedProperty`, `createSelectionList`, `setContactLeftRight`, `attributesTableRows`, `displayedFields`, `editableFields`, etc. Updated for HTML DOM and plain JavaScript card objects (TB128).
 
@@ -188,7 +192,7 @@ The add-on's duplicate-finder window is implemented as a single HTML window (`wi
 **Responsibilities:**
 - Advance (position1, position2) over all pairs (same-book triangle or two-book rectangle), skipping deleted slots.
 - When "defer interactive" is on, walk the pre-collected `duplicates` queue instead.
-- In `runIntervalAction(ctx)`: loop over pairs; for each pair get simplified cards, run matching (names/mails/phones); if match, run comparison; auto-delete or enqueue or show comparison UI; yield every ~1 s for UI updates and re-schedule via `setTimeout`.
+- In `runIntervalAction(ctx)`: loop over pairs; for each pair get simplified cards; **if `_AimScreenName` differs between the two, skip the pair** (treats them as already split, e.g. by the former “Make different” action); else run matching (names/mails/phones); if match, run comparison; auto-delete or enqueue or show comparison UI; yield every ~1 s for UI updates and re-schedule via `setTimeout`.
 
 **Dependencies:** Uses Matching, Comparison, UI, Display; expects `ctx` to provide `vcards`, positions, `updateProgress`, `getSimplifiedCard`, `deleteAbCard`, `displayCardData`, `endSearch`, `getString`, and options (autoremoveDups, preserveFirst, etc.). Updated to use address book IDs instead of directories (TB128).
 
@@ -202,7 +206,8 @@ The add-on's duplicate-finder window is implemented as a single HTML window (`wi
 - Hold all state (vcards, positions, preferences, DOM refs, options).
 - `init()`: bind Fields, use WebExtension `addressBooks` API, load prefs (async), apply to DOM, use `browser.i18n`/`messenger.i18n` for localization, build address book dropdowns, show ready state.
 - `startSearch()`: read prefs from DOM, validate, save prefs (async), read address books (async), reset search state, show searching state, call `searchNextDuplicate()` which schedules `DuplicateEntriesWindowSearch.runIntervalAction`.
-- Handle user actions: skip, keep both, apply (keep one + delete other); delegate card updates/deletes to Contacts (async); delegate table display to Display; delegate progress/stats to UI.
+- Handle user actions: skip; keep both; **remove one** (UI label for `applynextbutton`: keep one side per radio + delete the other); remove left / remove right (same as remove one but fixed column); remove both; merge left (fill empty left table cells from right, DOM only; save via remove one / keep both). **Keep both** calls `saveCard` twice with no transaction; `saveCard` logs `console.error` on failure before rethrowing; the window catches and shows `alert` without aborting the second save.
+- Delegate card updates/deletes to Contacts (async); delegate table display to Display; delegate progress/stats to UI.
 - Thin delegates for all module APIs so that the window object remains the single "context" passed to modules.
 
 **Dependencies:** All modules above; no module depends on the main file except as "ctx" or by name for `setTimeout` (e.g. `DuplicateEntriesWindowSearch.runIntervalAction(DuplicateEntriesWindow)`). Uses WebExtension APIs (`addressBooks`, `storage`, `i18n`) instead of XPCOM (TB128).
@@ -223,6 +228,24 @@ The add-on's duplicate-finder window is implemented as a single HTML window (`wi
 ---
 
 ## Change history
+
+### Unreleased
+* **No data loss on save:** Apply / Keep both merge edits into the original vCard (`VCardUtils.mergeVCard`) instead of regenerating it, so data the add-on does not show (extra emails and phones, categories, custom fields, name prefix/suffix, PO box, year-less birthdays, …) is preserved. `saveCard` updates `card._vCard` after each save.
+* **vCard parsing:** folded lines keep their spaces; `\\n` is no longer read as a newline; escaped `;` inside ADR/N components is respected; `TEL` types are read from type lists, quoted values and vCard 2.1 bare types; `ORG` sets Company and Department; `URL;TYPE=home` maps to WebPage2; photos are written as `ENCODING=b` in vCard 3.0.
+* **Addresses from older versions:** addresses written by version 2.2.3 and earlier (`;;;Street;City;State;Zip;Country`, usually with every `;` escaped) are read again; the empty-street fix had dropped that rule. An edited address of this kind is saved in the standard form.
+* **Tests:** `tests/vcard-utils.test.html`.
+* **Removed “Make different”:** the button was confusing and could not be undone. Pairs already split by it (different `X-AIM` values) are still skipped by the search; clear the AIM field in Thunderbird to have them matched again.
+* **Merge left** now also marks the left contact as to be kept, so **Remove one** keeps the merged contact.
+* **Fields to consider** now updates while you edit **Fields to ignore** (`refreshConsideredFieldsFromDOM`); it is still a computed, read-only list.
+* **Window size:** the window opens at most 960×850 and is shrunk to fit inside the Thunderbird window it is opened from (`fitWindowGeometry` in `background.js`), so on small or scaled screens its title bar and buttons are no longer pushed off screen. The button row wraps in a narrow window.
+
+### Version 2.2.4
+* **Make different:** set distinct synthetic `_AimScreenName` on both contacts (vCard `X-AIM` via `vCardUtils`); configurable `nodupAimPrefix` in `duplicateEntriesWindowFields.js`. Duplicate search skips pairs whose AIM already differs.
+* **Remove left / Remove right:** same as remove one (keep other column) with a fixed column; ignores keep-left/right radio.
+* **Merge left:** copy non-empty right cells into empty left cells in the table only; persistence still via remove one or keep both.
+* **Toolbar:** action buttons reordered; trailing `>` removed from localized labels; English **Remove one** label for the former Apply action.
+* **Noise:** remove verbose `console.log` from address book loading; `saveCard` still logs failures with `console.error` before rethrow.
+* **Docs:** architecture/history updated (Contacts exports, AIM/`X-AIM`, two-save behavior).
 
 ### Version 2.2.1 (post-2.2.0 fixes)
 * Fix preferences loading: Storage API does not support wildcards; request explicit keys in `loadPrefs`.

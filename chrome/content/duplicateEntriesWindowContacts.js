@@ -63,12 +63,15 @@ var DuplicateEntriesWindowContacts = (function() {
 			return { cards: [], totalBefore: 0 };
 		}
 
+		// Diagnostic output goes through the window's debug() (off by default)
+		var debug = (context && context.debug) ? function(str) { context.debug(str); } : function() {};
+
 		try {
-			console.log("Getting contacts from address book:", addressBookId);
+			debug("Getting contacts from address book: " + addressBookId);
 
 			// Get all contacts from the address book
 			const contacts = await addressBooksAPI.contacts.list(addressBookId);
-			console.log("Found", contacts.length, "contacts");
+			debug("Found " + contacts.length + " contacts");
 
 			var abCards = [];
 			var mailLists = [];
@@ -113,7 +116,7 @@ var DuplicateEntriesWindowContacts = (function() {
 				}
 			}
 
-			console.log("Processed", processedCount, "cards successfully");
+			debug("Processed " + processedCount + " cards successfully");
 
 			// Enrich cards with virtual properties
 			for (var j = 0; j < abCards.length; j++) {
@@ -122,7 +125,7 @@ var DuplicateEntriesWindowContacts = (function() {
 				}
 			}
 
-			console.log("Loaded", abCards.length, "contacts from address book", addressBookId);
+			debug("Loaded " + abCards.length + " contacts from address book " + addressBookId);
 			return { cards: abCards, totalBefore: abCards.length };
 		} catch (error) {
 			console.error("Error in getAllAbCards:", error);
@@ -144,10 +147,11 @@ var DuplicateEntriesWindowContacts = (function() {
 		}
 
 		try {
-			// Generate vCard from card properties
+			// Merge card properties into the vCard the contact was loaded from, so properties this
+			// add-on does not model (extra emails/phones, categories, X-* ...) are not dropped.
 			var vCardString;
-			if (typeof VCardUtils !== 'undefined' && VCardUtils.generateVCard) {
-				vCardString = VCardUtils.generateVCard(card);
+			if (typeof VCardUtils !== 'undefined' && VCardUtils.mergeVCard) {
+				vCardString = card._vCard ? VCardUtils.mergeVCard(card._vCard, card) : VCardUtils.generateVCard(card);
 			} else {
 				throw new Error("No vCard generator available");
 			}
@@ -160,6 +164,8 @@ var DuplicateEntriesWindowContacts = (function() {
 				// Update: API update(id, vCard) — contact id and vCard string only
 				await addressBooksAPI.contacts.update(card._id, vCardString);
 			}
+			// The card may be shown again in a later pair: merge further edits into what was saved
+			card._vCard = vCardString;
 		} catch (error) {
 			console.error("Error saving card:", error);
 			throw error;

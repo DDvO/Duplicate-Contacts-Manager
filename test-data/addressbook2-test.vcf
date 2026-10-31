@@ -166,7 +166,7 @@ FN:Auto Test Person 001
 N:Person;Auto Test;;;
 EMAIL;TYPE=INTERNET:rich001@example.com
 NOTE:[TEST] Auto-delete pair 001. Rich has extra fields. Poor is subset.
-UID:auto-001-shared
+UID:auto-P01-shared
 END:VCARD
 BEGIN:VCARD
 VERSION:3.0
@@ -175,7 +175,7 @@ N:Contact;Auto Test;;;
 EMAIL;TYPE=INTERNET:rich002@example.com
 TEL;TYPE=WORK:555-9002
 NOTE:[TEST] Auto-delete pair 002. Rich has extra fields. Poor is subset.
-UID:auto-002-shared
+UID:auto-P02-shared
 END:VCARD
 BEGIN:VCARD
 VERSION:3.0
@@ -183,7 +183,7 @@ FN:Auto Test Entry 003
 N:Entry;Auto Test;;;
 EMAIL;TYPE=INTERNET:rich003@example.com
 NOTE:[TEST] Auto-delete pair 003. Rich has extra fields. Poor is subset.
-UID:auto-003-shared
+UID:auto-P03-shared
 END:VCARD
 BEGIN:VCARD
 VERSION:3.0

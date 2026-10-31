@@ -2,7 +2,7 @@
 // file: duplicateEntriesWindowDisplay.js
 //
 // Comparison table display: displayCardData, displayCardField, SetRelation,
-// purgeAttributesTable, getCardFieldValues.
+// purgeAttributesTable, getCardFieldValues, mergeEmptyLeftFromRightInTable.
 // ctx must have: attributesTableRows, displayedFields, editableFields, consideredFields,
 // nonequivalentProperties, matchablesList, getString, getProperty, getAbstractedTransformedProperty,
 // (Equivalence symbols for non-set fields use DuplicateEntriesWindowCardValues.getComparisonValuesForProperty — same as compareCards.)
@@ -12,6 +12,32 @@
 
 var DuplicateEntriesWindowDisplay = (function() {
 	"use strict";
+
+	/**
+	 * Resolves the input/select/textarea for one cell in the duplicate comparison table.
+	 *
+	 * Uses #AttributesTableRows as the search root so we read the control that belongs to this table,
+	 * not some other element in the document that might share the same id (invalid HTML, but defensive).
+	 * CSS.escape is required for querySelector when ids contain characters that are special in CSS
+	 * selectors (e.g. colon in some property names).
+	 *
+	 * @param {object} ctx - Window context; should have attributesTableRows set while a pair is shown
+	 * @param {string} id - Full element id, e.g. left_PrimaryEmail
+	 * @returns {HTMLElement|null}
+	 */
+	function findFieldElementById(ctx, id) {
+		var root = ctx.attributesTableRows || document.getElementById('AttributesTableRows');
+		if (root && root.querySelector) {
+			try {
+				if (typeof CSS !== 'undefined' && CSS.escape) {
+					return root.querySelector('#' + CSS.escape(id));
+				}
+			} catch (e) {
+				/* fall through */
+			}
+		}
+		return document.getElementById(id);
+	}
 
 	function pushIfNew(elem, array) { /* well, this 'function' has a side effect on array */
 		if (!array.includes(elem))
@@ -377,16 +403,21 @@ var DuplicateEntriesWindowDisplay = (function() {
 	/**
 	 * Returns an object with all editable field values for the given side ('left' or 'right').
 	 * TB128: Handles HTML select/input/textarea elements.
-	 * Used when reading edited values from the table (save field in list for later retrieval).
+	 *
+	 * Used by updateAbCard / Keep both / Apply to read the live DOM after the user may have edited
+	 * cells. Only properties listed in ctx.editableFields (built when the pair was displayed) are read.
+	 * Each control is found via findFieldElementById so values come from this table, not a stray id match.
+	 *
 	 * @param {object} ctx - Context (window object)
 	 * @param {string} side - 'left' or 'right'
 	 * @returns {Object} Object with property names as keys and values as values
 	 */
 	function getCardFieldValues(ctx, side) {
 		var result = {};
+		if (!ctx.editableFields) return result;
 		for (var i = 0; i < ctx.editableFields.length; i++) {
 			const id = side + '_' + ctx.editableFields[i];
-			const valuebox = document.getElementById(id);
+			const valuebox = findFieldElementById(ctx, id);
 			if (!valuebox) continue;
 			// TB128: Handle HTML select/input/textarea elements
 			let value;
@@ -402,9 +433,64 @@ var DuplicateEntriesWindowDisplay = (function() {
 		return result;
 	}
 
+	/**
+	 * Copies the right column into the left for each editable row where the left cell is empty
+	 * and the right cell has a value. Only updates the comparison table DOM; does not save contacts.
+	 * @param {object} ctx - Window context (must have editableFields, defaultValue, isSelection, isNumerical)
+	 */
+	function mergeEmptyLeftFromRightInTable(ctx) {
+		if (!ctx.editableFields) return;
+		function readCell(valuebox) {
+			if (valuebox.tagName === 'SELECT') {
+				return valuebox.options[valuebox.selectedIndex] ? valuebox.options[valuebox.selectedIndex].value : '';
+			}
+			if (valuebox.tagName === 'INPUT' || valuebox.tagName === 'TEXTAREA') {
+				return valuebox.value;
+			}
+			return valuebox.textContent || '';
+		}
+		function leftIsEmpty(property, raw) {
+			var dv = ctx.defaultValue(property);
+			if (ctx.isSelection(property) || ctx.isNumerical(property)) {
+				return String(raw) === String(dv);
+			}
+			return raw == null || String(raw).trim() === '';
+		}
+		function rightHasValue(property, raw) {
+			var dv = ctx.defaultValue(property);
+			if (ctx.isSelection(property) || ctx.isNumerical(property)) {
+				return String(raw) !== String(dv);
+			}
+			return raw != null && String(raw).trim() !== '';
+		}
+		var i;
+		for (i = 0; i < ctx.editableFields.length; i++) {
+			var property = ctx.editableFields[i];
+			var leftEl = findFieldElementById(ctx, 'left_' + property);
+			var rightEl = findFieldElementById(ctx, 'right_' + property);
+			if (!leftEl || !rightEl) continue;
+			var lv = readCell(leftEl);
+			var rv = readCell(rightEl);
+			if (!leftIsEmpty(property, lv) || !rightHasValue(property, rv)) continue;
+			if (leftEl.tagName === 'SELECT') {
+				var want = String(rv);
+				var o;
+				for (o = 0; o < leftEl.options.length; o++) {
+					if (leftEl.options[o].value === want) {
+						leftEl.selectedIndex = o;
+						break;
+					}
+				}
+			} else if (leftEl.tagName === 'INPUT' || leftEl.tagName === 'TEXTAREA') {
+				leftEl.value = rv;
+			}
+		}
+	}
+
 	return {
 		displayCardData: displayCardData,
 		purgeAttributesTable: purgeAttributesTable,
-		getCardFieldValues: getCardFieldValues
+		getCardFieldValues: getCardFieldValues,
+		mergeEmptyLeftFromRightInTable: mergeEmptyLeftFromRightInTable
 	};
 })();

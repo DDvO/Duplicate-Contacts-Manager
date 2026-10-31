@@ -173,7 +173,7 @@ ORG:Tech Company Inc
 TITLE:Senior Engineer
 URL:https://example.com/rich001
 NOTE:[TEST] Auto-delete pair 001. Rich has extra fields. Poor is subset.
-UID:auto-001-shared
+UID:auto-R01-shared
 END:VCARD
 BEGIN:VCARD
 VERSION:3.0
@@ -187,7 +187,7 @@ ADR;TYPE=WORK:;;456 Business Ave;Worktown;ST;67890;USA
 ORG:Business Corp
 NICKNAME:FullGuy
 NOTE:[TEST] Auto-delete pair 002. Rich has extra fields. Poor is subset.
-UID:auto-002-shared
+UID:auto-R02-shared
 END:VCARD
 BEGIN:VCARD
 VERSION:3.0
@@ -202,7 +202,7 @@ TITLE:Manager
 URL:https://example.com/rich003
 ADR;TYPE=HOME:;;789 Oak St;Hometown;State;11111;USA
 NOTE:[TEST] Auto-delete pair 003. Rich has extra fields. Poor is subset.
-UID:auto-003-shared
+UID:auto-R03-shared
 END:VCARD
 BEGIN:VCARD
 VERSION:3.0

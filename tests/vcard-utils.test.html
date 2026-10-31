@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>vCardUtils tests</title>
+<!-- Open this file in a browser (no build or server needed). Not packaged into the XPI. -->
+<style>
+	body { font: 14px sans-serif; margin: 16px; }
+	.pass { color: #1a7f37; }
+	.fail { color: #cf222e; font-weight: bold; }
+	pre { background: #f6f8fa; padding: 6px; white-space: pre-wrap; }
+</style>
+<script src="../chrome/content/vCardUtils.js"></script>
+</head>
+<body>
+<h1 id="summary">Running…</h1>
+<div id="results"></div>
+<script>
+"use strict";
+
+var results = [];
+
+function test(name, fn) {
+	try {
+		fn();
+		results.push({ name: name, ok: true });
+	} catch (e) {
+		results.push({ name: name, ok: false, message: e.message });
+	}
+}
+
+function eq(actual, expected, what) {
+	if (actual !== expected) {
+		throw new Error((what || 'value') + ': expected ' + JSON.stringify(expected) + ', got ' + JSON.stringify(actual));
+	}
+}
+
+function contains(vcard, line) {
+	if (vcard.split('\r\n').indexOf(line) === -1) {
+		throw new Error('missing line ' + JSON.stringify(line) + ' in\n' + vcard);
+	}
+}
+
+function lacks(vcard, fragment) {
+	if (vcard.indexOf(fragment) !== -1) {
+		throw new Error('unexpected ' + JSON.stringify(fragment) + ' in\n' + vcard);
+	}
+}
+
+function card(lines) {
+	return ['BEGIN:VCARD'].concat(lines, ['END:VCARD']).join('\r\n');
+}
+
+/** Simulates load + edit + save: parse, apply edits, merge into the original. */
+function save(original, edits) {
+	var props = VCardUtils.parseVCard(original);
+	Object.keys(edits || {}).forEach(function(k) { props[k] = edits[k]; });
+	return VCardUtils.mergeVCard(original, props);
+}
+
+var THUNDERBIRD_CARD = card([
+	'VERSION:4.0',
+	'FN:Anna Rossi',
+	'N:Rossi;Anna;Maria;Dr.;PhD',
+	'EMAIL;PREF=1:anna@example.com',
+	'EMAIL:anna.rossi@work.example',
+	'EMAIL:anna@old.example',
+	'TEL;TYPE=work;VALUE=TEXT:+39 02 111',
+	'TEL;TYPE=work;VALUE=TEXT:+39 02 222',
+	'TEL;TYPE=cell;VALUE=TEXT:+39 333 444',
+	'ADR;TYPE=home:PO 12;;Via Roma 1;Milano;MI;20100;Italy',
+	'ORG:Acme;Sales;EMEA',
+	'CATEGORIES:Friends,Work',
+	'IMPP:xmpp:anna@example.com',
+	'ANNIVERSARY:20100612',
+	'X-CUSTOM1:custom value',
+	'NOTE:line one\\nline two',
+	'URL;TYPE=work;VALUE=URL:https://example.com/a,b',
+	'UID:0d6c8a1e-1111-2222-3333-444455556666'
+]);
+
+test('unchanged contact is written back byte for byte', function() {
+	eq(save(THUNDERBIRD_CARD), THUNDERBIRD_CARD, 'vCard');
+});
+
+test('third EMAIL, second work TEL and unmodelled properties survive an edit', function() {
+	var out = save(THUNDERBIRD_CARD, { PrimaryEmail: 'anna@new.example', WorkPhone: '+39 02 999', FirstName: 'Annie' });
+	contains(out, 'EMAIL;PREF=1:anna@new.example');
+	contains(out, 'EMAIL:anna@old.example');
+	contains(out, 'TEL;TYPE=work;VALUE=TEXT:+39 02 999');
+	contains(out, 'TEL;TYPE=work;VALUE=TEXT:+39 02 222');
+	contains(out, 'CATEGORIES:Friends,Work');
+	contains(out, 'IMPP:xmpp:anna@example.com');
+	contains(out, 'ANNIVERSARY:20100612');
+	contains(out, 'X-CUSTOM1:custom value');
+	lacks(out, '+39 02 111');
+});
+
+test('N prefix and suffix are kept when the name changes', function() {
+	contains(save(THUNDERBIRD_CARD, { FirstName: 'Annie' }), 'N:Rossi;Annie;Maria;Dr.;PhD');
+});
+
+test('ADR PO box is kept when the city changes', function() {
+	contains(save(THUNDERBIRD_CARD, { HomeCity: 'Torino' }), 'ADR;TYPE=home:PO 12;;Via Roma 1;Torino;MI;20100;Italy');
+});
+
+test('ORG department and further units are kept', function() {
+	var p = VCardUtils.parseVCard(THUNDERBIRD_CARD);
+	eq(p.Company, 'Acme', 'Company');
+	eq(p.Department, 'Sales', 'Department');
+	contains(save(THUNDERBIRD_CARD, { Company: 'Acme SpA' }), 'ORG:Acme SpA;Sales;EMEA');
+});
+
+test('changed line stays in place; order of EMAIL lines is preserved', function() {
+	var out = save(THUNDERBIRD_CARD, { SecondEmail: 'anna@work2.example' }).split('\r\n');
+	var emails = out.filter(function(l) { return l.indexOf('EMAIL') === 0; });
+	eq(emails.join('|'), 'EMAIL;PREF=1:anna@example.com|EMAIL:anna@work2.example|EMAIL:anna@old.example', 'emails');
+});
+
+test('cleared field removes its line only', function() {
+	var out = save(THUNDERBIRD_CARD, { Notes: '' });
+	lacks(out, 'NOTE:');
+	contains(out, 'X-CUSTOM1:custom value');
+});
+
+test('new field is added before END, new email before kept extra emails', function() {
+	var orig = card(['VERSION:3.0', 'FN:Bob', 'N:Bob;;;;', 'EMAIL:bob@a.example', 'X-FOO:bar']);
+	var out = save(orig, { HomePhone: '555-1', SecondEmail: 'bob@b.example' });
+	var lines = out.split('\r\n');
+	eq(lines[lines.length - 1], 'END:VCARD', 'last line');
+	contains(out, 'TEL;TYPE=HOME:555-1');
+	eq(VCardUtils.parseVCard(out).SecondEmail, 'bob@b.example', 'SecondEmail after reparse');
+});
+
+test('every modelled field reads back after a save', function() {
+	var edits = {
+		DisplayName: 'Z, Y', FirstName: 'Y;1', LastName: 'Z\\2', MiddleName: 'M', PrimaryEmail: 'p@x', SecondEmail: 's@x',
+		CellularNumber: '1', WorkPhone: '2', HomePhone: '3', FaxNumber: '4', PagerNumber: '5',
+		HomeAddress: 'Via A; 1', HomeAddress2: 'Int 2', HomeCity: 'C', HomeState: 'S', HomeZipCode: 'Z', HomeCountry: 'IT',
+		WorkAddress: 'W', WorkCity: 'WC', Company: 'Co', Department: 'D', JobTitle: 'T', Notes: 'a\nb, c',
+		WebPage1: 'https://a.example', WebPage2: 'https://b.example', BirthYear: '1980', BirthMonth: '02', BirthDay: '29',
+		NickName: 'N', _AimScreenName: 'aim-x-1', UID: 'u-1'
+	};
+	[THUNDERBIRD_CARD, card(['VERSION:3.0', 'FN:x'])].forEach(function(orig) {
+		var back = VCardUtils.parseVCard(save(orig, edits));
+		Object.keys(edits).forEach(function(k) { eq(back[k], edits[k], k); });
+	});
+});
+
+test('generateVCard round-trips for a new contact', function() {
+	var props = { DisplayName: 'New, One', FirstName: 'One', LastName: 'New', PrimaryEmail: 'n@x', WorkCity: 'Roma', Notes: 'C:\\new' };
+	var back = VCardUtils.parseVCard(VCardUtils.generateVCard(props));
+	Object.keys(props).forEach(function(k) { eq(back[k], props[k], k); });
+});
+
+test('folded lines keep the space at the fold', function() {
+	var p = VCardUtils.parseVCard(card(['VERSION:3.0', 'NOTE:Hello', '  world and', '\tmore']));
+	eq(p.Notes, 'Hello world andmore', 'Notes');
+});
+
+test('escaped backslash before n is not a newline', function() {
+	eq(VCardUtils.parseVCard(card(['NOTE:C:\\\\new\\nnext'])).Notes, 'C:\\new\nnext', 'Notes');
+});
+
+test('escaped semicolon inside an ADR component', function() {
+	var p = VCardUtils.parseVCard(card(['ADR;TYPE=WORK:;;Via Roma\\; 3;Milano;;;']));
+	eq(p.WorkAddress, 'Via Roma; 3', 'WorkAddress');
+	eq(p.WorkCity, 'Milano', 'WorkCity');
+});
+
+test('ADR with empty street is not field-shifted, and saves the same way', function() {
+	var orig = card(['VERSION:4.0', 'FN:x', 'ADR;TYPE=home:;;;Orta San Giulio;NO;28016;Italy', 'ADR;TYPE=work:;;;Milano;MI;20127;Italy']);
+	var p = VCardUtils.parseVCard(orig);
+	eq(p.HomeAddress, '', 'HomeAddress');
+	eq(p.HomeAddress2, '', 'HomeAddress2');
+	eq(p.HomeCity, 'Orta San Giulio', 'HomeCity');
+	eq(p.HomeState, 'NO', 'HomeState');
+	eq(p.HomeZipCode, '28016', 'HomeZipCode');
+	eq(p.HomeCountry, 'Italy', 'HomeCountry');
+	eq(p.WorkCity, 'Milano', 'WorkCity');
+	var out = save(orig, { HomeCity: 'Orta' });
+	contains(out, 'ADR;TYPE=home:;;;Orta;NO;28016;Italy');
+	contains(out, 'ADR;TYPE=work:;;;Milano;MI;20127;Italy');
+});
+
+test('address written by version 2.2.3 and earlier is read, and rewritten in the standard form', function() {
+	var orig = card(['VERSION:3.0', 'FN:x',
+		'ADR;TYPE=HOME:\\;\\;\\;Via Roma 1\\;Orta\\;NO\\;28016\\;Italy',
+		'ADR;TYPE=WORK:;;;Via Po 2;Milano;MI;20127;Italy']);
+	var p = VCardUtils.parseVCard(orig);
+	eq(p.HomeAddress, 'Via Roma 1', 'HomeAddress');
+	eq(p.HomeAddress2, '', 'HomeAddress2');
+	eq(p.HomeCity, 'Orta', 'HomeCity');
+	eq(p.HomeState, 'NO', 'HomeState');
+	eq(p.HomeZipCode, '28016', 'HomeZipCode');
+	eq(p.HomeCountry, 'Italy', 'HomeCountry');
+	eq(p.WorkAddress, 'Via Po 2', 'WorkAddress');
+	eq(p.WorkCity, 'Milano', 'WorkCity');
+	eq(p.WorkCountry, 'Italy', 'WorkCountry');
+	eq(save(orig), orig, 'unchanged vCard');
+	var out = save(orig, { HomeCity: 'Orta San Giulio', WorkCity: 'Milan' });
+	contains(out, 'ADR;TYPE=HOME:;;Via Roma 1;Orta San Giulio;NO;28016;Italy');
+	contains(out, 'ADR;TYPE=WORK:;;Via Po 2;Milan;MI;20127;Italy');
+	// Standard addresses with an empty street or extra trailing ';' are not taken for the old layout
+	var std = VCardUtils.parseVCard(card(['ADR;TYPE=HOME:;;;Orta;NO;28016;Italy;;', 'ADR;TYPE=WORK:;;;Milano;MI;20127;Italy']));
+	eq(std.HomeCity, 'Orta', 'standard HomeCity');
+	eq(std.HomeCountry, 'Italy', 'standard HomeCountry');
+	eq(std.WorkCity, 'Milano', 'standard WorkCity');
+});
+
+test('TEL type lists, quoted types and vCard 2.1 bare types', function() {
+	var p = VCardUtils.parseVCard(card([
+		'TEL;TYPE=work,fax:1', 'TEL;TYPE="cell":2', 'TEL;WORK;VOICE:3', 'TEL;TYPE=HOME;TYPE=VOICE:4', 'item1.TEL;type=pager:5'
+	]));
+	eq(p.FaxNumber, '1', 'FaxNumber');
+	eq(p.CellularNumber, '2', 'CellularNumber');
+	eq(p.WorkPhone, '3', 'WorkPhone');
+	eq(p.HomePhone, '4', 'HomePhone');
+	eq(p.PagerNumber, '5', 'PagerNumber');
+});
+
+test('first of repeated single-value lines wins and the rest is kept', function() {
+	var orig = card(['VERSION:3.0', 'FN:x', 'TITLE:First', 'TITLE:Second']);
+	eq(VCardUtils.parseVCard(orig).JobTitle, 'First', 'JobTitle');
+	var out = save(orig, { JobTitle: 'Boss' });
+	contains(out, 'TITLE:Boss');
+	contains(out, 'TITLE:Second');
+});
+
+test('year-less BDAY is kept, and replaced once a full birthday is set', function() {
+	var orig = card(['VERSION:4.0', 'FN:x', 'BDAY:--0612']);
+	contains(save(orig, { FirstName: 'y' }), 'BDAY:--0612');
+	var out = save(orig, { BirthYear: '1990', BirthMonth: '06', BirthDay: '12' });
+	contains(out, 'BDAY:1990-06-12');
+	lacks(out, '--0612');
+});
+
+test('folded base64 PHOTO is decoded and kept verbatim when unchanged', function() {
+	var orig = card(['VERSION:3.0', 'FN:x', 'PHOTO;ENCODING=b;TYPE=JPEG:AAAA', '   BBBB', '  CCCC']);
+	eq(VCardUtils.parseVCard(orig).PhotoURI, 'data:image/jpeg;base64,AAAABBBBCCCC', 'PhotoURI');
+	contains(save(orig, { FirstName: 'y' }), 'PHOTO;ENCODING=b;TYPE=JPEG:AAAA  BBBB CCCC');
+});
+
+test('copied photo is written in the format of the target vCard version', function() {
+	var photo = 'data:image/png;base64,QUJD';
+	contains(save(card(['VERSION:3.0', 'FN:x']), { PhotoURI: photo }), 'PHOTO;ENCODING=b;TYPE=PNG:QUJD');
+	contains(save(card(['VERSION:4.0', 'FN:x']), { PhotoURI: photo }), 'PHOTO:' + photo);
+});
+
+test('URL with comma is not escaped', function() {
+	eq(VCardUtils.parseVCard(THUNDERBIRD_CARD).WebPage1, 'https://example.com/a,b', 'WebPage1');
+	contains(save(card(['VERSION:4.0', 'FN:x']), { WebPage1: 'https://e.example/a,b' }), 'URL:https://e.example/a,b');
+});
+
+test('mergeVCard falls back to generateVCard without an original', function() {
+	eq(VCardUtils.mergeVCard('', { FirstName: 'A' }), VCardUtils.generateVCard({ FirstName: 'A' }), 'vCard');
+});
+
+var failed = results.filter(function(r) { return !r.ok; });
+document.getElementById('summary').textContent = failed.length === 0
+	? 'All ' + results.length + ' tests passed'
+	: failed.length + ' of ' + results.length + ' tests failed';
+document.getElementById('summary').className = failed.length === 0 ? 'pass' : 'fail';
+var container = document.getElementById('results');
+results.forEach(function(r) {
+	var div = document.createElement('div');
+	div.className = r.ok ? 'pass' : 'fail';
+	div.textContent = (r.ok ? '✓ ' : '✗ ') + r.name;
+	container.appendChild(div);
+	if (!r.ok) {
+		var pre = document.createElement('pre');
+		pre.textContent = r.message;
+		container.appendChild(pre);
+	}
+});
+window.testResults = results;
+</script>
+</body>
+</html>
